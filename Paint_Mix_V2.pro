@@ -1,4 +1,5 @@
 QT += quick
+QT += xml
 CONFIG += c++11
 
 

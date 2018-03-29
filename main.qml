@@ -40,7 +40,7 @@ ApplicationWindow {
             anchors.fill: parent
 
             ItemDelegate {
-                text: qsTr("Page 10")
+                text: qsTr("PaintMix")
                 width: parent.width
                 onClicked: {
                     stackView.push("PaintMix.qml")
