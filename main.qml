@@ -7,15 +7,17 @@ ApplicationWindow {
     visible: true
     width: 1280
     height: 800
-    title: qsTr("Painter Mix")
+    title: qsTr("HIWAVE")
+
 
     header: ToolBar {
-        contentHeight: toolButton.implicitHeight
+        contentHeight: 60
 
         ToolButton {
             id: toolButton
             text: stackView.depth > 1 ? "\u25C0" : "\u2630"
-            font.pixelSize: Qt.application.font.pixelSize * 1.6
+            opacity: 0.8
+            font.pixelSize: Qt.application.font.pixelSize * 2.5
             onClicked: {
                 if (stackView.depth > 1) {
                     stackView.pop()
@@ -26,8 +28,14 @@ ApplicationWindow {
         }
 
         Label {
-            text: stackView.currentItem.title
+            Text {
+                color: "#6678ff"
+                text: stackView.currentItem.title
+                font.pointSize: 20
+            }
             anchors.centerIn: parent
+            anchors.horizontalCenterOffset: -parent.width * 0.02
+
         }
     }
 

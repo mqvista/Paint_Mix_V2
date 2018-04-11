@@ -4,5 +4,6 @@
         <file>HomeForm.qml</file>
         <file>Page2Form.ui.qml</file>
         <file>PaintMix.qml</file>
+        <file>PaintMixQml/PageFormula.qml</file>
     </qresource>
 </RCC>
