@@ -1,5 +1,6 @@
 QT += quick
 QT += xml
+QT += serialport
 CONFIG += c++11
 
 
@@ -15,7 +16,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    utils/filereadwrite.cpp
+    utils/filereadwrite.cpp \
+    control/scales.cpp \
+    control/scalesbig.cpp \
+    control/scalessmall.cpp \
+    service.cpp \
+    control/scalesworker.cpp \
+    control/motion.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,4 +38,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    utils/filereadwrite.h
+    utils/filereadwrite.h \
+    control/scales.h \
+    control/scalesbig.h \
+    control/scalessmall.h \
+    service.h \
+    control/scalesworker.h \
+    control/motion.h
+
+# 添加机台驱动
+macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0
+
+INCLUDEPATH += $$PWD/DriverGC/include
+DEPENDPATH += $$PWD/DriverGC/include

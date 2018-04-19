@@ -9,12 +9,13 @@ ApplicationWindow {
     height: 800
     title: qsTr("HIWAVE")
 
-
+    //头栏目， 还有个导航按钮
     header: ToolBar {
         contentHeight: 60
 
         ToolButton {
             id: toolButton
+            anchors.verticalCenter: parent.verticalCenter
             text: stackView.depth > 1 ? "\u25C0" : "\u2630"
             opacity: 0.8
             font.pixelSize: Qt.application.font.pixelSize * 2.5
@@ -27,15 +28,48 @@ ApplicationWindow {
             }
         }
 
+        //头栏目里面的标题
         Label {
+            id: tittleLabel
+            anchors.centerIn: parent
+
+            //点击次数的flasg
+            property int clickFlag: 0
             Text {
+                anchors.centerIn: parent
                 color: "#6678ff"
                 text: stackView.currentItem.title
-                font.pointSize: 20
-            }
-            anchors.centerIn: parent
-            anchors.horizontalCenterOffset: -parent.width * 0.02
+                font.pointSize: 30
+                font.bold: true
 
+                //添加隐藏按键
+                //连续按下10下，可进入隐藏菜单
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (stackView.depth == 1)
+                        {
+                            tittleLabel.clickFlag += 1
+                            clickTimer.restart()
+                            if (tittleLabel.clickFlag >= 10)
+                            {
+                                tittleLabel.clickFlag = 0
+                                clickTimer.stop()
+                                console.log("trage into hidden mode")
+                            }
+                        }
+                    }
+                }
+                //给tittleLable的连续按键检测的定时器
+                Timer {
+                    id: clickTimer
+                    interval: 500       //设定500MS
+                    repeat: false
+                    running: false
+                    triggeredOnStart: false
+                    onTriggered: {tittleLabel.clickFlag = 0}
+                }
+            }
         }
     }
 
@@ -72,33 +106,4 @@ ApplicationWindow {
         initialItem: "HomeForm.qml"
         anchors.fill: parent
     }
-
-//    InputPanel {
-//        id: inputPanel
-//        z: 99
-//        x: 0
-//        y: window.height
-//        width: window.width
-
-//        states: State {
-//            name: "visible"
-//            when: inputPanel.active
-//            PropertyChanges {
-//                target: inputPanel
-//                y: window.height - inputPanel.height
-//            }
-//        }
-//        transitions: Transition {
-//            from: ""
-//            to: "visible"
-//            reversible: true
-//            ParallelAnimation {
-//                NumberAnimation {
-//                    properties: "y"
-//                    duration: 250
-//                    easing.type: Easing.InOutQuad
-//                }
-//            }
-//        }
-//    }
 }

@@ -19,13 +19,13 @@ Page {
 
         //一号QML
         PageFormula{
-
         }
     }
 
     TabBar {
         id: paintMixTabBar
         height: 60
+        width: parent.width
         currentIndex: 0
         anchors.left: parent.left
         anchors.right: parent.right
@@ -34,7 +34,6 @@ Page {
                     id: paintMixTabBarMain
                     text: qsTr("Main")
                     font.pointSize: 30
-                    autoExclusive: false
                     anchors.bottom: parent.bottom
                     height: parent.height
                     background: Rectangle {

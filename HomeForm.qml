@@ -3,7 +3,7 @@ import QtQuick.Controls 2.2
 
 Page {
     id: page
-    title: qsTr("Home")
+    title: qsTr("Hiwave")
 
 
     Rectangle {
@@ -27,7 +27,6 @@ Page {
             }
             onReleased: {
                 rct1.color = "#66ccff"
-                console.log("sh333")
                 stView.push("PaintMix.qml")
             }
         }
@@ -54,7 +53,6 @@ Page {
             }
             onReleased: {
                 rct2.color = "#66ccff"
-                console.log("sh333")
                 stView.push("Page2Form.ui.qml")
             }
         }

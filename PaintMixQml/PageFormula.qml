@@ -35,6 +35,7 @@ Item {
         border.width: 5
         border.color: "Silver"
 
+        //测试用的listModel
         ListModel {
             id: tst
             ListElement {
@@ -84,18 +85,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-//                    ToolButton {
-
-//                        anchors.verticalCenter: parent.verticalCenter
-//                        anchors.right: parent.right
-//                        text: "\u274C"
-//                        font.pixelSize: Qt.application.font.pixelSize * 2.5
-//                        onClicked: {
-//                            formulaListView.currentIndex = index
-//                        }
-//                    }
-
-                    // 删除按钮是由 Rectangle 里面嵌套一个 emoji 组成的
+                    // 删除按钮是由 Rectangle 里面嵌套一个 image 组成的
                     // 触发是由mousearea 做触发
                     Rectangle {
                         height: parent.height * 0.6
@@ -103,11 +93,10 @@ Item {
                         color: "transparent"
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        Text {
-                            id: deleteButtonText
+                        Image {
+                            source: "../img/cross.png"
                             anchors.centerIn: parent
-                            text: "\u274C"
-                            font.pixelSize: Qt.application.font.pixelSize * 2.5
+                            scale: 0.2
                         }
                         MouseArea {
                             anchors.fill: parent
@@ -134,6 +123,7 @@ Item {
             }
         }
 
+        //ListView to show data
         ListView {
             id: formulaListView
             width: formulaListViewRectangle.width * 0.9
@@ -143,25 +133,30 @@ Item {
             anchors.bottomMargin: 8
             anchors.horizontalCenter: formulaListViewRectangle.horizontalCenter
             model: tst
-            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            highlight: Rectangle { color: "lightsteelblue"; radius: 5; opacity: 0.5 }
             highlightMoveDuration: -1
             delegate: contactDelegate
             clip: true
             focus: true
         }
+
+        //确认删除方案的对话框
+        MessageDialog {
+            id: deleteMessageDialog
+            title: "May I have your attention please"
+            text: "It's so cool that you are using Qt Quick."+ formulaListView.modelData
+            icon: StandardIcon.Question
+            standardButtons: StandardButton.Yes | StandardButton.No
+            onYes: {
+                console.log("And of course you could only agree.")
+            }
+            onNo: {
+                console.log("And of course you could only agree.")
+            }
+        }
     }
 
-    //确认删除方案的对话框
-    MessageDialog {
-        id: deleteMessageDialog
-        title: "May I have your attention please"
-        text: "It's so cool that you are using Qt Quick."
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onYes: {
-            console.log("And of course you could only agree.")
-        }
-        onNo: {
-            console.log("And of course you could only agree.")
-        }
-    }
+
+
+
 }
