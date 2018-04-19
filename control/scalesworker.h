@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QMutex>
 #include "scalesbig.h"
 #include "scalessmall.h"
 

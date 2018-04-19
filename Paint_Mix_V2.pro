@@ -48,7 +48,7 @@ HEADERS += \
 
 # 添加机台驱动
 macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/DriverGC/win/ -lDriverGC
+win32: LIBS += -L$$PWD/DriverGC/win/ -lDriverGC
 
 
 INCLUDEPATH += $$PWD/DriverGC/include
