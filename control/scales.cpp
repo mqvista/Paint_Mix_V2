@@ -16,7 +16,7 @@ bool Scales::open(QString port, quint32 baud)
     m_serialPort.setPortName(port);
     if (m_serialPort.open(QIODevice::ReadWrite))         //打开端口
     {
-        qDebug() << "Serial is opened " << endl;
+        qDebug() << "scale Serial is opened " << endl;
         m_serialPort.setBaudRate(baud);
         m_serialPort.setDataBits(QSerialPort::Data8);
         m_serialPort.setParity(QSerialPort::NoParity);

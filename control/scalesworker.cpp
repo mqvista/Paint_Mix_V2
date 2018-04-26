@@ -16,16 +16,18 @@ ScalesWorker *ScalesWorker::Instance()
 
 ScalesWorker::~ScalesWorker()
 {
-    scalesBigThread.quit();
-    scalesBigThread.wait();
-    scalesSmallThread.quit();
-    scalesSmallThread.wait();
+    m_scalesBigThread.quit();
+    m_scalesBigThread.wait();
+    m_scalesSmallThread.quit();
+    m_scalesSmallThread.wait();
 }
 
+// 构造函数, 连接两个秤类的开启和关闭秤串口的信号
+// 还有秤数据的信号
 ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
 {
-    m_scalesBig.goToThread(&scalesBigThread);
-    m_scalesSmall.goToThread(&scalesSmallThread);
+    m_scalesBig.goToThread(&m_scalesBigThread);
+    m_scalesSmall.goToThread(&m_scalesSmallThread);
 
     //秤开启和关闭信号
     connect(this, &ScalesWorker::scalesBigOpenSig, &m_scalesBig, &ScalesBig::scalesOpenSlot);
@@ -40,6 +42,7 @@ ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
 //开启小秤
 void ScalesWorker::scalesSmallOpen(QString name, quint32 baud)
 {
+    qDebug() << "ScalesWorker thread" << QThread::currentThreadId() << endl;
     emit scalesSmallOpenSig(name, baud);
 }
 

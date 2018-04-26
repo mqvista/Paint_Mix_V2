@@ -15,7 +15,7 @@
 class DRIVERGCSHARED_EXPORT Communication : public QThread {
     Q_OBJECT
 public:
-    bool Open(const QString& port, const quint32& baud = 500000);
+    bool Open(const QString& port, const quint32& baud = 460800);
     bool Close();
     bool IsOpened();
 signals:

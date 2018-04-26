@@ -5,30 +5,33 @@
 #include "utils/filereadwrite.h"
 #include "control/motion.h"
 
+#include "PaintMixModule/taskmodule.h"
+
 int main(int argc, char *argv[])
 {
     //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
+
+    Service service(&engine);
+    qDebug() << "Main thread" << QThread::currentThreadId() << endl;
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    Service service;
-    qDebug() << "Main thread" << QThread::currentThreadId() << endl;
 
 
-    Motion mo;
-    mo.openSerial485("tty.usbserial", 115200);
+
+
+    //mo.moveAsixToScales(Motion::scales2Motor03);
+
+    //QMetaObject::invokeMethod(MotionWorker::Instance(), "addWater", Qt::QueuedConnection, Q_ARG(quint32, 10), Q_ARG(quint8, 1));
 
 
 //    FileReadWrite frw;
-
-
 //    QMap<QString, QString> aaa;
 //    aaa.insert("water", "100");
 //    aaa.insert("wwwww", "100");
@@ -36,7 +39,6 @@ int main(int argc, char *argv[])
 //    QMap<quint16, QMap<QString, QString>> asdf;
 //    asdf.insert(1, aaa);
 //    asdf.insert(2, aaa);
-
 //    qDebug() << frw.insertProfileDetail("testU2se", asdf, 2);
 
     return app.exec();

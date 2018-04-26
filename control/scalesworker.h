@@ -19,12 +19,15 @@ public:
     Q_INVOKABLE void scalesBigClose();
 
 signals:
-    //发送信号，通知别人去处理去更新数据
+    // A signal to notice anyone can update the small scale value
     void scalesSmallDataChangedSig(double value);
+    // A signal to notice anyone can update the big scale value
     void scalesBigDataChangedSig(double value);
-
+    // A signal to notice the small scale calss to open the scale serial port
     void scalesSmallOpenSig(QString name, quint32 baud);
+    // A signal to notice the big scale calss to open the scale serial port
     void scalesBigOpenSig(QString name, quint32 baud);
+    // A signal to notice the small cales to close the port
     void scalesSmallCloseSig();
     void scalesBigCloseSig();
 
@@ -38,8 +41,8 @@ private:
     explicit ScalesWorker(QObject *parent = nullptr);
     ScalesBig m_scalesBig;
     ScalesSmall m_scalesSmall;
-    QThread scalesBigThread;
-    QThread scalesSmallThread;
+    QThread m_scalesBigThread;
+    QThread m_scalesSmallThread;
     //秤数值的单位的保存
     double m_BigScalesValue = 0;
     double m_SmallScalesValue = 0;

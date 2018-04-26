@@ -6,5 +6,6 @@
         <file>PaintMix.qml</file>
         <file>PaintMixQml/PageFormula.qml</file>
         <file>img/cross.png</file>
+        <file>PaintMixQml/PageMain.qml</file>
     </qresource>
 </RCC>

@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     control/scalessmall.cpp \
     service.cpp \
     control/scalesworker.cpp \
-    control/motion.cpp
+    control/motion.cpp \
+    control/motionworker.cpp \
+    PaintMixModule/taskmodule.cpp
 
 RESOURCES += qml.qrc
 
@@ -44,7 +46,9 @@ HEADERS += \
     control/scalessmall.h \
     service.h \
     control/scalesworker.h \
-    control/motion.h
+    control/motion.h \
+    control/motionworker.h \
+    PaintMixModule/taskmodule.h
 
 # 添加机台驱动
 macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0

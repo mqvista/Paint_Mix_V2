@@ -69,6 +69,8 @@ public:
         Command_Special_Stop = 0xc2,
         Command_Special_Continue = 0xc3,
         Command_Special_Cacel = 0xc4,
+        Command_Special_Save = 0xc5,
+        Command_Special_Init = 0xc6,
 
         Command_Post_Mask = 0xe0,
         Command_Post_Get = 0xe1,

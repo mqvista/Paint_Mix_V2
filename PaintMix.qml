@@ -17,6 +17,10 @@ Page {
         anchors.bottom: paintMixTabBar.top
         currentIndex: paintMixTabBar.currentIndex
 
+        // 零号QML
+        PageMain{
+        }
+
         //一号QML
         PageFormula{
         }

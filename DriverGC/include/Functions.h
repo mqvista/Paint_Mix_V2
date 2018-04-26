@@ -69,18 +69,11 @@ public:
     bool Special_Stop(const quint16& salveAdd);
     bool Special_Continue(const quint16& salveAdd);
     bool Special_Cacel(const quint16& salveAdd);
+    bool Special_Save(const quint16& salveAdd);
+    bool Special_Init(const quint16& salveAdd);
 
 protected:
     Functions();
-//    Protocol _Ptc;
-//    QThread _PtcThread;
-//    QMutex mutex;
-//signals:
-// /   bool Send(quint16 salveAdd, Protocol::Command cmd,
- //       QByteArray& dataSend, QByteArray& dataReceive);
- //   bool Open(const QString& port, const quint32& baud = 500000);
- //   bool Close();
-  //  void DebugOut(QString msg, QDateTime curTime = QDateTime::currentDateTime());
 };
 
 #endif // FUNCTIONS_H
