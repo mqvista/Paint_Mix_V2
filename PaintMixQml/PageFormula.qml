@@ -80,8 +80,8 @@ Item {
                     height: parent.height * 0.9
                     anchors.centerIn: parent
                     Text {
-                        text: "Name:" + name
-                        font.pointSize: 20
+                        text: "Name: " + name
+                        font.pointSize: 30
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
@@ -132,7 +132,7 @@ Item {
             anchors.topMargin: 8
             anchors.bottomMargin: 8
             anchors.horizontalCenter: formulaListViewRectangle.horizontalCenter
-            model: tst
+            model: formulaList
             highlight: Rectangle { color: "lightsteelblue"; radius: 5; opacity: 0.5 }
             highlightMoveDuration: -1
             delegate: contactDelegate

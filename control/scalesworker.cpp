@@ -42,7 +42,7 @@ ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
 //开启小秤
 void ScalesWorker::scalesSmallOpen(QString name, quint32 baud)
 {
-    qDebug() << "ScalesWorker thread" << QThread::currentThreadId() << endl;
+    qDebug() << "ScalesWorker    thread" << QThread::currentThreadId() << endl;
     emit scalesSmallOpenSig(name, baud);
 }
 

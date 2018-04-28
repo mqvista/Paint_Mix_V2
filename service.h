@@ -7,8 +7,11 @@
 #include "control/scalesworker.h"
 #include "control/motionworker.h"
 
+
 //module
 #include "PaintMixModule/taskmodule.h"
+#include "PaintMixModule/indexmodule.h"
+#include "PaintMixModule/formulalistview.h"
 
 class Service : public QObject
 {
@@ -17,6 +20,8 @@ public:
     explicit Service(QQmlApplicationEngine *appEng, QObject *parent = nullptr);
     ~Service();
     void initContext();
+    void initSignalSlotConnect();
+    void initSystem();
 
 
 signals:
@@ -30,6 +35,8 @@ private:
 
     //module
     TaskModule m_TaskModule;
+    IndexModule m_IndexModule;
+    FormulaListView m_FormulaListView;
 
 };
 

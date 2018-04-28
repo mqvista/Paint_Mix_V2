@@ -17,7 +17,7 @@ public:
     void close(void);
     bool isScalesOpen();
     void goToThread(QThread *thread);
-//    QString getSerialPortBySerialNumber();
+    bool getSerialPortBySerialNumber(QString serialNumber,QString* portName);
 
 protected:
     QString m_receivedata;

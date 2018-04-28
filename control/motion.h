@@ -21,7 +21,7 @@ class Motion : public QThread
 public:
     static Motion *Instance();
     // Open DriverGC Serial Port
-    void openSerial485(QString port);
+    void openSerial485(QString portSN);
     // Close DriverGc Serial Port
     void closeSerial485();
     // Init the board
@@ -40,6 +40,8 @@ public:
     bool addWater(quint32 weight, quint8 scalesNum);
     // punmp water from one scale to other scale
     bool pumpToScale(quint8 targetScalesNum);
+    // Convery motorNum and scale Num to degree
+    quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
 
     // Scales 1 , enum type
     enum scales1Motor :quint16 {

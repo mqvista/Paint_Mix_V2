@@ -46,7 +46,7 @@ Page {
                 }
                 TabButton {
                     id: tabButtonProfile
-                    text: qsTr("Profile")
+                    text: qsTr("方案")
                     font.pointSize: 30
                     anchors.bottom: parent.bottom
                     height: parent.height

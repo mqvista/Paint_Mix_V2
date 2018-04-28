@@ -10,6 +10,7 @@ class TaskModule : public QObject
 public:
     explicit TaskModule(QObject *parent = nullptr);
     Q_INVOKABLE void test();
+    Q_INVOKABLE void runFromula(QString formulaName);
 
 signals:
 

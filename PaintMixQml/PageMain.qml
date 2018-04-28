@@ -22,5 +22,16 @@ Item {
                 taskModule.test();
             }
         }
+
+        Button {
+            id: button1
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 100
+            text: qsTr("runFormula")
+            onClicked: {
+                taskModule.runFromula("AAAA");
+            }
+        }
     }
 }

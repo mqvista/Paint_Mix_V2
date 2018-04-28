@@ -71,18 +71,18 @@ void Scales::goToThread(QThread *thread)
 
 }
 
-//QString Scales::getSerialPortBySerialNumber()
-//{
-//    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-//        qDebug()<< info.portName();
-//        qDebug()<< info.serialNumber();
-//        qDebug()<< info.description();
-//        qDebug()<< info.manufacturer();
-//        qDebug()<< info.systemLocation();
-
-//    }
-//    return "1";
-//}
+bool Scales::getSerialPortBySerialNumber(QString serialNumber, QString* portName)
+{
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        if (info.serialNumber() == serialNumber)
+        {
+            *portName = info.portName();
+            return true;
+        }
+    }
+    return false;
+}
 
 
 void Scales::rawSerialReceiveSlot()

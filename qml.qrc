@@ -7,5 +7,6 @@
         <file>PaintMixQml/PageFormula.qml</file>
         <file>img/cross.png</file>
         <file>PaintMixQml/PageMain.qml</file>
+        <file>img/loading.gif</file>
     </qresource>
 </RCC>

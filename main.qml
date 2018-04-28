@@ -11,6 +11,7 @@ ApplicationWindow {
 
     //头栏目， 还有个导航按钮
     header: ToolBar {
+        visible: ! indexModule.initialization
         contentHeight: 60
 
         ToolButton {
@@ -105,5 +106,30 @@ ApplicationWindow {
         id: stackView
         initialItem: "HomeForm.qml"
         anchors.fill: parent
+    }
+
+    // 全屏覆盖初始化界面
+    Rectangle {
+        id: initLoadRect
+        color: "#66ccff"
+        anchors.fill: parent
+        visible: indexModule.initialization
+
+        AnimatedImage
+        {
+            anchors.centerIn: parent
+            source: "./img/loading.gif"
+            scale: 0.2
+            playing: indexModule.initialization
+        }
+
+        Text {
+            id: ttt
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: parent.height * 0.2
+            text: qsTr("Loading")
+            font.pixelSize: Qt.application.font.pixelSize * 3
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        }
     }
 }

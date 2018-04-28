@@ -63,6 +63,7 @@ bool FileReadWrite::readProfileDetail(QString name, QMap<quint16, QMap<QString,Q
     }
     file->close();
     QDomElement root = doc.documentElement();
+
     //判断头格式是否正确
     if (root.nodeName() == "PaintMix_Profile")
     {
@@ -71,10 +72,9 @@ bool FileReadWrite::readProfileDetail(QString name, QMap<quint16, QMap<QString,Q
         {
             //转换为element 并判断是否为需要的element
             QDomElement element = node.toElement();
+
             if (element.attribute("Name", "") == name)
             {
-                //移动光标到Unit元素
-                element = element.nextSiblingElement();
                 //生成Unit 的 nodeList
                 QDomNodeList nodeList = element.childNodes();
                 //遍历Unit, 并将 unit 数量提交上

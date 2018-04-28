@@ -2,10 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include "service.h"
-#include "utils/filereadwrite.h"
-#include "control/motion.h"
-
-#include "PaintMixModule/taskmodule.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,14 +20,6 @@ int main(int argc, char *argv[])
 
 
 
-
-
-    //mo.moveAsixToScales(Motion::scales2Motor03);
-
-    //QMetaObject::invokeMethod(MotionWorker::Instance(), "addWater", Qt::QueuedConnection, Q_ARG(quint32, 10), Q_ARG(quint8, 1));
-
-
-//    FileReadWrite frw;
 //    QMap<QString, QString> aaa;
 //    aaa.insert("water", "100");
 //    aaa.insert("wwwww", "100");

@@ -22,14 +22,11 @@ Motion *Motion::Instance()
 // Open DriverGC Serial Port
 // Param1: Target Serial port url
 // Param2: Target Serial port baud
-void Motion::openSerial485(QString port)
+void Motion::openSerial485(QString portSN)
 {
-    DriverGC::Instance()->Open(port);
+    DriverGC::Instance()->OpenUseSN(portSN);
+    //DriverGC::Instance()->Open(portSN);
     connect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
-    // Connect the scales value signal, and get the small scales value
-    connect(ScalesWorker::Instance(), &ScalesWorker::scalesSmallDataChangedSig, this, &Motion::getSmallScalesValue);
-    // Connect the scales value signal, and get the big scales value
-    connect(ScalesWorker::Instance(), &ScalesWorker::scalesBigDataChangedSig, this, &Motion::getBigScalesValue);
     // Get debug data
     connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
 }
@@ -72,7 +69,7 @@ void Motion::driverGCDebugInfo(QString msg, QDateTime curTime)
 void Motion::getSmallScalesValue(double value)
 {
     m_SmallScalesValue = value;
-    qDebug()<< m_SmallScalesValue;
+//    qDebug()<< m_SmallScalesValue;
 }
 
 // Get the big scales senser data (is a slot)
@@ -527,10 +524,6 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                 }
             }
         }
-        else
-        {
-            stopDrop(motorNum);
-        }
     }
     return true;
 }
@@ -587,12 +580,12 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     while (loopFlag)
     {
         // 到重量 关闭电机和阀
-        //qDebug() << "test:" << m_SmallScalesValue;
+        qDebug() << "test:" << *currentWeight - oldWeight;
         if (*currentWeight - oldWeight >= weight)
         {
-            loopFlag = false;
-            DriverGC::Instance()->Control_Motor(6, 0);
             DriverGC::Instance()->Control_ValveClose(6, sta);
+            DriverGC::Instance()->Control_Motor(6, 0);
+            loopFlag = false;
         }
         msleep(100);
     }
@@ -640,6 +633,57 @@ bool Motion::pumpToScale(quint8 targetScalesNum)
         oldWeight = *currentWeight;
     }
     return true;
+}
+
+quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
+{
+    if (scaleNum == 1)
+    {
+        if (motorNum == 1)
+            return scales1Motor01;
+        if (motorNum == 2)
+            return scales1Motor02;
+        if (motorNum == 3)
+            return scales1Motor03;
+        if (motorNum == 4)
+            return scales1Motor04;
+        if (motorNum == 5)
+            return scales1Motor05;
+        if (motorNum == 6)
+            return scales1Motor06;
+        if (motorNum == 7)
+            return scales1Motor07;
+        if (motorNum == 8)
+            return scales1Motor08;
+        if (motorNum == 9)
+            return scales1Motor09;
+        if (motorNum == 10)
+            return scales1Motor10;
+    }
+    if (scaleNum == 2)
+    {
+        if (motorNum == 1)
+            return scales2Motor01;
+        if (motorNum == 2)
+            return scales2Motor02;
+        if (motorNum == 3)
+            return scales2Motor03;
+        if (motorNum == 4)
+            return scales2Motor04;
+        if (motorNum == 5)
+            return scales2Motor05;
+        if (motorNum == 6)
+            return scales2Motor06;
+        if (motorNum == 7)
+            return scales2Motor07;
+        if (motorNum == 8)
+            return scales2Motor08;
+        if (motorNum == 9)
+            return scales2Motor09;
+        if (motorNum == 10)
+            return scales2Motor10;
+    }
+    return 1;
 }
 
 
