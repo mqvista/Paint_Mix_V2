@@ -41,6 +41,8 @@ void Service::initContext()
     m_engine->rootContext()->setContextProperty("taskModule", &m_TaskModule);
     m_engine->rootContext()->setContextProperty("indexModule", &m_IndexModule);
     m_engine->rootContext()->setContextProperty("formulaList", &m_FormulaListView);
+    m_engine->rootContext()->setContextProperty("formulaGrid", &m_FormulaGridView);
+    m_engine->rootContext()->setContextProperty("formulaAddNew", &m_FormulaAddNew);
 }
 
 void Service::initSignalSlotConnect()

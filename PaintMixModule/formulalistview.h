@@ -49,6 +49,15 @@ public:
     // Remove All data
     void removeAll();
 
+    // Remove list and xml
+    Q_INVOKABLE void removeWithXML(int index);
+
+    // Get name use index 用 index 换 name
+    Q_INVOKABLE QString getNameUseIndex(int index);
+
+    // Reflush the ListView
+    Q_INVOKABLE void reflushAll();
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 

@@ -12,6 +12,8 @@
 #include "PaintMixModule/taskmodule.h"
 #include "PaintMixModule/indexmodule.h"
 #include "PaintMixModule/formulalistview.h"
+#include "PaintMixModule/formulagridview.h"
+#include "PaintMixModule/formulaaddnew.h"
 
 class Service : public QObject
 {
@@ -37,6 +39,8 @@ private:
     TaskModule m_TaskModule;
     IndexModule m_IndexModule;
     FormulaListView m_FormulaListView;
+    FormulaGridView m_FormulaGridView;
+    FormulaAddNew m_FormulaAddNew;
 
 };
 

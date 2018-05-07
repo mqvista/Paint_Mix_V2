@@ -26,7 +26,9 @@ SOURCES += main.cpp \
     control/motionworker.cpp \
     PaintMixModule/taskmodule.cpp \
     PaintMixModule/indexmodule.cpp \
-    PaintMixModule/formulalistview.cpp
+    PaintMixModule/formulalistview.cpp \
+    PaintMixModule/formulagridview.cpp \
+    PaintMixModule/formulaaddnew.cpp
 
 RESOURCES += qml.qrc
 
@@ -52,7 +54,9 @@ HEADERS += \
     control/motionworker.h \
     PaintMixModule/taskmodule.h \
     PaintMixModule/indexmodule.h \
-    PaintMixModule/formulalistview.h
+    PaintMixModule/formulalistview.h \
+    PaintMixModule/formulagridview.h \
+    PaintMixModule/formulaaddnew.h
 
 # 添加机台驱动
 macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0

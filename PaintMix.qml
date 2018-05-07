@@ -54,26 +54,6 @@ Page {
                         color: paintMixTabBar.currentIndex === 1 ? "silver" : "#1e90ff"
                     }
                 }
-                TabButton {
-                    id: tabButtonSetting
-                    text: qsTr("Setting")
-                    font.pointSize: 30
-                    anchors.bottom: parent.bottom
-                    height: parent.height
-                    background: Rectangle {
-                        color: paintMixTabBar.currentIndex === 2 ? "silver" : "#1e90ff"
-                    }
-                }
 
-                TabButton {
-                    id: tabButtonFactory
-                    text: qsTr("Factory Mode")
-                    font.pointSize: 30
-                    anchors.bottom: parent.bottom
-                    height: parent.height
-                    background: Rectangle {
-                        color: paintMixTabBar.currentIndex === 3 ? "silver" : "#1e90ff"
-                    }
-                }
     }
 }

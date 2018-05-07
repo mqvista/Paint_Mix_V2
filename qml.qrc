@@ -8,5 +8,10 @@
         <file>img/cross.png</file>
         <file>PaintMixQml/PageMain.qml</file>
         <file>img/loading.gif</file>
+        <file>PaintMixQml/NewFormulaDialog.qml</file>
+        <file>img/close.png</file>
+        <file>img/vertical-expansion.png</file>
+        <file>img/add.png</file>
+        <file>img/upDown.png</file>
     </qresource>
 </RCC>

@@ -12,7 +12,7 @@ QString FormulaList::name() const
 
 
 
-
+// qml 接口获取数据
 FormulaListView::FormulaListView(QObject *parent)
     : QAbstractListModel(parent)
 {
@@ -25,7 +25,6 @@ FormulaListView::FormulaListView(QObject *parent)
         qDebug()<<nameList.at(i);
         append(FormulaList(nameList.at(i)));
     }
-
 }
 
 int FormulaListView::rowCount(const QModelIndex &parent) const
@@ -38,7 +37,6 @@ int FormulaListView::rowCount(const QModelIndex &parent) const
     // FIXME: Implement me!
     Q_UNUSED(parent);
     return m_list.count();
-
 }
 
 QVariant FormulaListView::data(const QModelIndex &index, int role) const
@@ -107,8 +105,38 @@ void FormulaListView::removeAll()
         int cot = m_list.count();
         for (int i=0; i<= cot; i++)
         {
-            remove(i);
+            remove(0);
         }
+    }
+}
+
+void FormulaListView::removeWithXML(int index)
+{
+    FileReadWrite fileReadWrite;
+    fileReadWrite.deleteProfileDetail(getNameUseIndex(index));
+    remove(index);
+}
+
+QString FormulaListView::getNameUseIndex(int index)
+{
+    if (index < 0 || index > m_list.count())
+        return 0;
+    // 从 m_list 内获取 name
+    return m_list.at(index).name();
+
+}
+
+void FormulaListView::reflushAll()
+{
+    removeAll();
+    FileReadWrite fileReadWrite;
+    QList<QString> nameList;
+    fileReadWrite.readProfileLists(&nameList);
+
+    for (quint8 i=0; i<nameList.count(); i++)
+    {
+        qDebug()<<nameList.at(i);
+        append(FormulaList(nameList.at(i)));
     }
 }
 
