@@ -15,6 +15,8 @@ public:
     ~ScalesWorker();
     Q_INVOKABLE void scalesSmallOpen(QString name, quint32 baud);
     Q_INVOKABLE void scalesBigOpen(QString name, quint32 baud);
+    Q_INVOKABLE void scalesSmallOpenUseSN(QString serialNumber, quint32 baud);
+    Q_INVOKABLE void scalesBigOpenUseSN(QString serialNumber, quint32 baud);
     Q_INVOKABLE void scalesSmallClose();
     Q_INVOKABLE void scalesBigClose();
 
@@ -27,6 +29,12 @@ signals:
     void scalesSmallOpenSig(QString name, quint32 baud);
     // A signal to notice the big scale calss to open the scale serial port
     void scalesBigOpenSig(QString name, quint32 baud);
+
+    // A signal to notice the small scale calss to open the scale serial port
+    void scalesSmallOpenUseSNSig(QString serialNumber, quint32 baud);
+    // A signal to notice the big scale calss to open the scale serial port
+    void scalesBigOpenUseSNSig(QString serialNumber, quint32 baud);
+
     // A signal to notice the small cales to close the port
     void scalesSmallCloseSig();
     void scalesBigCloseSig();

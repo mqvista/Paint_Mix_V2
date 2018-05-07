@@ -233,8 +233,14 @@ Item {
     }
 
     Button {
-        id: button
-        text: qsTr("新增方案")
+        id: addButton
+        Text {
+            text: qsTr("新增方案")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pointSize: Qt.application.font.pixelSize * 1.5
+        }
+
         anchors.top: formulaGridViewRectangle.bottom
         anchors.topMargin: 30
         anchors.right: formulaListViewRectangle.left
@@ -246,6 +252,23 @@ Item {
             // 设定新增方案对话框的位置 x 在中间 y 在中间靠上
             newFormula.x = parent.width / 2 - newFormula.width / 2
             newFormula.y = parent.height / 2 - newFormula.height / 1.5
+        }
+    }
+
+    Button {
+        id: runButton
+        Text {
+            text: qsTr("运行方案")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pointSize: Qt.application.font.pixelSize * 1.5
+        }
+        anchors.top: formulaGridViewRectangle.bottom
+        anchors.topMargin: 100
+        anchors.right: formulaListViewRectangle.left
+        anchors.rightMargin: 30
+        onClicked: {
+            taskModule.runFromula(formulaList.getNameUseIndex(formulaGridView.currentIndex))
         }
     }
 }

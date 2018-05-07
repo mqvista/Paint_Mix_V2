@@ -235,8 +235,6 @@ bool FormulaAddNew::saveFormula(QString fName)
     {
         return true;
     }
-    qDebug() << formula;
-    //if (fileReadWrite.insertProfileDetail())
     return true;
 }
 
@@ -281,9 +279,6 @@ bool FormulaAddNew::updatePercent()
             }
         }
     }
-
-
-    qDebug() << totalWeight;
     return true;
 }
 

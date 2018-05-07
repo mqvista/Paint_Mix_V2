@@ -15,12 +15,11 @@ Service::Service(QQmlApplicationEngine *appEng, QObject *parent) : QObject(paren
     // 初始化qml 上下文对象
     initContext();
     // 开启 loading 画面
-    //m_IndexModule.setIsnitialization(true);
-
+    m_IndexModule.setIsnitialization(true);
     // 初始化信号连接
     initSignalSlotConnect();
     // 开启相应的硬件端口，并初始化硬件
-    //initSystem();
+    initSystem();
 
 
 }
@@ -60,6 +59,9 @@ void Service::initSystem()
     // 开启设备串口
     QMetaObject::invokeMethod(MotionWorker::Instance(), "openSerial485", Qt::QueuedConnection);
     // 开启秤的串口
-    QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesSmallOpen", Qt::QueuedConnection,
-                              Q_ARG(QString, "tty.usbserial"), Q_ARG(quint32, 2400));
+    QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesSmallOpenUseSN", Qt::QueuedConnection,
+                              Q_ARG(QString, "AH06DLKH"), Q_ARG(quint32, 2400));
+
+//    QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesBigOpenUseSN", Qt::QueuedConnection,
+//                              Q_ARG(QString, "AH06DLKF"), Q_ARG(quint32, 9600));
 }

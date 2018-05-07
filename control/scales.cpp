@@ -37,6 +37,22 @@ bool Scales::open(QString port, quint32 baud)
     }
 }
 
+bool Scales::openUseSN(const QString &serialNumber, const quint32 &baud)
+{
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        if (info.serialNumber() == serialNumber)
+        {
+            if (open(info.portName(), baud))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
+
 void Scales::close()
 {
     m_serialPort.close();
@@ -106,4 +122,9 @@ void Scales::scalesOpenSlot(QString port, quint32 baud)
 void Scales::scalesCloseSlot()
 {
     close();
+}
+
+void Scales::scalesOpenUseSNSlot(QString serialNumber, quint32 baud)
+{
+    openUseSN(serialNumber, baud);
 }

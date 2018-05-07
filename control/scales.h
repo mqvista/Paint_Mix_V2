@@ -14,6 +14,7 @@ public:
     explicit Scales(QObject *parent = nullptr);
     ~Scales();
     bool open(QString port, quint32 baud);
+    bool openUseSN(const QString &serialNumber, const quint32 &baud);
     void close(void);
     bool isScalesOpen();
     void goToThread(QThread *thread);
@@ -35,6 +36,7 @@ public slots:
     void rawSerialReceiveSlot();
     void scalesOpenSlot(QString port, quint32 baud);
     void scalesCloseSlot();
+    void scalesOpenUseSNSlot(QString serialNumber, quint32 baud);
 
 private:
     QSerialPort m_serialPort;

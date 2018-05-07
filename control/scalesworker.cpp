@@ -29,27 +29,39 @@ ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
     m_scalesBig.goToThread(&m_scalesBigThread);
     m_scalesSmall.goToThread(&m_scalesSmallThread);
 
-    //秤开启和关闭信号
+    // 秤开启和关闭信号
     connect(this, &ScalesWorker::scalesBigOpenSig, &m_scalesBig, &ScalesBig::scalesOpenSlot);
+    connect(this, &ScalesWorker::scalesBigOpenUseSNSig, &m_scalesBig, &ScalesBig::scalesOpenUseSNSlot);
     connect(this, &ScalesWorker::scalesBigCloseSig, &m_scalesBig, &ScalesBig::scalesCloseSlot);
+
+    connect(this, &ScalesWorker::scalesSmallOpenUseSNSig, &m_scalesSmall, &ScalesSmall::scalesOpenUseSNSlot);
     connect(this, &ScalesWorker::scalesSmallOpenSig, &m_scalesSmall, &ScalesSmall::scalesOpenSlot);
     connect(this, &ScalesWorker::scalesSmallCloseSig, &m_scalesSmall, &ScalesSmall::scalesCloseSlot);
-    //秤接收数据信号
+    // 秤接收数据信号
     connect(&m_scalesBig, &ScalesBig::receiveDataPush, this, &ScalesWorker::getScalesBigDataSlot);
     connect(&m_scalesSmall, &ScalesSmall::receiveDataPush, this, &ScalesWorker::getScalesSmallDataSlot);
 }
 
-//开启小秤
+// 开启小秤
 void ScalesWorker::scalesSmallOpen(QString name, quint32 baud)
 {
-    qDebug() << "ScalesWorker    thread" << QThread::currentThreadId() << endl;
     emit scalesSmallOpenSig(name, baud);
 }
 
-//开启大秤
+// 开启大秤
 void ScalesWorker::scalesBigOpen(QString name, quint32 baud)
 {
     emit scalesBigOpenSig(name, baud);
+}
+
+void ScalesWorker::scalesSmallOpenUseSN(QString serialNumber, quint32 baud)
+{
+    emit scalesSmallOpenUseSNSig(serialNumber, baud);
+}
+
+void ScalesWorker::scalesBigOpenUseSN(QString serialNumber, quint32 baud)
+{
+    emit scalesBigOpenUseSNSig(serialNumber, baud);
 }
 
 void ScalesWorker::scalesSmallClose()

@@ -69,7 +69,7 @@ void Motion::driverGCDebugInfo(QString msg, QDateTime curTime)
 void Motion::getSmallScalesValue(double value)
 {
     m_SmallScalesValue = value;
-//    qDebug()<< m_SmallScalesValue;
+    //qDebug()<< "Small_Scales:" << m_SmallScalesValue;
 }
 
 // Get the big scales senser data (is a slot)
@@ -77,7 +77,7 @@ void Motion::getSmallScalesValue(double value)
 void Motion::getBigScalesValue(double value)
 {
     m_BigScalesValue = value;
-//    qDebug() << m_BigScalesValue;
+    //qDebug()<< "Big_Scales:" << m_BigScalesValue;
 }
 
 // Block thread untils the motor is free

@@ -125,7 +125,7 @@ void FormulaGridView::reflushUseName(QString formulaName)
             QString setValue = subDetail.value("Weight") + "G";
             QString realValue = "-----";
             QString addLocal;
-            if (subDetail.value("Scales") == 1)
+            if (subDetail.value("Scales") == "1")
             {
                 addLocal = "小秤";
             }
@@ -143,7 +143,7 @@ void FormulaGridView::reflushUseName(QString formulaName)
             QString setValue = subDetail.value("Weight") + "G";
             QString realValue = "-----";
             QString addLocal;
-            if (subDetail.value("Scales") == 1)
+            if (subDetail.value("Scales") == "1")
             {
                 addLocal = "小秤";
             }
@@ -161,7 +161,7 @@ void FormulaGridView::reflushUseName(QString formulaName)
             QString setValue = "-----";;
             QString realValue = "-----";
             QString addLocal;
-            if (subDetail.value("Scales") == 1)
+            if (subDetail.value("Scales") == "1")
             {
                 addLocal = "小秤";
             }
