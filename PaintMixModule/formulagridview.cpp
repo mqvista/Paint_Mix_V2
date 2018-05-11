@@ -27,6 +27,26 @@ QString FormulaGrid::addLocal() const
     return m_addLocal;
 }
 
+void FormulaGrid::setName(const QString value)
+{
+    m_name = value;
+}
+
+void FormulaGrid::setSetValue(const QString value)
+{
+    m_setValue = value;
+}
+
+void FormulaGrid::setRealValue(const QString value)
+{
+    m_realValue = value;
+}
+
+void FormulaGrid::setAddLocal(const QString value)
+{
+    m_addLocal = value;
+}
+
 
 
 // qml 获取对象接口
@@ -65,6 +85,29 @@ QVariant FormulaGridView::data(const QModelIndex &index, int role) const
         return formulaGrid.addLocal();
 
     return QVariant();
+}
+
+bool FormulaGridView::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.row() < 0 || index.row() >= m_list.count())
+        return false;
+    if (data(index, role) != value) {
+        // FIXME: Implement me!
+        FormulaGrid &formulaGrid = m_list[index.row()];
+        if (role == NameRole)
+            formulaGrid.setName(value.toString());
+        else if (role == SetValueRole)
+            formulaGrid.setSetValue(value.toString());
+        else if (role == RealValueRole)
+            formulaGrid.setRealValue(value.toString());
+        else if (role == AddLocalRole)
+            formulaGrid.setAddLocal(value.toString());
+        else return false;
+
+        emit dataChanged(index, index, QVector<int>() << role);
+        return true;
+    }
+    return false;
 }
 
 void FormulaGridView::insert(int index, const FormulaGrid &formulaGrid)
@@ -174,6 +217,13 @@ void FormulaGridView::reflushUseName(QString formulaName)
         }
 
     }
+}
+
+void FormulaGridView::reflushRealValue(int row, QString value)
+{
+    QModelIndex index = this->index(row);
+    QVariant qv = value;
+    setData(index, qv, RealValueRole);
 }
 
 QHash<int, QByteArray> FormulaGridView::roleNames() const

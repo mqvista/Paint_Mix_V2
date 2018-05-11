@@ -10,7 +10,8 @@ class ScalesBig : public Scales
         ScalesBig();
 
     private:
-        void serialStrConver2Data(QString msg);
+        void serialStrConver2Data();
+        void splitData(QString msg);
 };
 
 #endif // SCALESBIG_H

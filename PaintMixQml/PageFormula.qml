@@ -10,6 +10,20 @@ Item {
         id: newFormula
     }
 
+    AdditionFormulaDialog {
+        id: additionFormula
+    }
+
+    // 从 motion 获取到的数据 跟新实际添加的重量
+    Connections {
+        target: taskModule
+        onTaskFinishWeight: {
+            console.log(value);
+            formulaGrid.reflushRealValue(formulaGridView.currentIndex, value);
+            formulaGridView.currentIndex += 1;
+        }
+    }
+
 
 
     //////////////////////////////////////////
@@ -99,6 +113,7 @@ Item {
                         // 用于刷新 对应的 gridview
                         formulaGrid.reflushUseName(name);
                     }
+                    enabled: !taskModule.busy
                 }
             }
         }
@@ -199,9 +214,6 @@ Item {
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                         }
                     }
-
-
-
                 }
             }
         }
@@ -234,17 +246,18 @@ Item {
 
     Button {
         id: addButton
+        width: parent.width * 0.1
+        height: parent.height * 0.08
         Text {
             text: qsTr("新增方案")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
         }
-
-        anchors.top: formulaGridViewRectangle.bottom
-        anchors.topMargin: 30
-        anchors.right: formulaListViewRectangle.left
-        anchors.rightMargin: 30
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.7
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.3
         onClicked: {
             formulaAddNew.reflush()
             // 开启对话框，添加新的方案
@@ -253,22 +266,100 @@ Item {
             newFormula.x = parent.width / 2 - newFormula.width / 2
             newFormula.y = parent.height / 2 - newFormula.height / 1.5
         }
+        enabled: !taskModule.busy
     }
 
     Button {
         id: runButton
+        width: parent.width * 0.1
+        height: parent.height * 0.08
         Text {
             text: qsTr("运行方案")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
         }
-        anchors.top: formulaGridViewRectangle.bottom
-        anchors.topMargin: 100
-        anchors.right: formulaListViewRectangle.left
-        anchors.rightMargin: 30
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.85
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.3
         onClicked: {
-            taskModule.runFromula(formulaList.getNameUseIndex(formulaGridView.currentIndex))
+            formulaGridView.currentIndex = 0
+            taskModule.runFromula(formulaList.getNameUseIndex(formulaListView.currentIndex))
         }
+        enabled: !taskModule.busy
+    }
+
+    Button {
+        id: additionButton
+        width: parent.width * 0.1
+        height: parent.height * 0.08
+        Text {
+            text: qsTr("微调方案")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pointSize: Qt.application.font.pixelSize * 1.5
+        }
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.7
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.45
+        onClicked: {
+            console.log()
+            formulaAddition.reflush(formulaList.getNameUseIndex(formulaListView.currentIndex))
+            additionFormula.open()
+            // 设定新增方案对话框的位置 x 在中间 y 在中间靠上
+            additionFormula.x = parent.width / 2 - additionFormula.width / 2
+            additionFormula.y = parent.height / 2 - additionFormula.height / 1.5
+        }
+        enabled: !taskModule.busy
+    }
+
+    AnimatedImage
+    {
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.38
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.25
+        source: "../img/loading.gif"
+        scale: 0.1
+        playing: true
+        visible: taskModule.busy
+    }
+
+
+    // 显示秤的读数啦
+    Text {
+        id: nameSmallScale
+        text: qsTr("小秤读数:")
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.7
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width * 0.02
+        font.pointSize: Qt.application.font.pixelSize * 2
+    }
+    Text {
+        text: taskModule.scaleSmall
+        anchors.left: nameSmallScale.right
+        anchors.leftMargin: 10
+        anchors.verticalCenter: nameSmallScale.verticalCenter
+        font.pointSize: Qt.application.font.pixelSize * 2
+    }
+
+    Text {
+        id: nameBigScale
+        text: qsTr("大秤读数:")
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.85
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width * 0.02
+        font.pointSize: Qt.application.font.pixelSize * 2
+    }
+    Text {
+        text: taskModule.scaleBig
+        anchors.left: nameBigScale.right
+        anchors.leftMargin: 10
+        anchors.verticalCenter: nameBigScale.verticalCenter
+        font.pointSize: Qt.application.font.pixelSize * 2
     }
 }

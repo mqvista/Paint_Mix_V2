@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     PaintMixModule/indexmodule.cpp \
     PaintMixModule/formulalistview.cpp \
     PaintMixModule/formulagridview.cpp \
-    PaintMixModule/formulaaddnew.cpp
+    PaintMixModule/formulaaddnew.cpp \
+    PaintMixModule/formulaaddition.cpp
 
 RESOURCES += qml.qrc
 
@@ -56,7 +57,8 @@ HEADERS += \
     PaintMixModule/indexmodule.h \
     PaintMixModule/formulalistview.h \
     PaintMixModule/formulagridview.h \
-    PaintMixModule/formulaaddnew.h
+    PaintMixModule/formulaaddnew.h \
+    PaintMixModule/formulaaddition.h
 
 # 添加机台驱动
 macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0

@@ -11,7 +11,8 @@ class ScalesSmall : public Scales
         ScalesSmall();
 
     private:
-        void serialStrConver2Data(QString msg);
+        void serialStrConver2Data();
+        void splitData(QString msg);
 };
 
 #endif // SCALESSMALL_H

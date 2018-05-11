@@ -369,9 +369,30 @@ Popup {
             }
 
             Text {
-                id: warningText
+                id: totalWeightText
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: formulaNameTextField.right
+                anchors.leftMargin: 20
+                font.pointSize: Qt.application.font.pixelSize * 1.5
+                text: qsTr("总重量:")
+            }
+            Text {
+                id: totalWeightValue
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: totalWeightText.right
+                anchors.leftMargin: 10
+                font.pointSize: Qt.application.font.pixelSize * 1.5
+                text: formulaAddNew.totalWeight
+            }
+
+
+
+
+
+            Text {
+                id: warningText
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: totalWeightValue.right
                 anchors.leftMargin: 20
                 font.pointSize: Qt.application.font.pixelSize * 1.5
                 color: "red"

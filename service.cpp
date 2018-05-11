@@ -8,7 +8,7 @@ Service::Service(QQmlApplicationEngine *appEng, QObject *parent) : QObject(paren
     // 把scalesWorker 丢入线程
     ScalesWorker::Instance()->moveToThread(&scalesWorkerThread);
     scalesWorkerThread.start();
-    // 把scalesWorker 丢入线程
+    // 把motionWorker 丢入线程
     MotionWorker::Instance()->moveToThread(&motionWorkerThread);
     motionWorkerThread.start();
 
@@ -42,6 +42,7 @@ void Service::initContext()
     m_engine->rootContext()->setContextProperty("formulaList", &m_FormulaListView);
     m_engine->rootContext()->setContextProperty("formulaGrid", &m_FormulaGridView);
     m_engine->rootContext()->setContextProperty("formulaAddNew", &m_FormulaAddNew);
+    m_engine->rootContext()->setContextProperty("formulaAddition", &m_FormulaAddition);
 }
 
 void Service::initSignalSlotConnect()
@@ -50,8 +51,17 @@ void Service::initSignalSlotConnect()
     connect(ScalesWorker::Instance(), &ScalesWorker::scalesSmallDataChangedSig, Motion::Instance(), &Motion::getSmallScalesValue);
     // Connect the scales value signal, and get the big scales value
     connect(ScalesWorker::Instance(), &ScalesWorker::scalesBigDataChangedSig, Motion::Instance(), &Motion::getBigScalesValue);
+
+    connect(ScalesWorker::Instance(), &ScalesWorker::scalesSmallDataChangedSig, &m_TaskModule, &TaskModule::getScaleSmallSlot);
+
+    connect(ScalesWorker::Instance(), &ScalesWorker::scalesBigDataChangedSig, &m_TaskModule, &TaskModule::getScaleBigSlot);
     // 连接从运动worker出发出的初始化完成信号,并隐藏等待画面
     connect(MotionWorker::Instance(), &MotionWorker::isIniting, &m_IndexModule, &IndexModule::setIsnitialization);
+    // qml 取得实际注液量
+    connect(Motion::Instance(), &Motion::finishWeight, &m_TaskModule, &TaskModule::getFinishWeight);
+
+
+    connect(MotionWorker::Instance(), &MotionWorker::runningStatus, &m_TaskModule, &TaskModule::getRunningStatus);
 }
 
 void Service::initSystem()
@@ -62,6 +72,6 @@ void Service::initSystem()
     QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesSmallOpenUseSN", Qt::QueuedConnection,
                               Q_ARG(QString, "AH06DLKH"), Q_ARG(quint32, 2400));
 
-//    QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesBigOpenUseSN", Qt::QueuedConnection,
-//                              Q_ARG(QString, "AH06DLKF"), Q_ARG(quint32, 9600));
+    QMetaObject::invokeMethod(ScalesWorker::Instance(), "scalesBigOpenUseSN", Qt::QueuedConnection,
+                              Q_ARG(QString, "AH06DLKF"), Q_ARG(quint32, 9600));
 }

@@ -163,6 +163,7 @@ bool FormulaAddNew::removeAll()
 // 刷新listview 界面 只留一个
 void FormulaAddNew::reflush()
 {
+    m_totalWeight = 0;
     // 先清除 m_list 里面所有的东东
     removeAll();
     // 再在 m_list 里面插入一个空行
@@ -240,16 +241,19 @@ bool FormulaAddNew::saveFormula(QString fName)
 
 bool FormulaAddNew::updatePercent()
 {
-    quint16 totalWeight = 0;
+    //quint32 m_totalWeight = 0;
+    m_totalWeight = 0;
+    emit totalWeightChanged();
     // 先计算重量的总和
     for (int i=0; i<m_list.count(); i++)
     {
         if ((m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
                 && m_list.at(i).setWeight() != "")
         {
-            totalWeight += m_list.at(i).setWeight().toInt();
+            m_totalWeight += m_list.at(i).setWeight().toInt();
         }
     }
+    emit totalWeightChanged();
 
     // 再计算百分比
     for (int i=0; i<m_list.count(); i++)
@@ -264,7 +268,7 @@ bool FormulaAddNew::updatePercent()
             {
                 // 除一下知道百分比
                 float percent;
-                percent = m_list.at(i).setWeight().toFloat() / totalWeight * 100;
+                percent = m_list.at(i).setWeight().toFloat() / m_totalWeight * 100;
                 // 转到 qv 里面
                 QVariant qv = QString::number(percent, 'f', 1);
                 // 最后设定进去
@@ -280,6 +284,11 @@ bool FormulaAddNew::updatePercent()
         }
     }
     return true;
+}
+
+quint32 FormulaAddNew::totalWeight()
+{
+    return m_totalWeight;
 }
 
 QHash<int, QByteArray> FormulaAddNew::roleNames() const

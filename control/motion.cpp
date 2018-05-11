@@ -42,7 +42,7 @@ void Motion::closeSerial485()
 // No Params
 bool Motion::initBoard()
 {
-    for(quint8 i=1; i<=6; i++)
+    for(quint8 i=1; i<=7; i++)
     {
         DriverGC::Instance()->Special_Reset(i);
         DriverGC::Instance()->Special_Init(i);
@@ -518,6 +518,9 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                     liquidRunStatus = false;
                     motorBusyStatus = false;
                     stopDrop(motorNum);
+                    // 发射信号 告诉界面最终的重量, 先等待数值稳定
+                    msleep(500);
+                    emit finishWeight(*currentWeight-oldWeight);
                     //高速回抽
                     DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 8000, 18000);
                     DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 2000);
@@ -580,12 +583,15 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     while (loopFlag)
     {
         // 到重量 关闭电机和阀
-        qDebug() << "test:" << *currentWeight - oldWeight;
+        //qDebug() << "test:" << *currentWeight - oldWeight;
         if (*currentWeight - oldWeight >= weight)
         {
             DriverGC::Instance()->Control_ValveClose(6, sta);
             DriverGC::Instance()->Control_Motor(6, 0);
             loopFlag = false;
+            // 发射信号 告诉界面最终的重量, 先等待数值稳定
+            msleep(500);
+            emit finishWeight(*currentWeight-oldWeight);
         }
         msleep(100);
     }
@@ -624,7 +630,7 @@ bool Motion::pumpToScale(quint8 targetScalesNum)
     //如果变化率小于1g，则停止
     while (loopFlag)
     {
-        sleep(100);
+        sleep(5);
         if (oldWeight - *currentWeight <= 1)
         {
             loopFlag = false;
@@ -684,6 +690,33 @@ quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
             return scales2Motor10;
     }
     return 1;
+}
+
+bool Motion::pumpToOutSide()
+{
+    double* currentWeight;
+    currentWeight = &m_BigScalesValue;
+
+    // 设定抽水速度
+    DriverGC::Instance()->Setting_SM_Speed(7, 1, 4000, 12000);
+    bool loopFlag=true;
+    double oldWeight = *currentWeight;
+
+    // 设定抽水机的转动方向
+    DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_CW);
+
+    //如果变化率小于1g，则停止
+    while (loopFlag)
+    {
+        sleep(5);
+        if (oldWeight - *currentWeight <= 1)
+        {
+            loopFlag = false;
+            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
+        }
+        oldWeight = *currentWeight;
+    }
+    return true;
 }
 
 

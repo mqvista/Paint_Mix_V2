@@ -13,5 +13,6 @@
         <file>img/vertical-expansion.png</file>
         <file>img/add.png</file>
         <file>img/upDown.png</file>
+        <file>PaintMixQml/AdditionFormulaDialog.qml</file>
     </qresource>
 </RCC>

@@ -6,6 +6,9 @@
 #include "motion.h"
 #include "utils/filereadwrite.h"
 
+typedef QMap<quint16, QMap<QString, QString>> detailType;
+
+
 class MotionWorker : public QObject
 {
     Q_OBJECT
@@ -17,6 +20,9 @@ public:
     Q_INVOKABLE void initAsix(quint8 motorNum);
     Q_INVOKABLE void liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum);
     Q_INVOKABLE void runFormula(const QString& formulaName);
+    Q_INVOKABLE void runUseDetail(const detailType formulaDetails);
+
+    Q_INVOKABLE void pumpToOutside();
 
 private:
     explicit MotionWorker(QObject *parent = nullptr);
@@ -25,6 +31,8 @@ private:
 signals:
     //通知主界面关闭初始化界面
     void isIniting(bool status);
+    // 通知 model 系统正在运动中
+    void runningStatus(bool value);
 
 public slots:
 };

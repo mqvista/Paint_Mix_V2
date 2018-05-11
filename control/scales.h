@@ -21,11 +21,14 @@ public:
     bool getSerialPortBySerialNumber(QString serialNumber,QString* portName);
 
 protected:
-    QString m_receivedata;
-    double m_scalesValue;
-    QString m_scalesStatus;
-    QString m_scalesUnit;
-    virtual void serialStrConver2Data(QString msg) = 0;     //must rewrite
+    QString p_receivedata;
+    double p_scalesValue;
+    QString p_scalesStatus;
+    QString p_scalesUnit;
+
+    QByteArray p_allData;
+
+    virtual void serialStrConver2Data() = 0;     //must rewrite
 
 
 signals:
@@ -40,7 +43,7 @@ public slots:
 
 private:
     QSerialPort m_serialPort;
-    QString receivedata;
+    QString m_receivedata;
 };
 
 #endif // SCALES_H

@@ -84,7 +84,6 @@ void Scales::goToThread(QThread *thread)
     m_serialPort.moveToThread(thread);
     this->moveToThread(thread);
     thread->start();
-
 }
 
 bool Scales::getSerialPortBySerialNumber(QString serialNumber, QString* portName)
@@ -103,15 +102,22 @@ bool Scales::getSerialPortBySerialNumber(QString serialNumber, QString* portName
 
 void Scales::rawSerialReceiveSlot()
 {
-    QByteArray readAllData = m_serialPort.readAll();     //读取收到的数据one Byte
-    receivedata.append(readAllData.data());             //将QByteArray转为QString，并保存
+    //qDebug()<< "Raws";
+    QByteArray readData = m_serialPort.readAll();     //读取收到的数据one Byte
+    //m_receivedata.append(readAllData.data());             //将QByteArray转为QString，并保存
+    /////
+    p_allData.append(readData);           // 数据直接附加到 private 的 QByteArray
+    serialStrConver2Data();
+    /////
 
-    if (QString(readAllData.data()) == "\n") {
-        m_receivedata = receivedata;
-        receivedata.clear();
-        serialStrConver2Data(m_receivedata);
-        emit receiveDataPush(m_scalesValue, m_scalesUnit);
-    }
+
+    /*if (QString(readAllData.data()) == "\n") {
+        p_receivedata = receivedata;
+        m_receivedata.clear();
+        serialStrConver2Data(p_receivedata);
+        qDebug()<< "rdata"<< p_receivedata;
+        emit receiveDataPush(p_scalesValue, p_scalesUnit);
+    }*/
 }
 
 void Scales::scalesOpenSlot(QString port, quint32 baud)

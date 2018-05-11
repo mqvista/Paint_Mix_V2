@@ -43,6 +43,9 @@ public:
     // Convery motorNum and scale Num to degree
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
 
+    // extren board pump
+    bool pumpToOutSide();
+
     // Scales 1 , enum type
     enum scales1Motor :quint16 {
         scales1Motor01 = 344,
@@ -80,6 +83,10 @@ public slots:
     void getSmallScalesValue(double value);
     // Get the big scales senser data
     void getBigScalesValue(double value);
+
+signals:
+    void finishWeight(double fWeight);
+
 
 private:
     Motion();

@@ -14,6 +14,7 @@
 #include "PaintMixModule/formulalistview.h"
 #include "PaintMixModule/formulagridview.h"
 #include "PaintMixModule/formulaaddnew.h"
+#include "PaintMixModule/formulaaddition.h"
 
 class Service : public QObject
 {
@@ -41,6 +42,7 @@ private:
     FormulaListView m_FormulaListView;
     FormulaGridView m_FormulaGridView;
     FormulaAddNew m_FormulaAddNew;
+    FormulaAddition m_FormulaAddition;
 
 };
 

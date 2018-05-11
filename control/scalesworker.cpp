@@ -29,6 +29,11 @@ ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
     m_scalesBig.goToThread(&m_scalesBigThread);
     m_scalesSmall.goToThread(&m_scalesSmallThread);
 
+
+    // 秤接收数据信号
+    connect(&m_scalesBig, &ScalesBig::receiveDataPush, this, &ScalesWorker::getScalesBigDataSlot);
+    connect(&m_scalesSmall, &ScalesSmall::receiveDataPush, this, &ScalesWorker::getScalesSmallDataSlot);
+
     // 秤开启和关闭信号
     connect(this, &ScalesWorker::scalesBigOpenSig, &m_scalesBig, &ScalesBig::scalesOpenSlot);
     connect(this, &ScalesWorker::scalesBigOpenUseSNSig, &m_scalesBig, &ScalesBig::scalesOpenUseSNSlot);
@@ -37,9 +42,7 @@ ScalesWorker::ScalesWorker(QObject *parent) : QObject(parent)
     connect(this, &ScalesWorker::scalesSmallOpenUseSNSig, &m_scalesSmall, &ScalesSmall::scalesOpenUseSNSlot);
     connect(this, &ScalesWorker::scalesSmallOpenSig, &m_scalesSmall, &ScalesSmall::scalesOpenSlot);
     connect(this, &ScalesWorker::scalesSmallCloseSig, &m_scalesSmall, &ScalesSmall::scalesCloseSlot);
-    // 秤接收数据信号
-    connect(&m_scalesBig, &ScalesBig::receiveDataPush, this, &ScalesWorker::getScalesBigDataSlot);
-    connect(&m_scalesSmall, &ScalesSmall::receiveDataPush, this, &ScalesWorker::getScalesSmallDataSlot);
+
 }
 
 // 开启小秤
