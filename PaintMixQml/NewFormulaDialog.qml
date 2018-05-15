@@ -414,7 +414,7 @@ Popup {
                             popupDialog.close()
                             return;
                         }
-                    }
+                    };
                     // 显示错误警告文字，然后定时器定时
                     warningText.text = "请检查名称或参数是否冲突或遗漏 ！"
                     clearTextTimer.start()
