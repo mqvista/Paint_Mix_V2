@@ -583,7 +583,6 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     while (loopFlag)
     {
         // 到重量 关闭电机和阀
-        //qDebug() << "test:" << *currentWeight - oldWeight;
         if (*currentWeight - oldWeight >= weight)
         {
             DriverGC::Instance()->Control_ValveClose(6, sta);
