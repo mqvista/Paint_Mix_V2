@@ -708,7 +708,8 @@ bool Motion::pumpToOutSide()
     //如果变化率小于1g，则停止
     while (loopFlag)
     {
-        sleep(5);
+        msleep(500);
+        //sleep(5);
         if (oldWeight - *currentWeight <= 1)
         {
             loopFlag = false;
