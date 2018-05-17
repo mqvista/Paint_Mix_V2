@@ -31,7 +31,7 @@ Page {
 
     TabBar {
         id: paintMixTabBar
-        height: 60
+        height: 40
         width: parent.width
         currentIndex: 0
         anchors.left: parent.left

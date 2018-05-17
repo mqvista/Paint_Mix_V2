@@ -1,11 +1,12 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
+import QtQuick.VirtualKeyboard 2.2
 
 Popup {
     id: popupDialog
-    width: parent.width / 1.5
-    height: parent.height / 1.5
+    width: parent.width / 1.2
+    height: parent.height / 1.2
     modal: true
     focus: true
     // 按 ESC 关闭
@@ -16,7 +17,8 @@ Popup {
     // 丢一个 rectangle 东西都放里面
     Rectangle {
         id: bkRect
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
         border.width: 2
         opacity: 1
         radius: 8
@@ -204,12 +206,16 @@ Popup {
                             width: 80
                             font.pointSize: Qt.application.font.pixelSize * 1.2
                             validator: IntValidator {bottom: 1; top: 999;}
+                            inputMethodHints: Qt.ImhDigitsOnly
                             onEditingFinished: {
                                 SetWeight = text
 
                                 // 更新百分比
                                 formulaAddNew.updatePercent();
                             }
+                            onPressed: {
+                                        vkb.visible = true; //当选择输入框的时候才显示键盘
+                                    }
                         }
 
                         // 第五个套装
@@ -366,6 +372,9 @@ Popup {
                 anchors.leftMargin: 10
                 width: 150
                 font.pointSize: Qt.application.font.pixelSize * 1.5
+                onPressed: {
+                            vkb.visible = true; //当选择输入框的时候才显示键盘
+                        }
             }
 
             Text {
@@ -432,6 +441,21 @@ Popup {
                 }
             }
         }
+
+        InputPanel {
+            id: vkb
+            visible: false
+            anchors.right: parent.right
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            //这种集成方式下点击隐藏键盘的按钮是没有效果的，
+            //只会改变active，因此我们自己处理一下
+            onActiveChanged: {
+                if(!active) { visible = false; }
+                }
+           }
+
+
     }
 
 

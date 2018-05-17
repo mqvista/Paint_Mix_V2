@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-//import QtQuick.VirtualKeyboard 2.2
+import QtQuick.VirtualKeyboard 2.2
 
 ApplicationWindow {
     id: window
@@ -12,7 +12,7 @@ ApplicationWindow {
     //头栏目， 还有个导航按钮
     header: ToolBar {
         visible: ! indexModule.initialization
-        contentHeight: 60
+        contentHeight: 40
 
         ToolButton {
             id: toolButton
