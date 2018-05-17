@@ -714,6 +714,8 @@ bool Motion::pumpToOutSide()
             loopFlag = false;
             DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
         }
+        // 测试用
+        reflushOutSideSenser();
         DriverGC::Instance()->Inquire_Limit(7, tmpLim);
         if (tmpLim.at(0) == true)
         {
