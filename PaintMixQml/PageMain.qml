@@ -14,11 +14,13 @@ Item {
 
         Button {
             id: button
+            width: 200
+            height: 80
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             text: qsTr("移液到外部")
+            font.pointSize: 28
             onClicked: {
-                console.log("123");
                 taskModule.test();
             }
         }
