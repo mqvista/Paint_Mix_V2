@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 Popup {
     id: popupAdditionDialog
-    width: parent.width / 1.5
+    width: parent.width / 1.2
     height: parent.height / 1.5
     modal: true
     focus: true

@@ -2,7 +2,7 @@
 
 TaskModule::TaskModule(QObject *parent) : QObject(parent)
 {
-
+    setBusy(false);
 }
 
 void TaskModule::test()

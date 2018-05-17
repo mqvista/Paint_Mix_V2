@@ -308,9 +308,9 @@ Item {
             console.log()
             formulaAddition.reflush(formulaList.getNameUseIndex(formulaListView.currentIndex))
             additionFormula.open()
-            // 设定新增方案对话框的位置 x 在中间 y 在中间靠上
+            // 设定微调方案对话框的位置 x 在中间 y 在中间靠上
             additionFormula.x = parent.width / 2 - additionFormula.width / 2
-            additionFormula.y = parent.height /1 - additionFormula.height / 1.5
+            additionFormula.y = parent.height /2 - additionFormula.height / 1.5
         }
         enabled: !taskModule.busy
     }
