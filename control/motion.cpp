@@ -695,6 +695,7 @@ bool Motion::pumpToOutSide()
 {
     double* currentWeight;
     currentWeight = &m_BigScalesValue;
+    QBitArray tmpLim;
 
     // 设定抽水速度
     DriverGC::Instance()->Setting_SM_Speed(7, 1, 4000, 12000);
@@ -709,6 +710,12 @@ bool Motion::pumpToOutSide()
     {
         sleep(5);
         if (oldWeight - *currentWeight <= 1)
+        {
+            loopFlag = false;
+            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
+        }
+        DriverGC::Instance()->Inquire_Limit(7, tmpLim);
+        if (tmpLim.at(0) == true)
         {
             loopFlag = false;
             DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
