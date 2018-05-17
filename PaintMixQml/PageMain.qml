@@ -16,10 +16,10 @@ Item {
             id: button
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("test")
+            text: qsTr("移液到外部")
             onClicked: {
                 console.log("123");
-                taskModule.getSenserData();
+                taskModule.test();
             }
         }
     }
