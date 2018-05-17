@@ -19,6 +19,13 @@ void TaskModule::runFromula(QString formulaName)
                               Q_ARG(QString, formulaName));
 }
 
+void TaskModule::getSenserData()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "reflushLimData",
+                              Qt::QueuedConnection);
+}
+
+
 QString TaskModule::scaleSmall()
 {
     return m_scaleSmall;

@@ -295,7 +295,6 @@ Popup {
 
 
 
-
     // 用偏移量计算最终 Popup 的位置
     function setDlgPoint(dlgX ,dlgY){
         //设置窗口拖拽不能超过父窗口

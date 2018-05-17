@@ -17,13 +17,16 @@ Page {
         anchors.bottom: paintMixTabBar.top
         currentIndex: paintMixTabBar.currentIndex
 
-        // 零号QML
-        PageMain{
-        }
 
         //一号QML
         PageFormula{
         }
+
+        // 零号QML
+        PageMain{
+        }
+
+
     }
 
     TabBar {
@@ -36,22 +39,29 @@ Page {
         anchors.bottom: parent.bottom
         TabButton {
                     id: paintMixTabBarMain
-                    text: qsTr("Main")
+                    text: qsTr("颜料方案")
                     font.pointSize: 30
                     anchors.bottom: parent.bottom
                     height: parent.height
                     background: Rectangle {
                         color: paintMixTabBar.currentIndex === 0 ? "silver" : "#1e90ff"
                     }
+                    onClicked: {
+                        taskModule.openCloseLimTimer(false);
+                        //console.log("reflush ouside");
+                    }
                 }
                 TabButton {
                     id: tabButtonProfile
-                    text: qsTr("方案")
+                    text: qsTr("外部颜料")
                     font.pointSize: 30
                     anchors.bottom: parent.bottom
                     height: parent.height
                     background: Rectangle {
                         color: paintMixTabBar.currentIndex === 1 ? "silver" : "#1e90ff"
+                    }
+                    onClicked: {
+                        //console.log("reflush ouside");
                     }
                 }
 

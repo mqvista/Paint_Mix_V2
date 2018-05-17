@@ -718,4 +718,11 @@ bool Motion::pumpToOutSide()
     return true;
 }
 
+void Motion::reflushOutSideSenser()
+{
+    QBitArray tmpLim;
+    DriverGC::Instance()->Inquire_Limit(7, tmpLim);
+    qDebug() << tmpLim.at(0);
+    qDebug() << tmpLim.at(1);
+}
 

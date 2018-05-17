@@ -57,6 +57,7 @@ ApplicationWindow {
                                 tittleLabel.clickFlag = 0
                                 clickTimer.stop()
                                 console.log("trage into hidden mode")
+                                Qt.quit()
                             }
                         }
                     }

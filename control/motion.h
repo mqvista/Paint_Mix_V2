@@ -5,6 +5,7 @@
 #include "scalesworker.h"
 #include <QDateTime>
 #include <QMutex>
+#include <QTimer>
 
 //////////////////////////////////////////////////////////
 /// \brief The Motion class
@@ -45,6 +46,7 @@ public:
 
     // extren board pump
     bool pumpToOutSide();
+    void reflushOutSideSenser();
 
     // Scales 1 , enum type
     enum scales1Motor :quint16 {
@@ -102,6 +104,8 @@ private:
     double m_BigScalesValue;
     // Save the small scales value from scalesWorker
     double m_SmallScalesValue;
+    //
+    QTimer *m_timers;
 };
 
 #endif // MOTION_H

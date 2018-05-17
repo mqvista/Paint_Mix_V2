@@ -41,7 +41,7 @@ Page {
         anchors.horizontalCenterOffset: parent.width / 5
         Text {
             id: text2
-            text: qsTr("别的什么模块")
+            text: qsTr("其他功能模块")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: 30

@@ -19,9 +19,8 @@ Item {
             text: qsTr("test")
             onClicked: {
                 console.log("123");
-                taskModule.test();
+                taskModule.getSenserData();
             }
         }
-
     }
 }

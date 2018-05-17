@@ -17,6 +17,8 @@ public:
     explicit TaskModule(QObject *parent = nullptr);
     Q_INVOKABLE void test();
     Q_INVOKABLE void runFromula(QString formulaName);
+    Q_INVOKABLE void getSenserData();
+
 
     QString scaleSmall();
     QString scaleBig();

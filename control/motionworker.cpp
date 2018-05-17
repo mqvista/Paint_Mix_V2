@@ -146,6 +146,11 @@ void MotionWorker::pumpToOutside()
     Motion::Instance()->pumpToOutSide();
 }
 
+void MotionWorker::reflushLimData()
+{
+    Motion::Instance()->reflushOutSideSenser();
+}
+
 MotionWorker::MotionWorker(QObject *parent) : QObject(parent)
 {
 
