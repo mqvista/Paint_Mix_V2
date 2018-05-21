@@ -143,7 +143,9 @@ void MotionWorker::runUseDetail(const detailType formulaDetails)
 // extern board
 void MotionWorker::pumpToOutside()
 {
+    emit runningStatus(true);
     Motion::Instance()->pumpToOutSide();
+    emit runningStatus(false);
 }
 
 void MotionWorker::reflushLimData()

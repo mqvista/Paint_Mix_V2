@@ -3,6 +3,7 @@
 TaskModule::TaskModule(QObject *parent) : QObject(parent)
 {
     setBusy(false);
+    setPumpOutSideWeight("0");
 }
 
 void TaskModule::test()
@@ -34,6 +35,17 @@ QString TaskModule::scaleSmall()
 QString TaskModule::scaleBig()
 {
     return m_scaleBig;
+}
+
+QString TaskModule::pumpOutSideWeight()
+{
+    return m_pumpOutSideWeight;
+}
+
+void TaskModule::setPumpOutSideWeight(QString value)
+{
+    m_pumpOutSideWeight = value;
+    pumpOutSideWeightChanged();
 }
 
 void TaskModule::setScaleSmall(QString value)
@@ -78,4 +90,11 @@ void TaskModule::getRunningStatus(bool value)
 {
     m_busy = value;
     emit busyChanged();
+}
+
+void TaskModule::getPumpOutSideWeightFromMotion(double value)
+{
+    qDebug()<< value;
+    QString tmp = QString::number(value, 'f', 1);
+    setPumpOutSideWeight(tmp);
 }

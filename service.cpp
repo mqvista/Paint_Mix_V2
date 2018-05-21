@@ -60,8 +60,9 @@ void Service::initSignalSlotConnect()
     // qml 取得实际注液量
     connect(Motion::Instance(), &Motion::finishWeight, &m_TaskModule, &TaskModule::getFinishWeight);
 
-
     connect(MotionWorker::Instance(), &MotionWorker::runningStatus, &m_TaskModule, &TaskModule::getRunningStatus);
+
+    connect(Motion::Instance(), &Motion::pumpToOutsideWeight, &m_TaskModule, &TaskModule::getPumpOutSideWeightFromMotion);
 }
 
 void Service::initSystem()

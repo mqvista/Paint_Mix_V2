@@ -165,7 +165,7 @@ void FormulaGridView::reflushUseName(QString formulaName)
         if (subDetail.count("Motor") == 1)
         {
             QString name = "颜料" + subDetail.value("Motor");
-            QString setValue = subDetail.value("Weight") + "G";
+            QString setValue = subDetail.value("Weight") + "g";
             QString realValue = "-----";
             QString addLocal;
             if (subDetail.value("Scales") == "1")
@@ -183,7 +183,7 @@ void FormulaGridView::reflushUseName(QString formulaName)
         if (subDetail.count("Water") == 1)
         {
             QString name = "加水";
-            QString setValue = subDetail.value("Weight") + "G";
+            QString setValue = subDetail.value("Weight") + "g";
             QString realValue = "-----";
             QString addLocal;
             if (subDetail.value("Scales") == "1")

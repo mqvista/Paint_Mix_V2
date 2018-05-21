@@ -694,6 +694,8 @@ quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
 bool Motion::pumpToOutSide()
 {
     double* currentWeight;
+    // 原始的重量
+    double orangeWeight = m_BigScalesValue;
     currentWeight = &m_BigScalesValue;
     QBitArray tmpLim;
     quint8 countLoop = 0;
@@ -729,8 +731,16 @@ bool Motion::pumpToOutSide()
             loopFlag = false;
             DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
         }
-        //oldWeight = *currentWeight;
     }
+
+
+    /*
+    QBitArray sta(24);
+    sta.fill(false);
+    sta.setBit(18);
+    DriverGC::Instance()->Control_ValveOpen(7, sta);
+    */
+    emit pumpToOutsideWeight(orangeWeight - *currentWeight);
     return true;
 }
 

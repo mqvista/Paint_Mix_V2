@@ -88,6 +88,7 @@ public slots:
 
 signals:
     void finishWeight(double fWeight);
+    void pumpToOutsideWeight(double fWeight);
 
 
 private:
