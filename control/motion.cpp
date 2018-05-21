@@ -719,6 +719,7 @@ bool Motion::pumpToOutSide()
                 loopFlag = false;
                 DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
             }
+            oldWeight = *currentWeight;
         }
 
         // 测试用
@@ -728,7 +729,7 @@ bool Motion::pumpToOutSide()
             loopFlag = false;
             DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
         }
-        oldWeight = *currentWeight;
+        //oldWeight = *currentWeight;
     }
     return true;
 }
