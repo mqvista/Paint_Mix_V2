@@ -16,7 +16,7 @@ Item {
         Button {
             id: button
             width: 200
-            height: 80
+            height: 40
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: parent.height * -0.3
             anchors.verticalCenter: parent.verticalCenter
@@ -39,7 +39,7 @@ Item {
         }
         Text {
             id: outsideWeight
-            text: taskModule.pumpOutSideWeight + "g"
+            text: taskModule.pumpOutSideWeight
             font.pointSize: 28
             anchors.leftMargin: 10
             anchors.left: outsideWeightName.right
@@ -48,28 +48,44 @@ Item {
 
         Text {
             id: addWaterName
-            text: qsTr("加水量：")
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: parent.height * -0.3
+            text: qsTr("加水量:")
+            anchors.left: button.left
+            //anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: parent.width * -0.05
             font.pixelSize: 28
         }
 
         TextField {
             id: textField
+            width: 100
+            height: 40
             text: qsTr("")
             anchors.left: addWaterName.right
             anchors.leftMargin: 10
             anchors.verticalCenterOffset: 0
             anchors.verticalCenter: addWaterName.verticalCenter
+            onEditingFinished: {
+                console.log(outsideWeight.text * 1)
+                addWaterPercent.text = (outsideWeight.text * 1) / (textField.text * 1)
+            }
+        }
+
+        Text {
+            id: addWaterLable
+            text: qsTr("L")
+            anchors.leftMargin: 10
+            anchors.left: textField.right
+            anchors.verticalCenter: textField.verticalCenter
+            font.pixelSize: 28
         }
 
         Text {
             id: addWaterPercentName
-            text: qsTr("稀释比例：")
+            text: qsTr("稀释比例:")
+            anchors.left: button.left
             anchors.top: addWaterName.bottom
             anchors.topMargin: 50
-            anchors.horizontalCenter: addWaterName.horizontalCenter
             font.pixelSize: 28
         }
 
@@ -80,6 +96,30 @@ Item {
             anchors.leftMargin: 10
             anchors.left: addWaterPercentName.right
             font.pixelSize: 28
+        }
+
+        Text {
+            id: addWaterPercentLable
+            text: "%"
+            anchors.leftMargin: 5
+            anchors.verticalCenter: addWaterPercentName.verticalCenter
+            anchors.left: addWaterPercent.right
+            font.pixelSize: 28
+        }
+
+        Button {
+            id: button1
+            y: 180
+            height: 40
+            text: qsTr("加水")
+            font.pointSize: 28
+            anchors.verticalCenterOffset: 0
+            anchors.left: textField.right
+            anchors.leftMargin: 60
+            anchors.verticalCenter: addWaterName.verticalCenter
+            onClicked: {
+                taskModule.addWaterOutside(textField.text)
+            }
         }
     }
 }

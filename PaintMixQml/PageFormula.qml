@@ -317,8 +317,9 @@ Item {
 
     AnimatedImage
     {
-        anchors.top: parent.top
-        anchors.topMargin: parent.height * 0.38
+        anchors.verticalCenter: runButton.verticalCenter
+        //anchors.top: parent.top
+        //anchors.topMargin: parent.height * 0.38
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.25
         source: "../img/loading.gif"

@@ -578,10 +578,23 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
         sta.setBit(1);
     }
     DriverGC::Instance()->Control_ValveOpen(6, sta);
-    DriverGC::Instance()->Control_Motor(6, 10000);
+    if (weight > 3)
+    {
+        DriverGC::Instance()->Control_Motor(6, 10000);
+    }
+    else
+    {
+        DriverGC::Instance()->Control_Motor(6, 3500);
+    }
     loopFlag = true;
+
     while (loopFlag)
     {
+        if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
+        {
+            DriverGC::Instance()->Control_Motor(6, 3500);
+            //msleep(100);
+        }
         // 到重量 关闭电机和阀
         if (*currentWeight - oldWeight >= weight)
         {
@@ -591,8 +604,9 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
             // 发射信号 告诉界面最终的重量, 先等待数值稳定
             msleep(500);
             emit finishWeight(*currentWeight-oldWeight);
+            return true;
         }
-        msleep(100);
+        msleep(200);
     }
     return true;
 }
@@ -732,16 +746,46 @@ bool Motion::pumpToOutSide()
             DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
         }
     }
-
-
-    /*
-    QBitArray sta(24);
-    sta.fill(false);
-    sta.setBit(18);
-    DriverGC::Instance()->Control_ValveOpen(7, sta);
-    */
     emit pumpToOutsideWeight(orangeWeight - *currentWeight);
     return true;
+}
+
+bool Motion::addWaterOutside(quint32 liter)
+{
+    quint64 needValue = liter * 1000;
+    bool loopFlag = true;
+    // 液位检测
+    QBitArray tmpLim;
+    // 先清除原有的数据
+    DriverGC::Instance()->Setting_ClearFlowValue(7);
+    // 开水
+    QBitArray valve(24);
+    valve.fill(false);
+    valve.setBit(17);
+    DriverGC::Instance()->Control_ValveOpen(7, valve);
+
+    while (loopFlag)
+    {
+        quint32 currentValue;
+        DriverGC::Instance()->Inquire_FlowValue(7, currentValue);
+        qDebug() << currentValue;
+        if (currentValue >= needValue)
+        {
+            DriverGC::Instance()->Control_ValveClose(7, valve);
+            loopFlag = false;
+            return true;
+        }
+        // 液位检测用
+        DriverGC::Instance()->Inquire_Limit(7, tmpLim);
+        if (tmpLim.at(0) == true)
+        {
+            DriverGC::Instance()->Control_ValveClose(7, valve);
+            loopFlag = false;
+            return false;
+        }
+        msleep(500);
+    }
+    return false;
 }
 
 void Motion::reflushOutSideSenser()

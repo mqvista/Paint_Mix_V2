@@ -148,6 +148,13 @@ void MotionWorker::pumpToOutside()
     emit runningStatus(false);
 }
 
+void MotionWorker::addWaterOutside(quint32 liter)
+{
+    emit runningStatus(true);
+    Motion::Instance()->addWaterOutside(liter);
+    emit runningStatus(false);
+}
+
 void MotionWorker::reflushLimData()
 {
     Motion::Instance()->reflushOutSideSenser();

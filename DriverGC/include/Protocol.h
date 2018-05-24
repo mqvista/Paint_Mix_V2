@@ -33,6 +33,7 @@ public:
         Command_Inquire_SpecialADCTrigger = 0x0c,
         Command_Inquire_SpecialStatus = 0x0d,
         Command_Inquire_SpecialDoubleADCTrigger = 0x0e,
+        Command_Inquire_FlowValue = 0x12,
         Command_Inquire_Status = 0x1f,
 
         Command_Control_Mask = 0x20,
@@ -61,6 +62,7 @@ public:
         Command_Setting_PIDInput = 0xa6,
         Command_Setting_PIDEnable = 0xa7,
         Command_Setting_SM_RelDir = 0xa8,
+        Command_Setting_ClearFlowValue = 0xab,
         Command_Setting_USART = 0xbe,
         Command_Setting_Address = 0xbf,
 

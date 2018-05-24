@@ -121,6 +121,10 @@ ApplicationWindow {
             source: "./img/loading.gif"
             scale: 0.2
             playing: indexModule.initialization
+            // tmp use
+            onPlayingChanged: {
+                stackView.push("PaintMix.qml")
+            }
         }
 
         Text {

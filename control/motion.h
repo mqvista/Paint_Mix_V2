@@ -46,6 +46,7 @@ public:
 
     // extren board pump
     bool pumpToOutSide();
+    bool addWaterOutside(quint32 liter);
     void reflushOutSideSenser();
 
     // Scales 1 , enum type

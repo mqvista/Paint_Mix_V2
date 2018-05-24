@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE void test();
     Q_INVOKABLE void runFromula(QString formulaName);
     Q_INVOKABLE void getSenserData();
+    Q_INVOKABLE void addWaterOutside(QString liter);
 
 
     QString scaleSmall();

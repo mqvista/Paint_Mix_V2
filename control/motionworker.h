@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void runUseDetail(const detailType formulaDetails);
 
     Q_INVOKABLE void pumpToOutside();
+    Q_INVOKABLE void addWaterOutside(quint32 liter);
     Q_INVOKABLE void reflushLimData();
 
 private:

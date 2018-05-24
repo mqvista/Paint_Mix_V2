@@ -34,6 +34,7 @@ public:
     bool Inquire_SpecialADCTrigger(const quint16& salveAdd);
     bool Inquire_SpecialStatus(const quint16& salveAdd);
     bool Inquire_SpecialDoubleADCTrigger(const quint16& salveAdd);
+    bool Inquire_FlowValue(const quint16& salveAdd, quint32& flowData);
     bool Inquire_Status(const quint16& salveAdd, const quint8& ch, bool& status);
 
     bool Control_Valve(const quint16& salveAdd, const QBitArray& status);
@@ -62,6 +63,7 @@ public:
     bool Setting_PIDInput(const quint16& salveAdd);
     bool Setting_PIDEnable(const quint16& salveAdd);
     bool Setting_SM_RelDir(const quint16& salveAdd, const quint8& ch, const StepMotor dir);
+    bool Setting_ClearFlowValue(const quint16& salveAdd);
     bool Setting_USART(const quint16& salveAdd, const quint8& baundNo);
     bool Setting_Address(const quint16& salveAdd, const quint16& salveAddSet);
 

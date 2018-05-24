@@ -26,6 +26,14 @@ void TaskModule::getSenserData()
                               Qt::QueuedConnection);
 }
 
+void TaskModule::addWaterOutside(QString liter)
+{
+    quint32 value = liter.toInt();
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "addWaterOutside",
+                              Qt::QueuedConnection,
+                              Q_ARG(quint32, value));
+}
+
 
 QString TaskModule::scaleSmall()
 {
