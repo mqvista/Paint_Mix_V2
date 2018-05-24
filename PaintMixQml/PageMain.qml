@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.3
+import QtQuick.VirtualKeyboard 2.2
+
 
 Item {
     id: item1
@@ -69,6 +71,9 @@ Item {
                 console.log(outsideWeight.text * 1)
                 addWaterPercent.text = (outsideWeight.text * 1) / (textField.text * 1)
             }
+            onPressed: {
+                        vkb.visible = true; //当选择输入框的时候才显示键盘
+                    }
         }
 
         Text {
@@ -117,9 +122,25 @@ Item {
             anchors.left: textField.right
             anchors.leftMargin: 60
             anchors.verticalCenter: addWaterName.verticalCenter
+            enabled: !taskModule.busy
             onClicked: {
                 taskModule.addWaterOutside(textField.text)
             }
         }
     }
+
+
+    InputPanel {
+        id: vkb
+        visible: false
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        //这种集成方式下点击隐藏键盘的按钮是没有效果的，
+        //只会改变active，因此我们自己处理一下
+        onActiveChanged: {
+            if(!active) { visible = false; }
+            }
+       }
+
 }
