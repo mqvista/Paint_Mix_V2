@@ -49,6 +49,15 @@ Item {
         }
 
         Text {
+            id: outsideG
+            text: "g"
+            font.pointSize: 28
+            anchors.leftMargin: 10
+            anchors.left: outsideWeight.right
+            anchors.verticalCenter: outsideWeight.verticalCenter
+        }
+
+        Text {
             id: addWaterName
             text: qsTr("加水量:")
             anchors.left: button.left
@@ -67,8 +76,9 @@ Item {
             anchors.leftMargin: 10
             anchors.verticalCenterOffset: 0
             anchors.verticalCenter: addWaterName.verticalCenter
+            validator: IntValidator {bottom: 1; top: 999;}
+            inputMethodHints: Qt.ImhDigitsOnly
             onEditingFinished: {
-                console.log(outsideWeight.text * 1)
                 addWaterPercent.text = (outsideWeight.text * 1) / (textField.text * 1)
             }
             onPressed: {
