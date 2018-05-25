@@ -421,11 +421,11 @@ bool Motion::moveAsixToScales(quint16 degree)
 bool Motion::detectEncoder()
 {
     DriverGC::Instance()->Inquire_Encoder(6, 2, m_EncoderData);
-    if (abs(m_EncoderData + m_CurrentDegree * 1200) <= 10)
+    if (abs(abs(m_EncoderData) - m_CurrentDegree * 1200) <= 10)
     {
         return true;
     }
-    qDebug()<< "Encoder error:" << abs(m_EncoderData + m_CurrentDegree * 1200);
+    qDebug()<< "Encoder error:" << "M_Encoder:" << m_EncoderData<< "CurrentDegree" << m_CurrentDegree<< abs(m_EncoderData + m_CurrentDegree * 1200);
     return false;
 }
 
