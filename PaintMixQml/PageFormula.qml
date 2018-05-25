@@ -245,6 +245,30 @@ Item {
     }
 
     Button {
+        id: stopButton
+        width: parent.width * 0.1
+        height: parent.height * 0.08
+        Text {
+            text: qsTr("停止运行")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pointSize: Qt.application.font.pixelSize * 1.5
+        }
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.7
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.6
+        enabled: taskModule.busy
+        onClicked: {
+            if (taskModule.busy)
+            {
+                taskModule.stopCurrentJob()
+            }
+        }
+    }
+
+
+    Button {
         id: addButton
         width: parent.width * 0.1
         height: parent.height * 0.08
@@ -258,6 +282,7 @@ Item {
         anchors.topMargin: parent.height * 0.7
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.3
+        enabled: !taskModule.busy
         onClicked: {
             formulaAddNew.reflush()
             // 开启对话框，添加新的方案
@@ -266,7 +291,7 @@ Item {
             newFormula.x = parent.width / 2 - newFormula.width / 2
             newFormula.y = parent.height / 2 - newFormula.height / 1.8
         }
-        enabled: !taskModule.busy
+
     }
 
     Button {
@@ -283,11 +308,11 @@ Item {
         anchors.topMargin: parent.height * 0.85
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.3
+        enabled: !taskModule.busy
         onClicked: {
             formulaGridView.currentIndex = 0
             taskModule.runFromula(formulaList.getNameUseIndex(formulaListView.currentIndex))
         }
-        enabled: !taskModule.busy
     }
 
     Button {
@@ -304,6 +329,7 @@ Item {
         anchors.topMargin: parent.height * 0.7
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.45
+        enabled: !taskModule.busy
         onClicked: {
             console.log()
             formulaAddition.reflush(formulaList.getNameUseIndex(formulaListView.currentIndex))
@@ -312,7 +338,6 @@ Item {
             additionFormula.x = parent.width / 2 - additionFormula.width / 2
             additionFormula.y = parent.height /2 - additionFormula.height / 1.5
         }
-        enabled: !taskModule.busy
     }
 
     AnimatedImage

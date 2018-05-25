@@ -70,10 +70,15 @@ void MotionWorker::runFormula(const QString& formulaName)
             quint8 scaleNum = subFormula.value("Scales").toUInt();
             quint32 weight = subFormula.value("Weight").toUInt();
             // 运动到指定位置
-            qDebug() << Motion::Instance()->converyDegree(motorNum, scaleNum);
-            Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum));
+            if(! Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum)))
+            {
+                break;
+            }
             // 放水
-            Motion::Instance()->liquidOut(motorNum, weight, scaleNum);
+            if(! Motion::Instance()->liquidOut(motorNum, weight, scaleNum))
+            {
+                break;
+            }
             continue;
         }
         // 判断是放清水
@@ -81,18 +86,22 @@ void MotionWorker::runFormula(const QString& formulaName)
         {
             quint8 scaleNum = subFormula.value("Scales").toUInt();
             quint32 weight = subFormula.value("Weight").toUInt();
-            Motion::Instance()->addWater(weight, scaleNum);
+            if (! Motion::Instance()->addWater(weight, scaleNum))
+            {
+                break;
+            }
             continue;
         }
         // 判断是否是搬运水
         if (subFormula.count("Exchange") == 1)
         {
-            Motion::Instance()->pumpToScale(2);
+            if (! Motion::Instance()->pumpToScale(2))
+            {
+                break;
+            }
             continue;
         }
     }
-
-
     emit runningStatus(false);
 }
 

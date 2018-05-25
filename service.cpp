@@ -15,7 +15,7 @@ Service::Service(QQmlApplicationEngine *appEng, QObject *parent) : QObject(paren
     // 初始化qml 上下文对象
     initContext();
     // 开启 loading 画面
-    m_IndexModule.setIsnitialization(true);
+    //m_IndexModule.setIsnitialization(true);
     // 初始化信号连接
     initSignalSlotConnect();
     // 开启相应的硬件端口，并初始化硬件
@@ -63,6 +63,9 @@ void Service::initSignalSlotConnect()
     connect(MotionWorker::Instance(), &MotionWorker::runningStatus, &m_TaskModule, &TaskModule::getRunningStatus);
 
     connect(Motion::Instance(), &Motion::pumpToOutsideWeight, &m_TaskModule, &TaskModule::getPumpOutSideWeightFromMotion);
+
+    // 停止当前工作
+    connect(&m_TaskModule, &TaskModule::stopCurrentJobSignal, Motion::Instance(), &Motion::getStopCurrentSignal);
 }
 
 void Service::initSystem()

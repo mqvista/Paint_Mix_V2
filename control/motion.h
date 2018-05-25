@@ -86,6 +86,7 @@ public slots:
     void getSmallScalesValue(double value);
     // Get the big scales senser data
     void getBigScalesValue(double value);
+    void getStopCurrentSignal();
 
 signals:
     void finishWeight(double fWeight);
@@ -108,6 +109,7 @@ private:
     double m_SmallScalesValue;
     //
     QTimer *m_timers;
+    bool m_stopFlag = false;
 };
 
 #endif // MOTION_H

@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.VirtualKeyboard 2.2
+//import QtQuick.VirtualKeyboard 2.2
 
 Popup {
     id: popupDialog
@@ -409,6 +409,7 @@ Popup {
             }
 
             Button {
+                id: saveButton
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 20
@@ -430,6 +431,17 @@ Popup {
                 }
             }
 
+            Button {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: saveButton.left
+                anchors.margins: 10
+                anchors.rightMargin: 20
+                text: qsTr("关闭窗口")
+                onClicked: {
+                    popupDialog.close()
+                }
+            }
+
             Timer {
                 id: clearTextTimer
                 interval: 2000
@@ -442,7 +454,7 @@ Popup {
             }
         }
 
-        InputPanel {
+        /*InputPanel {
             id: vkb
             visible: false
             anchors.right: parent.right
@@ -453,7 +465,7 @@ Popup {
             onActiveChanged: {
                 if(!active) { visible = false; }
                 }
-           }
+           }*/
 
     }
 

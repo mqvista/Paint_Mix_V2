@@ -34,6 +34,11 @@ void TaskModule::addWaterOutside(QString liter)
                               Q_ARG(quint32, value));
 }
 
+void TaskModule::stopCurrentJob()
+{
+    emit stopCurrentJobSignal();
+}
+
 
 QString TaskModule::scaleSmall()
 {

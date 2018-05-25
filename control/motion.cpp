@@ -80,6 +80,11 @@ void Motion::getBigScalesValue(double value)
     //qDebug()<< "Big_Scales:" << m_BigScalesValue;
 }
 
+void Motion::getStopCurrentSignal()
+{
+    m_stopFlag = true;
+}
+
 // Block thread untils the motor is free
 // Param1: motor number
 void Motion::waitWhileFree(quint16 motor)
@@ -401,6 +406,12 @@ bool Motion::moveAsixToScales(quint16 degree)
     {
         return true;
     }
+    // stop current job
+    if (m_stopFlag)
+    {
+        m_stopFlag = false;
+        return false;
+    }
     return true;
 }
 
@@ -480,6 +491,14 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             motorBusyStatus = true;
             while (motorBusyStatus)
             {
+                // stop current job
+                if (m_stopFlag)
+                {
+                    stopDrop(motorNum);
+                    m_stopFlag = false;
+                    return false;
+                }
+
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(100);
             }
@@ -495,6 +514,14 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             motorBusyStatus = true;
             while(motorBusyStatus)
             {
+                // stop current job
+                if (m_stopFlag)
+                {
+                    stopDrop(motorNum);
+                    m_stopFlag = false;
+                    return false;
+                }
+
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(50);
             }
@@ -511,6 +538,14 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             motorBusyStatus = true;
             while(motorBusyStatus)
             {
+                // stop current job
+                if (m_stopFlag)
+                {
+                    stopDrop(motorNum);
+                    m_stopFlag = false;
+                    return false;
+                }
+
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(50);
                 if (*currentWeight-oldWeight >= weight)
@@ -590,6 +625,15 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
 
     while (loopFlag)
     {
+        // stop current job
+        if (m_stopFlag)
+        {
+            DriverGC::Instance()->Control_ValveClose(6, sta);
+            DriverGC::Instance()->Control_Motor(6, 0);
+            m_stopFlag = false;
+            return false;
+        }
+
         if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
         {
             DriverGC::Instance()->Control_Motor(6, 3500);
@@ -643,6 +687,14 @@ bool Motion::pumpToScale(quint8 targetScalesNum)
     //如果变化率小于1g，则停止
     while (loopFlag)
     {
+        // stop current job
+        if (m_stopFlag)
+        {
+            DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_Stop);
+            m_stopFlag = false;
+            return false;
+        }
+
         sleep(5);
         if (oldWeight - *currentWeight <= 1)
         {
@@ -725,6 +777,14 @@ bool Motion::pumpToOutSide()
     //如果变化率小于1g，则停止
     while (loopFlag)
     {
+        // stop current job
+        if (m_stopFlag)
+        {
+            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
+            m_stopFlag = false;
+            return false;
+        }
+
         msleep(500);
         countLoop ++;
         if (countLoop > 10)
@@ -738,7 +798,7 @@ bool Motion::pumpToOutSide()
             oldWeight = *currentWeight;
         }
 
-        // 测试用
+        // 查询是否到限位
         DriverGC::Instance()->Inquire_Limit(7, tmpLim);
         if (tmpLim.at(0) == true)
         {
@@ -752,6 +812,7 @@ bool Motion::pumpToOutSide()
 
 bool Motion::addWaterOutside(quint32 liter)
 {
+    quint32 currentValue;
     quint64 needValue = liter * 1000;
     bool loopFlag = true;
     // 液位检测
@@ -766,9 +827,15 @@ bool Motion::addWaterOutside(quint32 liter)
 
     while (loopFlag)
     {
-        quint32 currentValue;
+        // stop current job
+        if (m_stopFlag)
+        {
+            DriverGC::Instance()->Control_ValveClose(7, valve);
+            m_stopFlag = false;
+            return false;
+        }
+
         DriverGC::Instance()->Inquire_FlowValue(7, currentValue);
-        qDebug() << currentValue;
         if (currentValue >= needValue)
         {
             DriverGC::Instance()->Control_ValveClose(7, valve);

@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void runFromula(QString formulaName);
     Q_INVOKABLE void getSenserData();
     Q_INVOKABLE void addWaterOutside(QString liter);
+    Q_INVOKABLE void stopCurrentJob();
 
 
     QString scaleSmall();
@@ -38,6 +39,7 @@ signals:
     void taskFinishWeight(QString value);
     void busyChanged();
     void pumpOutSideWeightChanged();
+    void stopCurrentJobSignal();
 
 public slots:
     void getScaleSmallSlot(double value);
