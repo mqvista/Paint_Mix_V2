@@ -22,30 +22,45 @@ Motion *Motion::Instance()
 // Open DriverGC Serial Port
 // Param1: Target Serial port url
 // Param2: Target Serial port baud
-void Motion::openSerial485(QString portSN)
+bool Motion::openSerial485(QString portSN)
 {
-    DriverGC::Instance()->OpenUseSN(portSN);
-    //DriverGC::Instance()->Open(portSN);
+    if (!DriverGC::Instance()->OpenUseSN(portSN))
+    {
+        return false;
+    }
+    // Get Serial Error
     connect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
-    // Get debug data
+    // Get Debug Data
     connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    return true;
 }
 
 // Close DriverGc Serial Port
 // No Params
-void Motion::closeSerial485()
+bool Motion::closeSerial485()
 {
     DriverGC::Instance()->Close();
+    disconnect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
+    disconnect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    return true;
 }
 
 // Init all board or it will not work
 // No Params
 bool Motion::initBoard()
 {
-    for(quint8 i=1; i<=7; i++)
+    for(quint8 i=1; i<=8; i++)
     {
-        DriverGC::Instance()->Special_Reset(i);
-        DriverGC::Instance()->Special_Init(i);
+        if (!DriverGC::Instance()->Special_Reset(i))
+        {
+            return false;
+        }
+        if (!DriverGC::Instance()->Special_Init(i))
+        {
+            return false;
+        }
+        //DriverGC::Instance()->Special_Reset(i);
+        //DriverGC::Instance()->Special_Init(i);
     }
     return true;
 }
@@ -59,6 +74,7 @@ void Motion::serial485Error(QString msg1, QString msg2)
     qDebug() << msg2;
 }
 
+// 输出driverGC的log
 void Motion::driverGCDebugInfo(QString msg, QDateTime curTime)
 {
     qDebug()<<curTime.toString("hh:mm:ss.zzz")<<":"<< msg;
@@ -181,6 +197,35 @@ void Motion::waitWhileFree(quint16 motor)
             DriverGC::Instance()->Inquire_Status(6, 2, state);
             msleep(500);
         }
+        break;
+    case 13:
+        while (state)
+        {
+            DriverGC::Instance()->Inquire_Status(7, 1, state);
+            msleep(500);
+        }
+        break;
+    case 14:
+        while (state)
+        {
+            DriverGC::Instance()->Inquire_Status(7, 2, state);
+            msleep(500);
+        }
+        break;
+    case 15:
+        while (state)
+        {
+            DriverGC::Instance()->Inquire_Status(8, 1, state);
+            msleep(500);
+        }
+        break;
+    case 16:
+        while (state)
+        {
+            DriverGC::Instance()->Inquire_Status(8, 2, state);
+            msleep(500);
+        }
+        break;
     default:
         break;
     }
@@ -224,7 +269,7 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(1);
         //设定M1轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(1, 1, 2500, 8000);
+        DriverGC::Instance()->Setting_SM_Speed(1, 1, 6000, 18000);
         //走M1轴的CCW极限
         DriverGC::Instance()->AutoControl_SM_By_Limit(1, 1, DriverGC::StepMotor_CCW, 1);
         break;
@@ -410,7 +455,7 @@ bool Motion::moveAsixToScales(quint16 degree)
     if (m_stopFlag)
     {
         m_stopFlag = false;
-        return false;
+        return true;
     }
     return true;
 }
@@ -755,6 +800,35 @@ quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
             return scales2Motor10;
     }
     return 1;
+}
+
+
+// 抽液体到外桶, 参数 1 or 2
+bool Motion::pumpToOutSide(quint8 scaleNum)
+{
+    bool loopFlag = true;
+    double* currentWeight;
+    double originalWeight;
+
+    if (scaleNum == 1)
+    {
+        // 记录抽取前的重量
+        currentWeight = &m_SmallScalesValue;
+        originalWeight = *currentWeight;
+        DriverGC::Instance()->Setting_SM_Speed(6, 2, 4000, 12000);
+        DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
+
+    }
+    else if (scaleNum == 2)
+    {
+        // 记录抽取前的重量
+        currentWeight = &m_BigScalesValue;
+        originalWeight = *currentWeight;
+    }
+    else
+        return false;
+
+
 }
 
 bool Motion::pumpToOutSide()

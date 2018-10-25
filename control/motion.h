@@ -1,11 +1,11 @@
 #ifndef MOTION_H
 #define MOTION_H
 
-#include "DriverGC.h"
-#include "scalesworker.h"
-#include <QDateTime>
 #include <QMutex>
 #include <QTimer>
+#include <QDateTime>
+#include "DriverGC.h"
+#include "scalesworker.h"
 
 //////////////////////////////////////////////////////////
 /// \brief The Motion class
@@ -22,9 +22,9 @@ class Motion : public QThread
 public:
     static Motion *Instance();
     // Open DriverGC Serial Port
-    void openSerial485(QString portSN);
+    bool openSerial485(QString portSN);
     // Close DriverGc Serial Port
-    void closeSerial485();
+    bool closeSerial485();
     // Init the board
     bool initBoard();
     // Init the Motor
@@ -39,10 +39,13 @@ public:
     bool stopDrop(quint8 motorNum);
     // Add water to scales small or big
     bool addWater(quint32 weight, quint8 scalesNum);
-    // punmp water from one scale to other scale
+
+    // punmp water from one scale to other scale (废弃)
     bool pumpToScale(quint8 targetScalesNum);
     // Convery motorNum and scale Num to degree
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
+    // 新机构设计, 所有的液体移除到外部的桶, 使用蠕动泵, 参数秤的编号 1和2
+    bool pumpToOutSide(quint8 scaleNum);
 
     // extren board pump
     bool pumpToOutSide();
@@ -86,6 +89,7 @@ public slots:
     void getSmallScalesValue(double value);
     // Get the big scales senser data
     void getBigScalesValue(double value);
+    // 接受来自UI的停止信号
     void getStopCurrentSignal();
 
 signals:

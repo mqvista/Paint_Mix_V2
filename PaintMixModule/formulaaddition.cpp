@@ -98,7 +98,7 @@ bool FormulaAddition::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
-    for (quint8 i = row+count-1; i <= row; i++)
+    for (int i = row+count-1; i <= row; i++)
     {
         m_list.removeAt(i);
     }

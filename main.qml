@@ -1,5 +1,5 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 
 ApplicationWindow {
     id: window
@@ -7,6 +7,8 @@ ApplicationWindow {
     width: 1280
     height: 800
     title: qsTr("HIWAVE")
+
+    signal errorMessageRetry()
 
     //头栏目， 还有个导航按钮
     header: ToolBar {
@@ -135,5 +137,32 @@ ApplicationWindow {
             font.pixelSize: Qt.application.font.pixelSize * 3
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
+    }
+
+
+
+
+    Dialog {
+        id: errorDialog
+        objectName: "errorDialogObject"
+        title: "Application Error"
+        visible: indexModule.systemError
+        clip: true
+        modal: true
+        leftMargin: (parent.width-width)/2
+        topMargin: (parent.height-height)/2
+        closePolicy: Popup.NoAutoClose
+        width: parent.width/4
+        height: parent.height/4
+        Label {
+            text: "Application Error: " + indexModule.systemErrorMessage
+        }
+        standardButtons: Dialog.Retry | Dialog.Cancel
+        onAccepted: {
+            indexModule.systemError = false
+            errorMessageRetry()
+        }
+
+        onRejected: Qt.quit()
     }
 }

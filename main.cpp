@@ -2,10 +2,12 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include "service.h"
+#include "utils/loginfo.h"
 
 int main(int argc, char *argv[])
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    //LogInfo logInfo;
+    //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
@@ -17,6 +19,8 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+
+    service.needRunafterQmlLoaded();
 
     return app.exec();
 }

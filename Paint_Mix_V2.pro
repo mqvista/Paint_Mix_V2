@@ -2,6 +2,7 @@ QT += quick
 QT += xml
 QT += serialport
 CONFIG += c++11
+CONFIG += sdk_no_version_check
 
 
 # The following define makes your compiler emit warnings if you use
@@ -29,7 +30,9 @@ SOURCES += main.cpp \
     PaintMixModule/formulalistview.cpp \
     PaintMixModule/formulagridview.cpp \
     PaintMixModule/formulaaddnew.cpp \
-    PaintMixModule/formulaaddition.cpp
+    PaintMixModule/formulaaddition.cpp \
+    utils/loginfo.cpp \
+    utils/errorhandle.cpp
 
 RESOURCES += qml.qrc
 
@@ -58,14 +61,14 @@ HEADERS += \
     PaintMixModule/formulalistview.h \
     PaintMixModule/formulagridview.h \
     PaintMixModule/formulaaddnew.h \
-    PaintMixModule/formulaaddition.h
+    PaintMixModule/formulaaddition.h \
+    utils/loginfo.h \
+    utils/errorhandle.h
 
 # 添加机台驱动
 unix:!macx: LIBS += -L$$PWD/DriverGC/arm_linux/ -lDriverGC
 macx: LIBS += -L$$PWD/DriverGC/osx/ -lDriverGC.1.0.0
 win32: LIBS += -L$$PWD/DriverGC/win/ -lDriverGC
-
-
 
 INCLUDEPATH += $$PWD/DriverGC/include
 DEPENDPATH += $$PWD/DriverGC/include

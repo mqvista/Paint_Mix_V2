@@ -105,6 +105,21 @@ Item {
             font.pixelSize: 28
         }
 
+        Button {
+            id: stopButton
+            y: 180
+            height: 40
+            text: qsTr("停止任务")
+            font.pointSize: 28
+            anchors.left: addWaterPercentName.right
+            anchors.leftMargin: 140
+            anchors.verticalCenter: addWaterPercentName.verticalCenter
+            enabled: !taskModule.busy
+            onClicked: {
+                taskModule.addWaterOutside(textField.text)
+            }
+        }
+
         Text {
             id: addWaterPercent
             text: "0"
@@ -133,9 +148,12 @@ Item {
             anchors.left: textField.right
             anchors.leftMargin: 60
             anchors.verticalCenter: addWaterName.verticalCenter
-            enabled: !taskModule.busy
+            enabled: taskModule.busy
             onClicked: {
-                taskModule.addWaterOutside(textField.text)
+                if (taskModule.busy)
+                {
+                    taskModule.stopCurrentJob()
+                }
             }
         }
     }

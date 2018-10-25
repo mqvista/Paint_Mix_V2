@@ -9,7 +9,7 @@ void ScalesBig::serialStrConver2Data()
 {
     quint16 head = 0, tail = 0;
     bool he = false, ta = false;
-    bool hasData;
+    bool hasData = false;
 
     for(quint16 i=0; i<p_allData.length(); i++)
     {

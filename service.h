@@ -15,6 +15,7 @@
 #include "PaintMixModule/formulagridview.h"
 #include "PaintMixModule/formulaaddnew.h"
 #include "PaintMixModule/formulaaddition.h"
+#include "utils/errorhandle.h"
 
 class Service : public QObject
 {
@@ -25,6 +26,7 @@ public:
     void initContext();
     void initSignalSlotConnect();
     void initSystem();
+    void needRunafterQmlLoaded();
 
 
 signals:
@@ -35,6 +37,7 @@ private:
     QQmlApplicationEngine *m_engine;
     QThread scalesWorkerThread;
     QThread motionWorkerThread;
+    QThread errorHandalThread;
 
     //module
     TaskModule m_TaskModule;

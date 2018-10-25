@@ -1,4 +1,5 @@
 #include "motionworker.h"
+#include "utils/errorhandle.h"
 
 MotionWorker *MotionWorker::Instance()
 {
@@ -18,14 +19,31 @@ void MotionWorker::openSerial485()
 {
     qDebug() << "Motion thread" << QThread::currentThreadId() << endl;
     Motion::Instance()->openSerial485("45VBMPWF");
-    Motion::Instance()->initBoard();
-    Motion::Instance()->initAsixMotor(0);
+    if (!Motion::Instance()->openSerial485("45VBMPWF"))
+    {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_RS485_OPEN_FAILED);
+    }
+}
+
+
+// 初始化板子和旋转轴
+void MotionWorker::initDeviceMotor()
+{
+    if (!Motion::Instance()->initBoard())
+    {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_BOARD_INIT_FAILED);
+        return;
+    }
+    if (!Motion::Instance()->initAsixMotor(0))
+    {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_INIT_FAILED);
+        return;
+    }
     emit isIniting(false);
 }
 
 void MotionWorker::closeSerial485()
 {
-//    DriverGC::Instance()->Close();
     Motion::Instance()->closeSerial485();
 }
 
@@ -172,4 +190,22 @@ void MotionWorker::reflushLimData()
 MotionWorker::MotionWorker(QObject *parent) : QObject(parent)
 {
 
+}
+
+void MotionWorker::processError(ErrorHandle::errorType type)
+{
+    switch (type)
+    {
+    case ErrorHandle::ERROR_RS485_NOT_OPEN:
+        openSerial485();
+        break;
+    case ErrorHandle::ERROR_BOARD_INIT_FAILED:
+        initDeviceMotor();
+        break;
+    case ErrorHandle::ERROR_ROTARY_INIT_FAILED:
+        initDeviceMotor();
+        break;
+    default:
+        break;
+    }
 }
