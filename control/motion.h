@@ -52,32 +52,36 @@ public:
     bool addWaterOutside(quint32 liter);
     void reflushOutSideSenser();
 
+    // 给大容量补充原液
+    bool topUpTank();
+
+
     // Scales 1 , enum type
     enum scales1Motor :quint16 {
-        scales1Motor01 = 344,
-        scales1Motor02 = 308,
-        scales1Motor03 = 272,
-        scales1Motor04 = 236,
-        scales1Motor05 = 200,
-        scales1Motor06 = 164,
-        scales1Motor07 = 128,
-        scales1Motor08 = 92,
-        scales1Motor09 = 56,
-        scales1Motor10 = 20
+        scales1Motor01 = 288,
+        scales1Motor02 = 252,
+        scales1Motor03 = 216,
+        scales1Motor04 = 180,
+        scales1Motor05 = 144,
+        scales1Motor06 = 108,
+        scales1Motor07 = 72,
+        scales1Motor08 = 36,
+        scales1Motor09 = 0,
+        scales1Motor10 = 324
     };
 
     // Scales 2 , enum type
     enum scales2Motor :quint16 {
-        scales2Motor01 = 128,
-        scales2Motor02 = 92,
-        scales2Motor03 = 56,
-        scales2Motor04 = 20,
-        scales2Motor05 = 344,
-        scales2Motor06 = 308,
-        scales2Motor07 = 272,
-        scales2Motor08 = 236,
-        scales2Motor09 = 200,
-        scales2Motor10 = 164
+        scales2Motor01 = 108,
+        scales2Motor02 = 72,
+        scales2Motor03 = 37,
+        scales2Motor04 = 0,
+        scales2Motor05 = 324,
+        scales2Motor06 = 188,
+        scales2Motor07 = 252,
+        scales2Motor08 = 216,
+        scales2Motor09 = 180,
+        scales2Motor10 = 144
     };
 
 public slots:
@@ -100,7 +104,7 @@ signals:
 private:
     Motion();
     // Save the current machine local
-    quint8 m_CurrentMotor;
+    //quint8 m_CurrentMotor;
     // Save the current machine degree
     quint16 m_CurrentDegree;
     // Save the asix A, curret encoder value

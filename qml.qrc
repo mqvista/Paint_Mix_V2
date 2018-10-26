@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>HomeForm.qml</file>
-        <file>Page2Form.ui.qml</file>
         <file>PaintMix.qml</file>
         <file>PaintMixQml/PageFormula.qml</file>
         <file>img/cross.png</file>
@@ -14,5 +13,6 @@
         <file>img/add.png</file>
         <file>img/upDown.png</file>
         <file>PaintMixQml/AdditionFormulaDialog.qml</file>
+        <file>PageSecond.qml</file>
     </qresource>
 </RCC>

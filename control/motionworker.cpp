@@ -90,6 +90,8 @@ void MotionWorker::runFormula(const QString& formulaName)
             // 运动到指定位置
             if(! Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum)))
             {
+                // 通知错误处理
+                ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_ENCODER);
                 break;
             }
             // 放水
@@ -190,22 +192,4 @@ void MotionWorker::reflushLimData()
 MotionWorker::MotionWorker(QObject *parent) : QObject(parent)
 {
 
-}
-
-void MotionWorker::processError(ErrorHandle::errorType type)
-{
-    switch (type)
-    {
-    case ErrorHandle::ERROR_RS485_NOT_OPEN:
-        openSerial485();
-        break;
-    case ErrorHandle::ERROR_BOARD_INIT_FAILED:
-        initDeviceMotor();
-        break;
-    case ErrorHandle::ERROR_ROTARY_INIT_FAILED:
-        initDeviceMotor();
-        break;
-    default:
-        break;
-    }
 }

@@ -53,7 +53,7 @@ Page {
             }
             onReleased: {
                 rct2.color = "#66ccff"
-                stView.push("Page2Form.ui.qml")
+                stView.push("PageSecond.qml")
             }
         }
     }

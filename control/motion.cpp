@@ -1,4 +1,5 @@
 #include "motion.h"
+#include <utils/errorhandle.h>
 
 Motion::Motion()
 {
@@ -255,8 +256,8 @@ bool Motion::initAsixMotor(quint8 motorNum)
         DriverGC::Instance()->Setting_Encoder_Zero(6, 2);
         DriverGC::Instance()->Inquire_Encoder(6, 2, m_EncoderData);
         //默认初始化后停留在10号轴
-        m_CurrentMotor = 10;
-        //10号轴的绝对角度为0
+        //m_CurrentMotor = 10;
+        //9号轴的绝对角度为0
         m_CurrentDegree = 0;
         break;
     //初始化1号注射轴
@@ -398,7 +399,7 @@ bool Motion::initAsixMotor(quint8 motorNum)
         DriverGC::Instance()->Setting_SM_Speed(5, 2, 8000, 18000);
         //走M10轴的CCW极限
         DriverGC::Instance()->AutoControl_SM_By_Limit(5, 2, DriverGC::StepMotor_CCW, 3);
-        break;
+        break;  
     default:
         //错误参数
         return false;
@@ -935,5 +936,91 @@ void Motion::reflushOutSideSenser()
     DriverGC::Instance()->Inquire_Limit(7, tmpLim);
     qDebug() << tmpLim.at(0);
     qDebug() << tmpLim.at(1);
+}
+
+// 罐子加注原液
+// 新需求
+bool Motion::topUpTank()
+{
+    bool loopFlag;
+    QBitArray valueArray(24);
+    valueArray.fill(false);
+    QBitArray tankLimit;
+
+    moveAsixToScales(0);
+    //
+    DriverGC::Instance()->Inquire_Limit(8, tankLimit);
+    if(!tankLimit.at(0))
+    {
+        loopFlag = true;
+        valueArray[19] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        while (loopFlag)
+        {
+            DriverGC::Instance()->Inquire_Limit(8, tankLimit);
+            if (tankLimit.at(0))
+            {
+                DriverGC::Instance()->Control_ValveClose(7, valueArray);
+                valueArray.fill(false);
+                loopFlag = false;
+            }
+            msleep(500);
+        }
+    }
+
+    if(!tankLimit.at(1))
+    {
+        loopFlag = true;
+        valueArray[21] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        while (loopFlag)
+        {
+            DriverGC::Instance()->Inquire_Limit(8, tankLimit);
+            if (tankLimit.at(1))
+            {
+                DriverGC::Instance()->Control_ValveClose(7, valueArray);
+                valueArray.fill(false);
+                loopFlag = false;
+            }
+            msleep(500);
+        }
+    }
+
+    if(!tankLimit.at(2))
+    {
+        loopFlag = true;
+        valueArray[20] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        while (loopFlag)
+        {
+            DriverGC::Instance()->Inquire_Limit(8, tankLimit);
+            if (tankLimit.at(2))
+            {
+                DriverGC::Instance()->Control_ValveClose(7, valueArray);
+                valueArray.fill(false);
+                loopFlag = false;
+            }
+            msleep(500);
+        }
+    }
+
+    if(!tankLimit.at(3))
+    {
+        loopFlag = true;
+        valueArray[18] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        while (loopFlag)
+        {
+            DriverGC::Instance()->Inquire_Limit(8, tankLimit);
+            if (tankLimit.at(3))
+            {
+                DriverGC::Instance()->Control_ValveClose(7, valueArray);
+                valueArray.fill(false);
+                loopFlag = false;
+            }
+            msleep(500);
+        }
+    }
+    return true;
 }
 

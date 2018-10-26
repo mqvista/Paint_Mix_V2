@@ -39,7 +39,7 @@ signals:
     void runningStatus(bool value);
 
 public slots:
-    void processError(ErrorHandle::errorType type);
+//    void processError(ErrorHandle::errorType type);
 };
 
 #endif // MOTIONWORKER_H

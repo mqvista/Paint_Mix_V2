@@ -96,7 +96,8 @@ ApplicationWindow {
                 text: qsTr("Page 2")
                 width: parent.width
                 onClicked: {
-                    stackView.push("Page2Form.ui.qml")
+                    //stackView.push("Page2Form.ui.qml")
+                    stackView.push("PageSecond.qml")
                     drawer.close()
                 }
             }
@@ -138,9 +139,6 @@ ApplicationWindow {
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
     }
-
-
-
 
     Dialog {
         id: errorDialog
