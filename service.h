@@ -16,6 +16,7 @@
 #include "PaintMixModule/formulaaddnew.h"
 #include "PaintMixModule/formulaaddition.h"
 #include "utils/errorhandle.h"
+#include "testUseModule/pagesecond.h"
 
 class Service : public QObject
 {
@@ -46,6 +47,7 @@ private:
     FormulaGridView m_FormulaGridView;
     FormulaAddNew m_FormulaAddNew;
     FormulaAddition m_FormulaAddition;
+    PageSecond m_pageSecond;
 
 };
 

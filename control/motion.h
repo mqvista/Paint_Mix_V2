@@ -39,21 +39,24 @@ public:
     bool stopDrop(quint8 motorNum);
     // Add water to scales small or big
     bool addWater(quint32 weight, quint8 scalesNum);
-
-    // punmp water from one scale to other scale (废弃)
-    bool pumpToScale(quint8 targetScalesNum);
     // Convery motorNum and scale Num to degree
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
     // 新机构设计, 所有的液体移除到外部的桶, 使用蠕动泵, 参数秤的编号 1和2
     bool pumpToOutSide(quint8 scaleNum);
 
-    // extren board pump
-    bool pumpToOutSide();
-    bool addWaterOutside(quint32 liter);
-    void reflushOutSideSenser();
+
+//    bool addWaterOutside(quint32 liter);
+//    void reflushOutSideSenser();
 
     // 给大容量补充原液
     bool topUpTank();
+    // 获取中间桶的液位
+    bool getMiddleTankLevel(double *microLiter);
+    // 抽水到外部
+    bool pumpMiddleTankToUserTank(bool OnOff);
+    // 给中通加水
+    bool addWaterMiddleTank(double liter);
+
 
 
     // Scales 1 , enum type

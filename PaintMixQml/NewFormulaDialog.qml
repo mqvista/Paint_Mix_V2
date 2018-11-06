@@ -103,14 +103,25 @@ Popup {
                                 if (currentIndex == 0)
                                 {
                                     ItemName = "Motor"
+                                    localComboBoxModel.clear()
+                                    localComboBoxModel.append({text: "小秤"})
+                                    localComboBoxModel.append({text: "大秤"})
                                 }
                                 if (currentIndex == 1)
                                 {
                                     ItemName = "Water";
+                                    localComboBoxModel.clear()
+                                    localComboBoxModel.append({text: "小秤"})
+                                    localComboBoxModel.append({text: "大秤"})
+                                    localComboBoxModel.append({text: "中桶"})
                                 }
                                 if (currentIndex == 2)
                                 {
                                     ItemName = "Exchange";
+                                    localComboBoxModel.clear()
+                                    localComboBoxModel.append({text: "小秤"})
+                                    localComboBoxModel.append({text: "大秤"})
+
                                 }
                                 // 更新百分比
                                 formulaAddNew.updatePercent();
@@ -156,7 +167,7 @@ Popup {
                         // 第三个套装
                         Text {
                             id: localName
-                            visible: motionComboBox.currentText != "移液"
+                            visible: true
                             text: "方位: "
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
@@ -165,10 +176,11 @@ Popup {
                         }
                         ComboBox {
                             id: localComboBox
-                            visible: motionComboBox.currentText != "移液"
+                            visible: true
                             width: 82
                             height: 35
                             model: ListModel {
+                                id: localComboBoxModel
                                 ListElement {text: "小秤"}
                                 ListElement {text: "大秤"}
                             }
@@ -177,6 +189,7 @@ Popup {
                             anchors.left: localName.right
                             anchors.verticalCenter: parent.verticalCenter
                             onCurrentIndexChanged: {
+                                console.log(currentIndex)
                                 if (currentIndex == 0)
                                 {
                                     AddLocal = "1"
@@ -185,8 +198,14 @@ Popup {
                                 {
                                     AddLocal = "2";
                                 }
+                                if (currentIndex == 2)
+                                {
+                                    AddLocal = "3";
+                                }
                             }
                         }
+
+
 
                         // 第四个套装
                         Text {
@@ -205,7 +224,7 @@ Popup {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 80
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            validator: IntValidator {bottom: 1; top: 999;}
+                            validator: IntValidator {bottom: 1; top: 9999;}
                             inputMethodHints: Qt.ImhDigitsOnly
                             onEditingFinished: {
                                 SetWeight = text
@@ -218,7 +237,7 @@ Popup {
                                     }
                         }
 
-                        // 第五个套装
+                        // 第五 "比重"
                         Text {
                             id: percentName
                             visible: motionComboBox.currentText != "移液"
@@ -237,8 +256,18 @@ Popup {
                             anchors.left: percentName.right
                             anchors.leftMargin: 5
                         }
+                        Text {
+                            id: percentICO
+                            visible: motionComboBox.currentText != "移液"
+                            text: "%"
+                            font.pointSize: Qt.application.font.pixelSize * 1.5
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: percentName.right
+                            anchors.leftMargin: 60
+                        }
 
-                        //第N个开关
+
+                        //第六
                         Rectangle {
                             id: closeRec
                             height: parent.height * 0.9

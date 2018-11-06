@@ -22,10 +22,20 @@ public:
     Q_INVOKABLE void initAsix(quint8 motorNum);
     Q_INVOKABLE void liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum);
     Q_INVOKABLE void runFormula(const QString& formulaName);
-    Q_INVOKABLE void runUseDetail(const detailType formulaDetails);
-    Q_INVOKABLE void pumpToOutside();
-    Q_INVOKABLE void addWaterOutside(quint32 liter);
-    Q_INVOKABLE void reflushLimData();
+    // 微调用单次运行
+    void runFormula(const QMap<quint16, QMap<QString, QString>> singleFormula, quint8 length);
+
+    // Q_ARG 不支持模板类型，只能使用typedefine 间接支持
+    typedef  QMap<quint16, QMap<QString, QString>> FixedType;
+    Q_INVOKABLE void runAndSaveNewFormula(QString formulaName, FixedType newFormula);
+
+    // testUSE
+    Q_INVOKABLE void moveAsix(quint8 num);
+    Q_INVOKABLE void getExternADCValue();
+    Q_INVOKABLE void openExtrenPump();
+    Q_INVOKABLE void closeExtrenPump();
+
+
 
 private:
     explicit MotionWorker(QObject *parent = nullptr);

@@ -117,9 +117,12 @@ public:
 
     Q_INVOKABLE void reflushOffsetPercent();
 
-    Q_INVOKABLE void runFormula();
+    // 运行并保存新的调整配置
+    Q_INVOKABLE void runAndSaveFixedFormula(QString fName);
 
-    Q_INVOKABLE QMap<quint16, QMap<QString, QString>> getFormulaDetail();
+    QMap<quint16, QMap<QString, QString>> getFormulaDetail();
+
+    typedef QMap<quint16, QMap<QString, QString>> FixedType;
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

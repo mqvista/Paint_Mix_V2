@@ -1,4 +1,5 @@
 #include "scales.h"
+#include "utils/errorhandle.h"
 
 
 Scales::Scales(QObject *parent) : QObject(parent)
@@ -17,7 +18,7 @@ bool Scales::open(QString port, quint32 baud)
     if (m_serialPort.open(QIODevice::ReadWrite))         //打开端口
     {
         qDebug() << "scale Serial is opened " << endl;
-        m_serialPort.setBaudRate(baud);
+        m_serialPort.setBaudRate(qint32(baud));
         m_serialPort.setDataBits(QSerialPort::Data8);
         m_serialPort.setParity(QSerialPort::NoParity);
         m_serialPort.setStopBits(QSerialPort::OneStop);
@@ -32,6 +33,7 @@ bool Scales::open(QString port, quint32 baud)
     }
     else
     {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_SCALE_OPEN_FAILED);
         qDebug() << "Open Failed" << m_serialPort.errorString();
         return false;
     }

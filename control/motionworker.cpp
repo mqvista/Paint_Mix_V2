@@ -1,7 +1,7 @@
 #include "motionworker.h"
 #include "utils/errorhandle.h"
 
-MotionWorker *MotionWorker::Instance()
+MotionWorker* MotionWorker::Instance()
 {
     static QMutex mutex;
     static QScopedPointer<MotionWorker> instance;
@@ -19,23 +19,19 @@ void MotionWorker::openSerial485()
 {
     qDebug() << "Motion thread" << QThread::currentThreadId() << endl;
     Motion::Instance()->openSerial485("45VBMPWF");
-    if (!Motion::Instance()->openSerial485("45VBMPWF"))
-    {
+    if (!Motion::Instance()->openSerial485("45VBMPWF")) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_RS485_OPEN_FAILED);
     }
 }
 
-
 // 初始化板子和旋转轴
 void MotionWorker::initDeviceMotor()
 {
-    if (!Motion::Instance()->initBoard())
-    {
+    if (!Motion::Instance()->initBoard()) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_BOARD_INIT_FAILED);
         return;
     }
-    if (!Motion::Instance()->initAsixMotor(0))
-    {
+    if (!Motion::Instance()->initAsixMotor(0)) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_INIT_FAILED);
         return;
     }
@@ -62,6 +58,7 @@ void MotionWorker::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
     Motion::Instance()->liquidOut(motorNum, weight, scalesNum);
 }
 
+// 单次运行方案，执行完毕后停止
 void MotionWorker::runFormula(const QString& formulaName)
 {
 
@@ -73,50 +70,50 @@ void MotionWorker::runFormula(const QString& formulaName)
     // 读取方案文件
     fileReadWrite.readProfileDetail(formulaName, &formula, &length);
 
-
     // 循环qmap 找出每一个步骤，并执行
-    for (quint8 i=1; i<=length; i++)
-    {
+    for (quint8 i = 1; i <= length; i++) {
         // 建立一个子 qmap， 存储循环出来的数据
         QMap<QString, QString> subFormula;
         subFormula = formula.value(i);
 
         // 判断是否有 Motor 注液流且 Motor 唯一
-        if (subFormula.count("Motor") == 1)
-        {
-            quint8 motorNum = subFormula.value("Motor").toUInt();
-            quint8 scaleNum = subFormula.value("Scales").toUInt();
+        if (subFormula.count("Motor") == 1) {
+            quint8 motorNum = quint8(subFormula.value("Motor").toUShort());
+            quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
             quint32 weight = subFormula.value("Weight").toUInt();
             // 运动到指定位置
-            if(! Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum)))
-            {
+            if (!Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum))) {
                 // 通知错误处理
                 ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_ENCODER);
                 break;
             }
             // 放水
-            if(! Motion::Instance()->liquidOut(motorNum, weight, scaleNum))
-            {
+            if (!Motion::Instance()->liquidOut(motorNum, weight, scaleNum)) {
                 break;
             }
             continue;
         }
         // 判断是放清水
-        if (subFormula.count("Water") == 1)
-        {
-            quint8 scaleNum = subFormula.value("Scales").toUInt();
+        if (subFormula.count("Water") == 1) {
+            quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
             quint32 weight = subFormula.value("Weight").toUInt();
-            if (! Motion::Instance()->addWater(weight, scaleNum))
-            {
+            if (!Motion::Instance()->addWater(weight, scaleNum)) {
+                break;
+            }
+            continue;
+        }
+        //
+        if (subFormula.count("PumpScaleOutside") == 1) {
+            quint8 scaleNum = quint8(subFormula.value("PumpScaleOutside").toUShort());
+            if (!Motion::Instance()->pumpToOutSide(scaleNum)) {
                 break;
             }
             continue;
         }
         // 判断是否是搬运水
-        if (subFormula.count("Exchange") == 1)
-        {
-            if (! Motion::Instance()->pumpToScale(2))
-            {
+        if (subFormula.count("AddWaterMiddle") == 1) {
+            double liter = subFormula.value("AddWaterMiddle").toDouble();
+            if (!Motion::Instance()->addWaterMiddleTank(liter)) {
                 break;
             }
             continue;
@@ -125,71 +122,279 @@ void MotionWorker::runFormula(const QString& formulaName)
     emit runningStatus(false);
 }
 
-void MotionWorker::runUseDetail(const detailType formulaDetails)
+void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singleFormula, quint8 length)
 {
-
-    emit runningStatus(true);
-
     // 循环qmap 找出每一个步骤，并执行
-    for (quint8 i=1; i<=formulaDetails.size(); i++)
-    {
+    for (quint8 i = 1; i <= length; i++) {
         // 建立一个子 qmap， 存储循环出来的数据
         QMap<QString, QString> subFormula;
-        subFormula = formulaDetails.value(i);
+        subFormula = singleFormula.value(i);
 
         // 判断是否有 Motor 注液流且 Motor 唯一
-        if (subFormula.count("Motor") == 1)
-        {
-            quint8 motorNum = subFormula.value("Motor").toUInt();
-            quint8 scaleNum = subFormula.value("Scales").toUInt();
+        if (subFormula.count("Motor") == 1) {
+            quint8 motorNum = quint8(subFormula.value("Motor").toUShort());
+            quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
             quint32 weight = subFormula.value("Weight").toUInt();
             // 运动到指定位置
-            qDebug() << Motion::Instance()->converyDegree(motorNum, scaleNum);
-            Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum));
+            if (!Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum))) {
+                // 通知错误处理
+                ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_ENCODER);
+                break;
+            }
             // 放水
-            Motion::Instance()->liquidOut(motorNum, weight, scaleNum);
+            if (!Motion::Instance()->liquidOut(motorNum, weight, scaleNum)) {
+                break;
+            }
             continue;
         }
         // 判断是放清水
-        if (subFormula.count("Water") == 1)
-        {
-            quint8 scaleNum = subFormula.value("Scales").toUInt();
+        if (subFormula.count("Water") == 1) {
+            quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
             quint32 weight = subFormula.value("Weight").toUInt();
-            Motion::Instance()->addWater(weight, scaleNum);
+            if (!Motion::Instance()->addWater(weight, scaleNum)) {
+                break;
+            }
+            continue;
+        }
+        //
+        if (subFormula.count("PumpScaleOutside") == 1) {
+            quint8 scaleNum = quint8(subFormula.value("PumpScaleOutside").toUShort());
+            if (!Motion::Instance()->pumpToOutSide(scaleNum)) {
+                break;
+            }
             continue;
         }
         // 判断是否是搬运水
-        if (subFormula.count("Exchange") == 1)
-        {
-            Motion::Instance()->pumpToScale(2);
+        if (subFormula.count("AddWaterMiddle") == 1) {
+            double liter = subFormula.value("AddWaterMiddle").toDouble();
+            if (!Motion::Instance()->addWaterMiddleTank(liter)) {
+                break;
+            }
             continue;
         }
     }
-
-    emit runningStatus(false);
 }
 
-// extern board
-void MotionWorker::pumpToOutside()
+void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormula)
 {
     emit runningStatus(true);
-    Motion::Instance()->pumpToOutSide();
-    emit runningStatus(false);
-}
 
-void MotionWorker::addWaterOutside(quint32 liter)
-{
+    // 先读取原始的参数, 计算出原始的比例
+    qint16 length;
+    qint32 originalWeight = 0;
+    qint32 fixedWeight = 0;
+    QMap<quint16, QMap<QString, QString>> originalFormula;
+    QMap<quint16, QMap<QString, QString>> fixedFormula = newFormula;
+    double middleTankLiter;
+    // 获取中桶液位升数
+    Motion::Instance()->getMiddleTankLevel(&middleTankLiter);
+
+    fileReadWrite.readProfileDetail(formulaName, &originalFormula, &length);
+
+    // 循环qmap 找出每一个步骤，统计总重量
+    for (quint8 i = 1; i <= length; i++) {
+        // 建立一个子 qmap， 存储循环出来的数据
+        QMap<QString, QString> subFormula;
+        subFormula = originalFormula.value(i);
+
+        // 判断是否有 weight
+        if (subFormula.count("Weight") == 1) {
+            quint32 weight = subFormula.value("Weight").toUInt();
+            originalWeight += weight;
+        }
+    }
+
+    // 把百分比带入原来的里面
+    for (quint8 i = 1; i <= length; i++) {
+        if (originalFormula.value(i).count("Weight") == 1) {
+            double percent = originalFormula.value(i).value("Weight").toDouble() / originalWeight;
+            originalFormula[i].insert("Percent", QString::number(percent));
+            // 计算中桶对应的数量
+            double middleLiter = middleTankLiter * percent;
+            originalFormula[i].insert("MiddleTankLiter", QString::number(middleLiter));
+        }
+    }
+
+    // 循环qmap 找出每一个步骤，统计总重量
+    for (quint8 i = 1; i <= length; i++) {
+        // 建立一个子 qmap， 存储循环出来的数据
+        QMap<QString, QString> subFormula;
+        subFormula = fixedFormula.value(i);
+
+        // 判断是否有 weight
+        if (subFormula.count("Weight") == 1) {
+            quint32 weight = subFormula.value("Weight").toUInt();
+            fixedWeight += weight;
+        }
+    }
+
+    // 把百分比带入原来的里面
+    for (quint8 i = 1; i <= length; i++) {
+        if (fixedFormula.value(i).count("Weight") == 1) {
+            double percent = fixedFormula.value(i).value("Weight").toDouble() / fixedWeight;
+            fixedFormula[i].insert("Percent", QString::number(percent));
+        }
+    }
+
+    //求出差旧的和新的差最大的重量
+    double maxDifference = 0;
+    quint8 maxDifferenceUnit = 0;
+
+    // diffA 判定为大的单元， diffB为临时用的单元
+    double diffA = -1;
+    quint8 diffAUnit = 0;
+    double diffB = 0;
+    quint8 diffBUnit = 0;
+    // 注意从2开始
+    for (quint8 i = 1; i <= length; i++) {
+        if (fixedFormula.value(i).count("Weight") == 1) {
+            if (diffA <= 0) {
+                diffA = originalFormula.value(i).value("Percent").toDouble() - fixedFormula.value(i).value("Percent").toDouble();
+                diffAUnit = i;
+            }
+
+            diffB = originalFormula.value(i).value("Percent").toDouble() - fixedFormula.value(i).value("Percent").toDouble();
+            diffBUnit = i;
+
+            // 对比谁的差最大
+            if (diffA >= diffB && diffA > 0) {
+                maxDifferenceUnit = diffAUnit;
+                maxDifference = diffA;
+            } else if (diffB > diffA && diffB > 0) {
+                maxDifferenceUnit = diffBUnit;
+                maxDifference = diffB;
+                diffA = diffB;
+                diffAUnit = diffBUnit;
+            }
+        }
+    }
+
+    // 先代入比例差值最大的目标，并代入对应的桶内重量
+    fixedFormula[maxDifferenceUnit].insert("MiddleTankLiter", originalFormula.value(maxDifferenceUnit).value("MiddleTankLiter"));
+    // 算出目标的每个点所占的系数
+    double newPrecentModulus = fixedFormula.value(maxDifferenceUnit).value("MiddleTankLiter").toDouble() /
+            fixedFormula.value(maxDifferenceUnit).value("Percent").toDouble();;
+    for (quint8 i = 1; i<=length; i++)
+    {
+        if (i == maxDifferenceUnit)
+            continue;
+        if (fixedFormula.value(i).contains("Percent") == 1)
+        {
+            double tempMiddleLiter = fixedFormula.value(i).value("Percent").toDouble() * newPrecentModulus;
+            fixedFormula[i].insert("MiddleTankLiter", QString::number(tempMiddleLiter));
+        }
+    }
+
+    // 新建个qmap 准备参数并运行
+    QMap<quint16, QMap<QString, QString>> formulaToRun;
+    quint8 count=1;
+    for (quint8 i=1; i<=length; i++)
+    {
+        double tempOrigWeight, tempFixedWeight;
+        if (originalFormula.value(i).contains("Percent") == 1)
+        {
+            tempOrigWeight = originalFormula.value(i).value("MiddleTankLiter").toDouble();
+            tempFixedWeight = fixedFormula.value(i).value("MiddleTankLiter").toDouble();
+            if (tempFixedWeight - tempOrigWeight > 0)
+            {
+                QMap<QString, QString> subFormula;
+                if (originalFormula.value(i).contains("Motor") == 1)
+                {
+                    subFormula.insert("Motor", originalFormula.value(i).value("Motor"));
+                    subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    formulaToRun.insert(count, subFormula);
+                    count++;
+                    continue;
+                }
+                if (originalFormula.value(i).contains("Water") == 1)
+                {
+                    subFormula.insert("Water", "1");
+                    subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    formulaToRun.insert(count, subFormula);
+                    count++;
+                    continue;
+                }
+                if (originalFormula.value(i).contains("AddWaterMiddle") == 1)
+                {
+                    subFormula.insert("AddWaterMiddle", "1");
+                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    formulaToRun.insert(count, subFormula);
+                    count++;
+                    continue;
+                }
+            }
+        }
+    }
+
+
+
+    //runFormula(formulaToRun, count--);
     emit runningStatus(true);
-    Motion::Instance()->addWaterOutside(liter);
-    emit runningStatus(false);
+    qDebug() << formulaToRun;
+
+    // TODO QML 设定微调不能超过2G,单个颜料
 }
 
-void MotionWorker::reflushLimData()
+void MotionWorker::moveAsix(quint8 num)
 {
-    Motion::Instance()->reflushOutSideSenser();
+    switch (num) {
+    case 1:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor01);
+        break;
+    case 2:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor02);
+        break;
+    case 3:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor03);
+        break;
+    case 4:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor04);
+        break;
+    case 5:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor05);
+        break;
+    case 6:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor06);
+        break;
+    case 7:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor07);
+        break;
+    case 8:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor08);
+        break;
+    case 9:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor09);
+        break;
+    case 10:
+        Motion::Instance()->moveAsixToScales(Motion::scales1Motor10);
+        break;
+    default:
+        break;
+    }
 }
 
-MotionWorker::MotionWorker(QObject *parent) : QObject(parent)
+void MotionWorker::getExternADCValue()
 {
+    double tmp;
+    Motion::Instance()->getMiddleTankLevel(&tmp);
+}
 
+// test use
+void MotionWorker::openExtrenPump()
+{
+    Motion::Instance()->pumpMiddleTankToUserTank(true);
+}
+
+// test use
+void MotionWorker::closeExtrenPump()
+{
+    Motion::Instance()->pumpMiddleTankToUserTank(false);
+}
+
+MotionWorker::MotionWorker(QObject* parent)
+    : QObject(parent)
+{
+    qRegisterMetaType<FixedType>("FixedType");
 }

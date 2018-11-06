@@ -38,6 +38,7 @@ public:
         ERROR_ROTARY_INIT_FAILED,
         ERROR_BOARD_INIT_FAILED,
 
+        ERROR_SCALE_OPEN_FAILED,
         ERROR_UNKNOWN
     };
     Q_ENUM(errorType)

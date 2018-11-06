@@ -25,7 +25,6 @@ int FormulaAddition::rowCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    // FIXME: Implement me!
     Q_UNUSED(parent);
     return m_list.count();
 }
@@ -35,7 +34,6 @@ QVariant FormulaAddition::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    // FIXME: Implement me!
     if (index.row() < 0 || index.row() >= m_list.count())
         return QVariant();
     const AdditionModel &additionModel = m_list[index.row()];
@@ -61,7 +59,6 @@ bool FormulaAddition::setData(const QModelIndex &index, const QVariant &value, i
     if (index.row() < 0 || index.row() >= m_list.count())
         return false;
     if (data(index, role) != value) {
-        // FIXME: Implement me!
         AdditionModel &additionModel = m_list[index.row()];
         if (role == ItemNameRole)
             additionModel.set_itemName(value.toString());
@@ -88,7 +85,6 @@ bool FormulaAddition::setData(const QModelIndex &index, const QVariant &value, i
 bool FormulaAddition::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
     m_list.insert(row, AdditionModel("","","","","","",""));
     endInsertRows();
     return true;
@@ -97,7 +93,6 @@ bool FormulaAddition::insertRows(int row, int count, const QModelIndex &parent)
 bool FormulaAddition::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
-    // FIXME: Implement me!
     for (int i = row+count-1; i <= row; i++)
     {
         m_list.removeAt(i);
@@ -124,7 +119,7 @@ void FormulaAddition::reflush(QString fName)
     fileReadWrite.readProfileDetail(fName, &formula, &detailLength);
 
     // 计算原来的克重
-    quint16 totalWeight = 0;
+    quint32 totalWeight = 0;
     QList<QString> calcPercent;
     // 先算总重量
     for (quint16 i=1; i<= detailLength; i++)
@@ -133,9 +128,9 @@ void FormulaAddition::reflush(QString fName)
         QMap<QString, QString> tempFormula;
         tempFormula = formula.value(i);
 
-        if (tempFormula.contains("Motor") || tempFormula.contains("Water"))
+        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle"))
         {
-            totalWeight += tempFormula.value("Weight").toInt();
+            totalWeight += tempFormula.value("Weight").toLong();
         }
     }
     // 计算原来的百分比
@@ -147,9 +142,9 @@ void FormulaAddition::reflush(QString fName)
         // 获取数据
         QMap<QString, QString> tempFormula;
         tempFormula = formula.value(i);
-        if (tempFormula.contains("Motor") || tempFormula.contains("Water"))
+        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle"))
         {
-            float tempPercent = tempFormula.value("Weight").toFloat() / totalWeight * 100;
+            double tempPercent = tempFormula.value("Weight").toDouble() / totalWeight * 100;
             calcPercent[i-1] = QString::number(tempPercent, 'f', 1);
         }
     }
@@ -194,11 +189,34 @@ void FormulaAddition::reflush(QString fName)
             setData(index, percernt, PercentRole);
             continue;
         }
-        // 判断是否是移液 ？
-        if (tempFormula.contains("Exchange"))
+        // 判断是否是加水中桶
+        if (tempFormula.contains("AddWaterMiddle"))
         {
-            QVariant itemName = "Exchange";
+            QVariant itemName = "Water";
             setData(index, itemName, ItemNameRole);
+            QVariant scales = 3;
+            setData(index, scales, AddLocalRole);
+            QVariant weight = tempFormula.value("Weight");
+            setData(index, weight, SetWeightRole);
+            QVariant percernt = calcPercent.at(i-1);
+            setData(index, percernt, PercentRole);
+            continue;
+        }
+        // 判断是否是移液 ？
+        if (tempFormula.contains("PumpScaleOutside"))
+        {
+            QVariant itemName = "PumpScaleOutside";
+            setData(index, itemName, ItemNameRole);
+            if (tempFormula.value("PumpScaleOutside") == "1")
+            {
+                QVariant scales = 1;
+                setData(index, scales, AddLocalRole);
+            }
+            else if (tempFormula.value("PumpScaleOutside") == "2")
+            {
+                QVariant scales = 2;
+                setData(index, scales, AddLocalRole);
+            }
             continue;
         }
     }
@@ -206,11 +224,11 @@ void FormulaAddition::reflush(QString fName)
 
 void FormulaAddition::reflushOffsetPercent()
 {
-    quint32 totalWeight = 0;
+    qint32 totalWeight = 0;
     // 先计算重量的总和
     for (int i=0; i<m_list.count(); i++)
     {
-        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
+        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle")
         {
             totalWeight += m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
         }
@@ -220,14 +238,14 @@ void FormulaAddition::reflushOffsetPercent()
     for (int i=0; i<m_list.count(); i++)
     {
         // 先计算重量的总和
-        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
+        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle")
         {
             // 先设定下 index
             QModelIndex index = this->index(i);
 
             // 除一下知道百分比
-            float percent;
-            percent = (m_list.at(i).setWeight().toFloat() + m_list.at(i).offset().toFloat()) / totalWeight * 100;
+            double percent;
+            percent = (m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble()) / totalWeight * 100;
             // 转到 qv 里面
             QVariant qv = QString::number(percent, 'f', 1);
             // 最后设定进去
@@ -236,11 +254,16 @@ void FormulaAddition::reflushOffsetPercent()
     }
 }
 
-void FormulaAddition::runFormula()
+
+// TODO 等待实现后面的调整参数
+void FormulaAddition::runAndSaveFixedFormula(QString fName)
 {
-    QMetaObject::invokeMethod(MotionWorker::Instance(), "runUseDetail",
-                              Qt::QueuedConnection,
-                              Q_ARG(detailType, (detailType)getFormulaDetail()));
+    FixedType tempFormula;
+    tempFormula = getFormulaDetail();
+    // TODO 还需要传入新修改的内容
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "runAndSaveNewFormula",
+                              Qt::QueuedConnection, Q_ARG(QString, fName), Q_ARG(FixedType, tempFormula));
+
 }
 
 QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
@@ -250,7 +273,7 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
     {
         if (m_list.at(i).itemName() == "Motor")
         {
-            quint16 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
 
             QMap<QString, QString> tmp_map;
             // 先插电机号
@@ -260,13 +283,13 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
             // 最后插重量
             tmp_map.insert("Weight", QString::number(weight));
             // 插入到大的 map 里面
-            formula.insert(i+1, tmp_map);
+            formula.insert(quint8(i+1), tmp_map);
             continue;
         }
 
-        if (m_list.at(i).itemName() == "Water")
+        if (m_list.at(i).itemName() == "Water" && (m_list.at(i).addLocal() != "3"))
         {
-            quint16 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
 
                 QMap<QString, QString> tmp_map;
                 // 先插water  号码无所谓
@@ -276,23 +299,38 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
                 // 最后插重量
                 tmp_map.insert("Weight", QString::number(weight));
                 // 插入到大的 map 里面
-                formula.insert(i+1, tmp_map);
+                formula.insert(quint8(i+1), tmp_map);
                 continue;
         }
 
-        if (m_list.at(i).itemName() == "Exchange")
+        if (m_list.at(i).itemName() == "Water" && (m_list.at(i).addLocal() == "3"))
+        {
+            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            QMap<QString, QString> tmp_map;
+            // 先插 name 号码无所谓
+            tmp_map.insert("AddWaterMiddle", "1");
+            // 插入 weight
+            tmp_map.insert("Weight", QString::number(weight));
+            // 插入到大的 map 里面
+            formula.insert(quint8(i+1), tmp_map);
+            continue;
+        }
+
+
+
+        if (m_list.at(i).itemName() == "PumpScaleOutside")
         {
             QMap<QString, QString> tmp_map;
             // 先插 exchange  号码无所谓
-            tmp_map.insert("Exchange", "1");
+            tmp_map.insert("PumpScaleOutside", m_list.at(i).addLocal());
             // 插入到大的 map 里面
-            formula.insert(i+1, tmp_map);
+            formula.insert(quint8(i+1), tmp_map);
             continue;
         }
     }
-
     return formula;
 }
+
 
 QHash<int, QByteArray> FormulaAddition::roleNames() const
 {

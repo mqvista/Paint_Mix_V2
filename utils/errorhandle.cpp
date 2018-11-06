@@ -75,6 +75,8 @@ void ErrorHandle::getErrorMessageRetry()
     case ERROR_BOARD_INIT_FAILED:
         QMetaObject::invokeMethod(MotionWorker::Instance(), "initDeviceMotor", Qt::QueuedConnection);
         break;
+    case ERROR_SCALE_OPEN_FAILED:
+        break;
     case ERROR_UNKNOWN:
         break;
     }

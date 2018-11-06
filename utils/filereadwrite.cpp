@@ -222,3 +222,48 @@ bool FileReadWrite::insertProfileDetail(QString name, QMap<quint16, QMap<QString
     file->close();
     return true;
 }
+
+bool FileReadWrite::replaceProfileDetail(QString name, QMap<quint16, QMap<QString, QString> > detail, qint16 detailLength)
+{
+    // 长度qmap
+    QMap<QString, qint16> detailLengthMap;
+    // 先获取name 列表
+    QList<QString> nameList;
+    readProfileLists(&nameList);
+    // 获取全部的profile
+    QMap<QString, QMap<quint16, QMap<QString, QString>>> profileDetails;
+    QListIterator<QString> nameListIterator(nameList);
+    while (nameListIterator.hasNext())
+    {
+        // 准备subdetail 的变量
+        QString subDetailName = nameListIterator.next();
+        qint16 tmpDetailLength;
+        QMap<quint16, QMap<QString, QString>> subDetail;
+        //获取内容
+        readProfileDetail(subDetailName, &subDetail, &tmpDetailLength);
+        profileDetails[subDetailName] = subDetail;
+        detailLengthMap[subDetailName] = tmpDetailLength;
+    }
+    // 替换内容
+    if (!profileDetails.contains(name))
+    {
+        return false;
+    }
+    profileDetails[name] = detail;
+    detailLengthMap[name] = detailLength;
+
+    // 删除原有的配置
+    nameListIterator.toFront();
+    while (nameListIterator.hasNext())
+    {
+        deleteProfileDetail(nameListIterator.next());
+    }
+    // 将原有的配置恢复过去
+    nameListIterator.toFront();
+    while (nameListIterator.hasNext())
+    {
+        QString subDetailName = nameListIterator.next();
+        insertProfileDetail(subDetailName, profileDetails[subDetailName], detailLengthMap[subDetailName]);
+    }
+    return true;
+}

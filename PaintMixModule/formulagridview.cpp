@@ -190,21 +190,33 @@ void FormulaGridView::reflushUseName(QString formulaName)
             {
                 addLocal = "小秤";
             }
-            else
+            else if (subDetail.value("Scales") == "2")
             {
                 addLocal = "大秤";
             }
             append(FormulaGrid(name, setValue, realValue, addLocal));
             continue;
         }
+        // 判断是否是中桶加水
+        if (subDetail.count("AddWaterMiddle") == 1)
+        {
+            QString name = "注水";
+            QString setValue = subDetail.value("Weight") + "g";
+            QString realValue = "-----";
+            QString addLocal = "中桶";
+
+            append(FormulaGrid(name, setValue, realValue, addLocal));
+            continue;
+        }
+
         // 判断是否是转移液体
-        if (subDetail.count("Exchange") == 1)
+        if (subDetail.count("PumpScaleOutside") == 1)
         {
             QString name = "移液";
             QString setValue = "-----";;
             QString realValue = "-----";
             QString addLocal;
-            if (subDetail.value("Scales") == "1")
+            if (subDetail.value("PumpScaleOutside") == "1")
             {
                 addLocal = "小秤";
             }
@@ -215,7 +227,6 @@ void FormulaGridView::reflushUseName(QString formulaName)
             append(FormulaGrid(name, setValue, realValue, addLocal));
             continue;
         }
-
     }
 }
 

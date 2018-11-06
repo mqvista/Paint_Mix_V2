@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "service.h"
 #include "utils/loginfo.h"
+#include "utils/filereadwrite.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,5 @@ int main(int argc, char *argv[])
         return -1;
 
     service.needRunafterQmlLoaded();
-
     return app.exec();
 }

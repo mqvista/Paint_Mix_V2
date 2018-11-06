@@ -127,7 +127,6 @@ bool FormulaAddNew::move(int srcIndex, int desIndex)
             m_list[i] = m_list.at(i + 1);
         }
         m_list[desIndex] = tempModel;
-
         emit endMoveRows();
         return true;
 
@@ -142,11 +141,9 @@ bool FormulaAddNew::move(int srcIndex, int desIndex)
             m_list[i] =m_list.at(i-1);
         }
         m_list[desIndex] = tempModel;
-
         emit endMoveRows();
         return true;
     }
-
     return false;
 }
 
@@ -202,10 +199,17 @@ bool FormulaAddNew::saveFormula(QString fName)
             if (m_list.at(i).addLocal() != "" && m_list.at(i).setWeight() != "")
             {
                 QMap<QString, QString> tmp_map;
-                // 先插water  号码无所谓
-                tmp_map.insert("Water", "1");
-                // 再插秤号
-                tmp_map.insert("Scales", m_list.at(i).addLocal());
+                if (m_list.at(i).addLocal() != '3')
+                {
+                    // 先插water  号码无所谓
+                    tmp_map.insert("Water", "1");
+                    // 再插秤号
+                    tmp_map.insert("Scales", m_list.at(i).addLocal());
+                }
+                else
+                {
+                    tmp_map.insert("AddWaterMiddle", "1");
+                }
                 // 最后插重量
                 tmp_map.insert("Weight", m_list.at(i).setWeight());
                 // 插入到大的 map 里面
@@ -220,7 +224,8 @@ bool FormulaAddNew::saveFormula(QString fName)
         {
             QMap<QString, QString> tmp_map;
             // 先插 exchange  号码无所谓
-            tmp_map.insert("Exchange", "1");
+            //tmp_map.insert("Exchange", "1");
+            tmp_map.insert("PumpScaleOutside", m_list.at(i).addLocal());
             // 插入到大的 map 里面
             formula.insert(i+1, tmp_map);
             continue;

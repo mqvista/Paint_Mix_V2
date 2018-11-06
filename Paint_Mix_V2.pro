@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     PaintMixModule/formulaaddnew.cpp \
     PaintMixModule/formulaaddition.cpp \
     utils/loginfo.cpp \
-    utils/errorhandle.cpp
+    utils/errorhandle.cpp \
+    testUseModule/pagesecond.cpp
 
 RESOURCES += qml.qrc
 
@@ -63,7 +64,8 @@ HEADERS += \
     PaintMixModule/formulaaddnew.h \
     PaintMixModule/formulaaddition.h \
     utils/loginfo.h \
-    utils/errorhandle.h
+    utils/errorhandle.h \
+    testUseModule/pagesecond.h
 
 # 添加机台驱动
 unix:!macx: LIBS += -L$$PWD/DriverGC/arm_linux/ -lDriverGC

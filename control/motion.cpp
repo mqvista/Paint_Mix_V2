@@ -419,6 +419,9 @@ bool Motion::moveAsixToScales(quint16 degree)
         //先计算出角度差，已知1度 需要 3200 个脉冲
         tmpSteps = (m_CurrentDegree - degree) * 3200 * -1;
         //qDebug() << "Steps->" << tmpSteps;
+
+        DriverGC::Instance()->Setting_SM_Speed(6, 1, 45000, 60000);
+
         DriverGC::Instance()->AutoControl_SM_By_Step(6, 1, tmpSteps);
         m_CurrentDegree = degree;
         //阻塞线程，等待电机到位, asix 0
@@ -428,6 +431,7 @@ bool Motion::moveAsixToScales(quint16 degree)
         {
             return true;
         }
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_ENCODER);
         qDebug()<<"Encoder error";
         return false;
     }
@@ -436,6 +440,9 @@ bool Motion::moveAsixToScales(quint16 degree)
     {
         tmpSteps = (degree - m_CurrentDegree) * 3200;
         //qDebug() << "Steps->" << tmpSteps;
+
+        DriverGC::Instance()->Setting_SM_Speed(6, 1, 45000, 60000);
+
         DriverGC::Instance()->AutoControl_SM_By_Step(6, 1, tmpSteps);
         m_CurrentDegree = degree;
         waitWhileFree(0);
@@ -444,6 +451,7 @@ bool Motion::moveAsixToScales(quint16 degree)
         {
             return true;
         }
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_ENCODER);
         qDebug()<<"Encoder error";
         return false;
     }
@@ -632,7 +640,7 @@ bool Motion::stopDrop(quint8 motorNum)
     return true;
 }
 
-// Add water to scales
+// 给大秤和小秤加水
 // Parma1: weight
 // Param2: scales Number 1 or 2
 bool Motion::addWater(quint32 weight, quint8 scalesNum)
@@ -683,7 +691,6 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
         if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
         {
             DriverGC::Instance()->Control_Motor(6, 3500);
-            //msleep(100);
         }
         // 到重量 关闭电机和阀
         if (*currentWeight - oldWeight >= weight)
@@ -697,57 +704,6 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
             return true;
         }
         msleep(200);
-    }
-    return true;
-}
-
-// punmp water from one scale to other scale
-// Param1: target scale Number 1(small) or 2(big)
-bool Motion::pumpToScale(quint8 targetScalesNum)
-{
-    double* currentWeight;
-    if (targetScalesNum == 1)
-    {
-        currentWeight = &m_BigScalesValue;
-
-    }
-    else
-    {
-        currentWeight = &m_SmallScalesValue;
-    }
-    // 设定抽水速度
-    DriverGC::Instance()->Setting_SM_Speed(6, 2, 4000, 12000);
-    bool loopFlag=true;
-    double oldWeight = *currentWeight;
-
-    // 设定抽水机的转动方向
-    if (targetScalesNum == 1)
-    {
-        DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CCW);
-    }
-    else
-    {
-        DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
-    }
-
-    //如果变化率小于1g，则停止
-    while (loopFlag)
-    {
-        // stop current job
-        if (m_stopFlag)
-        {
-            DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_Stop);
-            m_stopFlag = false;
-            return false;
-        }
-
-        sleep(5);
-        if (oldWeight - *currentWeight <= 1)
-        {
-            loopFlag = false;
-            DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_Stop);
-        }
-        oldWeight = *currentWeight;
     }
     return true;
 }
@@ -804,141 +760,63 @@ quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
 }
 
 
-// 抽液体到外桶, 参数 1 or 2
+// 抽液体到外桶, 参数 1(小秤)to middle or 2(大秤)to middle
+// 新增
 bool Motion::pumpToOutSide(quint8 scaleNum)
 {
     bool loopFlag = true;
     double* currentWeight;
     double originalWeight;
+    double oldweight;
 
     if (scaleNum == 1)
     {
         // 记录抽取前的重量
         currentWeight = &m_SmallScalesValue;
-        originalWeight = *currentWeight;
+        originalWeight = m_SmallScalesValue;
+        oldweight = m_SmallScalesValue;
         DriverGC::Instance()->Setting_SM_Speed(6, 2, 4000, 12000);
         DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
-
     }
     else if (scaleNum == 2)
     {
         // 记录抽取前的重量
         currentWeight = &m_BigScalesValue;
-        originalWeight = *currentWeight;
+        originalWeight = m_BigScalesValue;
+        oldweight = m_BigScalesValue;
+        DriverGC::Instance()->Setting_SM_Speed(8, 1, 4000, 12000);
+        DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_CW);
     }
     else
         return false;
-
-
-}
-
-bool Motion::pumpToOutSide()
-{
-    double* currentWeight;
-    // 原始的重量
-    double orangeWeight = m_BigScalesValue;
-    currentWeight = &m_BigScalesValue;
-    QBitArray tmpLim;
-    quint8 countLoop = 0;
-
-    // 设定抽水速度
-    DriverGC::Instance()->Setting_SM_Speed(7, 1, 4000, 12000);
-    bool loopFlag=true;
-    double oldWeight = *currentWeight;
-
-    // 设定抽水机的转动方向
-    DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_CW);
-
-    //如果变化率小于1g，则停止
+    // 先预先抽取
+    msleep(5000);
+    // 等待秤的变化率小于1就停止抽液
     while (loopFlag)
     {
-        // stop current job
-        if (m_stopFlag)
-        {
-            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
-            m_stopFlag = false;
-            return false;
-        }
-
-        msleep(500);
-        countLoop ++;
-        if (countLoop > 10)
-        {
-            countLoop = 0;
-            if (oldWeight - *currentWeight <= 1)
-            {
-                loopFlag = false;
-                DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
-            }
-            oldWeight = *currentWeight;
-        }
-
-        // 查询是否到限位
-        DriverGC::Instance()->Inquire_Limit(7, tmpLim);
-        if (tmpLim.at(0) == true)
+        if (oldweight - *currentWeight <=1)
         {
             loopFlag = false;
-            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
+            if (scaleNum == 1)
+            {
+                DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_Stop);
+            }
+            else if (scaleNum == 2)
+            {
+                DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_Stop);
+            }
         }
+        oldweight = *currentWeight;
+        // 等待500ms抽取时间
+        msleep(500);
     }
-    emit pumpToOutsideWeight(orangeWeight - *currentWeight);
+    // 给界面提供数据
+    emit pumpToOutsideWeight(originalWeight - *currentWeight);
     return true;
 }
 
-bool Motion::addWaterOutside(quint32 liter)
-{
-    quint32 currentValue;
-    quint64 needValue = liter * 1000;
-    bool loopFlag = true;
-    // 液位检测
-    QBitArray tmpLim;
-    // 先清除原有的数据
-    DriverGC::Instance()->Setting_ClearFlowValue(7);
-    // 开水
-    QBitArray valve(24);
-    valve.fill(false);
-    valve.setBit(17);
-    DriverGC::Instance()->Control_ValveOpen(7, valve);
 
-    while (loopFlag)
-    {
-        // stop current job
-        if (m_stopFlag)
-        {
-            DriverGC::Instance()->Control_ValveClose(7, valve);
-            m_stopFlag = false;
-            return false;
-        }
-
-        DriverGC::Instance()->Inquire_FlowValue(7, currentValue);
-        if (currentValue >= needValue)
-        {
-            DriverGC::Instance()->Control_ValveClose(7, valve);
-            loopFlag = false;
-            return true;
-        }
-        // 液位检测用
-        DriverGC::Instance()->Inquire_Limit(7, tmpLim);
-        if (tmpLim.at(0) == true)
-        {
-            DriverGC::Instance()->Control_ValveClose(7, valve);
-            loopFlag = false;
-            return false;
-        }
-        msleep(500);
-    }
-    return false;
-}
-
-void Motion::reflushOutSideSenser()
-{
-    QBitArray tmpLim;
-    DriverGC::Instance()->Inquire_Limit(7, tmpLim);
-    qDebug() << tmpLim.at(0);
-    qDebug() << tmpLim.at(1);
-}
-
-// 罐子加注原液
+// 小罐子加注原液
 // 新需求
 bool Motion::topUpTank()
 {
@@ -947,13 +825,13 @@ bool Motion::topUpTank()
     valueArray.fill(false);
     QBitArray tankLimit;
 
-    moveAsixToScales(0);
+    moveAsixToScales(scales1Motor09);
     //
     DriverGC::Instance()->Inquire_Limit(8, tankLimit);
     if(!tankLimit.at(0))
     {
         loopFlag = true;
-        valueArray[19] = true;
+        valueArray[18] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -971,7 +849,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(1))
     {
         loopFlag = true;
-        valueArray[21] = true;
+        valueArray[20] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -989,7 +867,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(2))
     {
         loopFlag = true;
-        valueArray[20] = true;
+        valueArray[19] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -1007,7 +885,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(3))
     {
         loopFlag = true;
-        valueArray[18] = true;
+        valueArray[17] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -1020,6 +898,67 @@ bool Motion::topUpTank()
             }
             msleep(500);
         }
+    }
+    return true;
+}
+
+// 获取中间罐桶的液体升数
+bool Motion::getMiddleTankLevel(double *microLiter)
+{
+    qint16 adcValue;
+    DriverGC::Instance()->Inquire_ExADC(7, 0, adcValue);
+    if (adcValue <0)
+        adcValue = 0;
+    *microLiter = 1.582 * adcValue - 1223;
+    return true;
+}
+
+// 从中桶到外部液槽
+// FIXME 等待实现 参数未定，外部传感器位置未定
+bool Motion::pumpMiddleTankToUserTank(bool OnOff)
+{
+    DriverGC::Instance()->Setting_SM_Speed(7, 2, 40000, 40000);
+    if (OnOff)
+    {
+        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_CCW);
+    }
+    else
+    {
+        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_Stop);
+    }
+    return true;
+}
+
+bool Motion::addWaterMiddleTank(double liter)
+{
+    QBitArray valueArray(24);
+    valueArray.fill(false);
+    // 水泵 22 port
+    valueArray[21] = true;
+    bool loopFlag = true;
+    double currentLiter;
+    double targetLiter;
+    getMiddleTankLevel(&currentLiter);
+
+    targetLiter = currentLiter + liter;
+    // 防止超过30L
+    if (targetLiter >= 30)
+    {
+        return false;
+    }
+
+    // port num 22
+    DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+    while (loopFlag)
+    {
+        getMiddleTankLevel(&currentLiter);
+        if (currentLiter >= targetLiter)
+        {
+            DriverGC::Instance()->Control_ValveClose(7, valueArray);
+            loopFlag = false;
+            break;
+        }
+        msleep(500);
     }
     return true;
 }

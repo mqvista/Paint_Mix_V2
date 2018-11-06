@@ -48,6 +48,8 @@ void Service::initContext()
     m_engine->rootContext()->setContextProperty("formulaGrid", &m_FormulaGridView);
     m_engine->rootContext()->setContextProperty("formulaAddNew", &m_FormulaAddNew);
     m_engine->rootContext()->setContextProperty("formulaAddition", &m_FormulaAddition);
+
+    m_engine->rootContext()->setContextProperty("pageSecond", &m_pageSecond);
 }
 
 void Service::initSignalSlotConnect()

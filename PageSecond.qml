@@ -64,7 +64,8 @@ Page {
                 anchors.left: comboBox.right
                 anchors.verticalCenter: parent.verticalCenter
                 onReleased: {
-                    console.log(comboBox.currentText)
+                    //console.log(comboBox.currentText)
+                    pageSecond.moveAsix(comboBox.currentText)
                 }
             }
         }
@@ -72,16 +73,61 @@ Page {
         Rectangle {
             id: rectangle1
             width: 200
-            height: 200
+            height: 70
             color: "#ffffff"
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             border.color: "#66CCFF"
+
+            Button {
+                id: button1
+                text: qsTr("GetADCValue")
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                focusPolicy: Qt.NoFocus
+                onReleased: tttt.start()
+            }
+            Timer{
+                id: tttt
+                repeat: true
+                interval: 500
+                triggeredOnStart: true
+                onTriggered: {
+                    pageSecond.getExternADCValue()
+                }
+            }
+        }
+
+        Rectangle {
+            id: rectangle2
+            width: 240
+            height: 70
+            color: "#ffffff"
+            border.color: "#66CCFF"
+
+            Button {
+                id: button2
+                text: qsTr("抽水")
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                onReleased: pageSecond.openPump()
+            }
+            Button {
+                id: button3
+                text: qsTr("取消")
+                anchors.left: button2.right
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                onReleased: pageSecond.closePump()
+            }
         }
     }
 }
 
 
+
+
 /*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:1;anchors_height:100;anchors_width:100;anchors_x:188;anchors_y:118}
+    D{i:0;autoSize:true;height:480;width:640}
 }
  ##^##*/

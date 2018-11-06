@@ -91,7 +91,7 @@ Popup {
                                     return "注液"
                                 if (ItemName == "Water")
                                     return "注水"
-                                if (ItemName == "Exchange")
+                                if (ItemName == "PumpScaleOutside")
                                     return "移液"
                             }
                             font.underline: true
@@ -130,10 +130,12 @@ Popup {
                         Text {
                             id: localValue
                             text: {
-                                if (AddLocal == "1")
+                                if (AddLocal == '1')
                                     return "小秤"
-                                if (AddLocal == "2")
+                                if (AddLocal == '2')
                                     return "大秤"
+                                if (AddLocal == '3')
+                                    return "中桶"
                             }
                             font.underline: true
                             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -166,7 +168,7 @@ Popup {
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: weightText.right
-                            anchors.leftMargin: parent.width * 0.05
+                            anchors.leftMargin: parent.width * 0.06
                         }
                         Text {
                             id: percentValue
@@ -188,6 +190,12 @@ Popup {
                         }
                         SpinBox {
                             id: offsetValue
+                            enabled: {
+                                if (ItemName == "PumpScaleOutside")
+                                    return false;
+                                else
+                                    return true;
+                            }
                             width: 120
                             value: 0
                             from: parseInt(weightValue.text) * -1
@@ -287,7 +295,7 @@ Popup {
                 anchors.rightMargin: 20
                 text: qsTr("运行微调方案")
                 onClicked: {
-                    formulaAddition.runFormula()
+                    formulaAddition.runAndSaveFixedFormula(formulaList.getNameUseIndex(formulaListView.currentIndex))
                 }
             }
         }

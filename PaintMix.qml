@@ -47,7 +47,6 @@ Page {
                         color: paintMixTabBar.currentIndex === 0 ? "silver" : "#1e90ff"
                     }
                     onClicked: {
-                        taskModule.openCloseLimTimer(false);
                         //console.log("reflush ouside");
                     }
                 }

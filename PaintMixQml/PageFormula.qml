@@ -340,13 +340,34 @@ Item {
         }
     }
 
+    Button {
+        id: loopButton
+        width: parent.width * 0.1
+        height: parent.height * 0.08
+        Text {
+            text: qsTr("循环运行")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pointSize: Qt.application.font.pixelSize * 1.5
+        }
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.85
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width * 0.45
+        enabled: !taskModule.busy
+        onClicked: {
+            formulaGridView.currentIndex = 0
+            //taskModule.runFromula(formulaList.getNameUseIndex(formulaListView.currentIndex))
+        }
+    }
+
     AnimatedImage
     {
         anchors.verticalCenter: runButton.verticalCenter
         //anchors.top: parent.top
         //anchors.topMargin: parent.height * 0.38
         anchors.right: parent.right
-        anchors.rightMargin: parent.width * 0.25
+        anchors.rightMargin: parent.width * 0.4
         source: "../img/loading.gif"
         scale: 0.1
         playing: true
