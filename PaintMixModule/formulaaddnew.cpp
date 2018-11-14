@@ -169,6 +169,8 @@ void FormulaAddNew::reflush()
 
 bool FormulaAddNew::saveFormula(QString fName)
 {
+    bool hasExchange = false;
+    bool hasWater = false;
     FileReadWrite fileReadWrite;
     QMap<quint16, QMap<QString, QString>> formula;
     for (int i=0; i<m_list.count(); i++)
@@ -195,6 +197,7 @@ bool FormulaAddNew::saveFormula(QString fName)
 
         if (m_list.at(i).itemName() == "Water")
         {
+            hasWater = true;
             // 判断是否为空
             if (m_list.at(i).addLocal() != "" && m_list.at(i).setWeight() != "")
             {
@@ -222,6 +225,7 @@ bool FormulaAddNew::saveFormula(QString fName)
 
         if (m_list.at(i).itemName() == "Exchange")
         {
+            hasExchange = true;
             QMap<QString, QString> tmp_map;
             // 先插 exchange  号码无所谓
             //tmp_map.insert("Exchange", "1");
@@ -237,7 +241,11 @@ bool FormulaAddNew::saveFormula(QString fName)
     {
         return false;
     }
-    if (fileReadWrite.insertProfileDetail(fName, formula, m_list.count()))
+    if (!hasExchange || !hasWater)
+    {
+        return false;
+    }
+    if (fileReadWrite.insertProfileDetail(fName, formula, qint16(m_list.count())))
     {
         return true;
     }
@@ -255,7 +263,7 @@ bool FormulaAddNew::updatePercent()
         if ((m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
                 && m_list.at(i).setWeight() != "")
         {
-            m_totalWeight += m_list.at(i).setWeight().toInt();
+            m_totalWeight += m_list.at(i).setWeight().toUInt();
         }
     }
     emit totalWeightChanged();
@@ -275,7 +283,7 @@ bool FormulaAddNew::updatePercent()
                 float percent;
                 percent = m_list.at(i).setWeight().toFloat() / m_totalWeight * 100;
                 // 转到 qv 里面
-                QVariant qv = QString::number(percent, 'f', 1);
+                QVariant qv = QString::number(double(percent), 'f', 2);
                 // 最后设定进去
                 setData(index, qv, PercentRole);
             }

@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE void getSenserData();
     Q_INVOKABLE void addWaterOutside(QString liter);
     Q_INVOKABLE void stopCurrentJob();
+    Q_INVOKABLE void runLoopFormula(QString formulaName);
 
 
     QString scaleSmall();

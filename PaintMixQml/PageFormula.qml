@@ -253,6 +253,16 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
+            color: {
+                if (!taskModule.busy)
+                {
+                    return "#f0f0f5"
+                }
+                else
+                {
+                    return "#000000"
+                }
+            }
         }
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.7
@@ -274,6 +284,16 @@ Item {
         height: parent.height * 0.08
         Text {
             text: qsTr("新增方案")
+            color: {
+                if (taskModule.busy)
+                {
+                    return "#f0f0f5"
+                }
+                else
+                {
+                    return "#000000"
+                }
+            }
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -298,8 +318,19 @@ Item {
         id: runButton
         width: parent.width * 0.1
         height: parent.height * 0.08
+        enabled: !taskModule.busy
         Text {
             text: qsTr("运行方案")
+            color: {
+                if (taskModule.busy)
+                {
+                    return "#f0f0f5"
+                }
+                else
+                {
+                    return "#000000"
+                }
+            }
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -308,7 +339,6 @@ Item {
         anchors.topMargin: parent.height * 0.85
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.3
-        enabled: !taskModule.busy
         onClicked: {
             formulaGridView.currentIndex = 0
             taskModule.runFromula(formulaList.getNameUseIndex(formulaListView.currentIndex))
@@ -319,8 +349,19 @@ Item {
         id: additionButton
         width: parent.width * 0.1
         height: parent.height * 0.08
+        enabled: !taskModule.busy
         Text {
             text: qsTr("微调方案")
+            color: {
+                if (taskModule.busy)
+                {
+                    return "#f0f0f5"
+                }
+                else
+                {
+                    return "#000000"
+                }
+            }
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -329,7 +370,6 @@ Item {
         anchors.topMargin: parent.height * 0.7
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.45
-        enabled: !taskModule.busy
         onClicked: {
             console.log()
             formulaAddition.reflush(formulaList.getNameUseIndex(formulaListView.currentIndex))
@@ -344,8 +384,19 @@ Item {
         id: loopButton
         width: parent.width * 0.1
         height: parent.height * 0.08
+        enabled: !taskModule.busy
         Text {
             text: qsTr("循环运行")
+            color: {
+                if (taskModule.busy)
+                {
+                    return "#f0f0f5"
+                }
+                else
+                {
+                    return "#000000"
+                }
+            }
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -354,10 +405,10 @@ Item {
         anchors.topMargin: parent.height * 0.85
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.45
-        enabled: !taskModule.busy
         onClicked: {
             formulaGridView.currentIndex = 0
-            //taskModule.runFromula(formulaList.getNameUseIndex(formulaListView.currentIndex))
+            // TODO 等待测试
+            taskModule.runLoopFormula(formulaList.getNameUseIndex(formulaListView.currentIndex));
         }
     }
 

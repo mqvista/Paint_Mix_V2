@@ -43,6 +43,10 @@ public:
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
     // 新机构设计, 所有的液体移除到外部的桶, 使用蠕动泵, 参数秤的编号 1和2
     bool pumpToOutSide(quint8 scaleNum);
+    // 获取浆料槽液位是否到top
+    void getUserTankTop(bool* flag);
+    // 搅拌中桶
+    void mixMiddleTank(bool flag);
 
 
 //    bool addWaterOutside(quint32 liter);
@@ -52,8 +56,8 @@ public:
     bool topUpTank();
     // 获取中间桶的液位
     bool getMiddleTankLevel(double *microLiter);
-    // 抽水到外部
-    bool pumpMiddleTankToUserTank(bool OnOff);
+    // 抽混合液体到外部
+    bool pumpMiddleTankToUserTank();
     // 给中通加水
     bool addWaterMiddleTank(double liter);
 
@@ -77,10 +81,10 @@ public:
     enum scales2Motor :quint16 {
         scales2Motor01 = 108,
         scales2Motor02 = 72,
-        scales2Motor03 = 37,
+        scales2Motor03 = 36,
         scales2Motor04 = 0,
         scales2Motor05 = 324,
-        scales2Motor06 = 188,
+        scales2Motor06 = 288,
         scales2Motor07 = 252,
         scales2Motor08 = 216,
         scales2Motor09 = 180,
@@ -118,9 +122,12 @@ private:
     double m_BigScalesValue;
     // Save the small scales value from scalesWorker
     double m_SmallScalesValue;
+    void m_MoveAsixToTop(quint8 boadrAddr, quint8 motorChannel);
     //
     QTimer *m_timers;
     bool m_stopFlag = false;
+    // 旋转方向
+    bool m_MixTurn = true;;
 };
 
 #endif // MOTION_H

@@ -296,6 +296,10 @@ Popup {
                 text: qsTr("运行微调方案")
                 onClicked: {
                     formulaAddition.runAndSaveFixedFormula(formulaList.getNameUseIndex(formulaListView.currentIndex))
+                    popupAdditionDialog.close()
+                    // TODO 更新界面的修改 有问题
+                    //formulaGrid.reflushUseName(formulaList.getNameUseIndex(formulaListView.currentIndex));
+
                 }
             }
         }

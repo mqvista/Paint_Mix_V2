@@ -39,6 +39,13 @@ void TaskModule::stopCurrentJob()
     emit stopCurrentJobSignal();
 }
 
+void TaskModule::runLoopFormula(QString formulaName)
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "runLoopFormula",
+                              Qt::QueuedConnection,
+                              Q_ARG(QString, formulaName));
+}
+
 
 QString TaskModule::scaleSmall()
 {

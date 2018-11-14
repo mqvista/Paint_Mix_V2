@@ -72,6 +72,7 @@ void Service::initSignalSlotConnect()
     connect(Motion::Instance(), &Motion::pumpToOutsideWeight, &m_TaskModule, &TaskModule::getPumpOutSideWeightFromMotion);
     // 停止当前工作
     connect(&m_TaskModule, &TaskModule::stopCurrentJobSignal, Motion::Instance(), &Motion::getStopCurrentSignal);
+    connect(&m_TaskModule, &TaskModule::stopCurrentJobSignal, MotionWorker::Instance(), &MotionWorker::getStopCurrentSignal);
 }
 
 void Service::initSystem()

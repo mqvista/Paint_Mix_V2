@@ -31,9 +31,12 @@ void MotionWorker::initDeviceMotor()
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_BOARD_INIT_FAILED);
         return;
     }
-    if (!Motion::Instance()->initAsixMotor(0)) {
-        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_INIT_FAILED);
-        return;
+    for (quint8 i=0; i<=10; i++)
+    {
+        if (!Motion::Instance()->initAsixMotor(i)) {
+            ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_INIT_FAILED);
+            return;
+        }
     }
     emit isIniting(false);
 }
@@ -59,10 +62,15 @@ void MotionWorker::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
 }
 
 // 单次运行方案，执行完毕后停止
-void MotionWorker::runFormula(const QString& formulaName)
+void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
 {
+    if (needRunningFlag)
+    {
+        emit runningStatus(true);
+    }
 
-    emit runningStatus(true);
+    // 先确保tank液位在最上面
+        Motion::Instance()->topUpTank();
 
     // 设置一个变量保存读取出来的数据
     QMap<quint16, QMap<QString, QString>> formula;
@@ -112,14 +120,17 @@ void MotionWorker::runFormula(const QString& formulaName)
         }
         // 判断是否是搬运水
         if (subFormula.count("AddWaterMiddle") == 1) {
-            double liter = subFormula.value("AddWaterMiddle").toDouble();
+            double liter = subFormula.value("Weight").toDouble();
             if (!Motion::Instance()->addWaterMiddleTank(liter)) {
                 break;
             }
             continue;
         }
     }
-    emit runningStatus(false);
+    if (needRunningFlag)
+    {
+        emit runningStatus(false);
+    }
 }
 
 void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singleFormula, quint8 length)
@@ -175,20 +186,64 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singl
     }
 }
 
-void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormula)
+void MotionWorker::runLoopFormula(const QString &formulaName)
 {
     emit runningStatus(true);
+    double microLiter = 0;
+    bool loopFlag = true;
+    QBitArray tankLimit;
+    while (loopFlag)
+    {
+        // 关闭标志
+        if (m_stopFlag)
+        {
+            m_stopFlag = false;
+            return;
+        }
+        // 检测外部液位是否触发
+        // 用户浆料槽top 液位 board6， channel 2
+       DriverGC::Instance()->Inquire_Limit(6, tankLimit);
+        if (!tankLimit.at(2))
+        {
+            Motion::Instance()->pumpMiddleTankToUserTank();
+        }
+        // 中桶补充
+        sleep(5);
+        Motion::Instance()->getMiddleTankLevel(&microLiter);
+        if (microLiter < 25000)
+        {
+            runFormula(formulaName, false);
+        }
+        // 开启中桶搅拌电机
+        Motion::Instance()->mixMiddleTank(true);
+        sleep(10);
+        Motion::Instance()->mixMiddleTank(false);
+        sleep(10);
+    }
+    emit runningStatus(false);
+}
 
+// 单次调整用的
+void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormula)
+{
     // 先读取原始的参数, 计算出原始的比例
     qint16 length;
+    // 原始的方案重量
     qint32 originalWeight = 0;
+    // 修改后的的方案重量
     qint32 fixedWeight = 0;
     QMap<quint16, QMap<QString, QString>> originalFormula;
     QMap<quint16, QMap<QString, QString>> fixedFormula = newFormula;
-    double middleTankLiter;
+    double middleTankLiter = 0;
+    double finallTankLiter = 0;
     // 获取中桶液位升数
     Motion::Instance()->getMiddleTankLevel(&middleTankLiter);
-
+    if (middleTankLiter <0)
+    {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_IS_EMPTY_OR_TANK_SENSER_ERROR);
+        // TODO 取消注释
+        //return;
+    }
     fileReadWrite.readProfileDetail(formulaName, &originalFormula, &length);
 
     // 循环qmap 找出每一个步骤，统计总重量
@@ -270,6 +325,10 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
 
     // 先代入比例差值最大的目标，并代入对应的桶内重量
+    if (maxDifferenceUnit == 0)
+    {
+        maxDifferenceUnit = 1;
+    }
     fixedFormula[maxDifferenceUnit].insert("MiddleTankLiter", originalFormula.value(maxDifferenceUnit).value("MiddleTankLiter"));
     // 算出目标的每个点所占的系数
     double newPrecentModulus = fixedFormula.value(maxDifferenceUnit).value("MiddleTankLiter").toDouble() /
@@ -286,6 +345,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
 
     // 新建个qmap 准备参数并运行
+    // 按照计算出桶里面的重量比例来秤分量
     QMap<quint16, QMap<QString, QString>> formulaToRun;
     quint8 count=1;
     for (quint8 i=1; i<=length; i++)
@@ -305,6 +365,8 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
                     subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
                     count++;
+                    // 统计桶内重量
+                    finallTankLiter += tempFixedWeight;
                     continue;
                 }
                 if (originalFormula.value(i).contains("Water") == 1)
@@ -314,6 +376,8 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
                     subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
                     count++;
+                    // 统计桶内重量
+                    finallTankLiter += tempFixedWeight;
                     continue;
                 }
                 if (originalFormula.value(i).contains("AddWaterMiddle") == 1)
@@ -322,17 +386,25 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
                     subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
                     count++;
+                    // 统计桶内重量
+                    finallTankLiter += tempFixedWeight;
                     continue;
                 }
             }
         }
     }
 
+    // 先判断桶内容量和秤上分量是否足够这次调整，不够就不调整，并用ERROR_HANDLER 提示用户
+    if (middleTankLiter > 30000)
+    {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_WILL_OVER_LIMIT);
+        return;
+    }
 
-
-    //runFormula(formulaToRun, count--);
     emit runningStatus(true);
-    qDebug() << formulaToRun;
+    runFormula(formulaToRun, count);
+    emit runningStatus(false);
+    fileReadWrite.replaceProfileDetail(formulaName, newFormula, length);
 
     // TODO QML 设定微调不能超过2G,单个颜料
 }
@@ -384,17 +456,21 @@ void MotionWorker::getExternADCValue()
 // test use
 void MotionWorker::openExtrenPump()
 {
-    Motion::Instance()->pumpMiddleTankToUserTank(true);
+    //Motion::Instance()->pumpMiddleTankToUserTank(true);
 }
 
 // test use
 void MotionWorker::closeExtrenPump()
 {
-    Motion::Instance()->pumpMiddleTankToUserTank(false);
+    //Motion::Instance()->pumpMiddleTankToUserTank(false);
 }
 
-MotionWorker::MotionWorker(QObject* parent)
-    : QObject(parent)
+MotionWorker::MotionWorker()
 {
     qRegisterMetaType<FixedType>("FixedType");
+}
+
+void MotionWorker::getStopCurrentSignal()
+{
+    m_stopFlag = true;
 }

@@ -10,7 +10,7 @@
 typedef QMap<quint16, QMap<QString, QString>> detailType;
 
 
-class MotionWorker : public QObject
+class MotionWorker : public QThread
 {
     Q_OBJECT
 public:
@@ -21,9 +21,11 @@ public:
     Q_INVOKABLE void addWater(quint32 weight, quint8 scalesNum);
     Q_INVOKABLE void initAsix(quint8 motorNum);
     Q_INVOKABLE void liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum);
-    Q_INVOKABLE void runFormula(const QString& formulaName);
+    Q_INVOKABLE void runFormula(const QString& formulaName, bool needRunningFlag = true);
     // 微调用单次运行
     void runFormula(const QMap<quint16, QMap<QString, QString>> singleFormula, quint8 length);
+    // 滚动循环用
+    Q_INVOKABLE void runLoopFormula(const QString& formulaName);
 
     // Q_ARG 不支持模板类型，只能使用typedefine 间接支持
     typedef  QMap<quint16, QMap<QString, QString>> FixedType;
@@ -38,8 +40,9 @@ public:
 
 
 private:
-    explicit MotionWorker(QObject *parent = nullptr);
+    explicit MotionWorker();
     FileReadWrite fileReadWrite;
+    bool m_stopFlag = false;
 
 
 signals:
@@ -49,7 +52,8 @@ signals:
     void runningStatus(bool value);
 
 public slots:
-//    void processError(ErrorHandle::errorType type);
+    // 接受来自UI的停止信号
+    void getStopCurrentSignal();
 };
 
 #endif // MOTIONWORKER_H

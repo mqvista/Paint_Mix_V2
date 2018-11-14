@@ -263,7 +263,7 @@ Popup {
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: percentName.right
-                            anchors.leftMargin: 60
+                            anchors.leftMargin: 70
                         }
 
 
@@ -431,7 +431,7 @@ Popup {
                 id: warningText
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: totalWeightValue.right
-                anchors.leftMargin: 20
+                anchors.leftMargin: 16
                 font.pointSize: Qt.application.font.pixelSize * 1.5
                 color: "red"
                 text: qsTr("")
@@ -455,7 +455,7 @@ Popup {
                         }
                     };
                     // 显示错误警告文字，然后定时器定时
-                    warningText.text = "请检查名称或参数是否冲突或遗漏 ！"
+                    warningText.text = "请检查名称冲突或参数遗漏(移液和注水是必须)！"
                     clearTextTimer.start()
                 }
             }

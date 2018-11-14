@@ -77,6 +77,12 @@ void ErrorHandle::getErrorMessageRetry()
         break;
     case ERROR_SCALE_OPEN_FAILED:
         break;
+    case ERROR_SCALE_NOT_FOUND:
+        break;
+    case ERROR_TANK_IS_EMPTY_OR_TANK_SENSER_ERROR:
+        break;
+    case ERROR_TANK_WILL_OVER_LIMIT:
+        break;
     case ERROR_UNKNOWN:
         break;
     }

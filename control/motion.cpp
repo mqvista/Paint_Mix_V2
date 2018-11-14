@@ -29,10 +29,10 @@ bool Motion::openSerial485(QString portSN)
     {
         return false;
     }
-    // Get Serial Error
+    // NOTE Get Serial Error
     connect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
-    // Get Debug Data
-    connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    // NOTE Get Debug Data
+    //connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
     return true;
 }
 
@@ -232,6 +232,55 @@ void Motion::waitWhileFree(quint16 motor)
     }
 }
 
+void Motion::m_MoveAsixToTop(quint8 boadrAddr, quint8 motorChannel)
+{
+    // Fast rise motor asix
+    DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 15000, 20000);
+    //DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 10000);
+    // 应为每个电机轴的高度都不一样，需要设置不同的上移步数
+    if (boadrAddr == 1 && motorChannel == 1)
+    {
+      DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 22000);
+    }
+    else if (boadrAddr == 1 && motorChannel == 2)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 5000);
+    }
+    else if (boadrAddr == 2 && motorChannel == 1)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 11000);
+    }
+    else if (boadrAddr == 2 && motorChannel == 2)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 23000);
+    }
+    else if (boadrAddr == 3 && motorChannel == 1)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 8000);
+    }
+    else if (boadrAddr == 3 && motorChannel == 2)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 13000);
+    }
+    else if (boadrAddr == 4 && motorChannel == 1)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 9000);
+    }
+    else if (boadrAddr == 4 && motorChannel == 2)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 9000);
+    }
+    else if (boadrAddr == 5 && motorChannel == 1)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 8500);
+    }
+    else if (boadrAddr == 5 && motorChannel == 2)
+    {
+        DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 12000);
+
+    }
+}
+
 // Init the Motor the you start the system
 // Param1: Motor number 0 ~ 10
 bool Motion::initAsixMotor(quint8 motorNum)
@@ -270,9 +319,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(1);
         //设定M1轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(1, 1, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(1, 1, 8000, 18000);
         //走M1轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(1, 1, DriverGC::StepMotor_CCW, 1);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(1, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化2号注射轴
     case 2:
@@ -284,9 +333,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(1);
         //设定M2轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(1, 2, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(1, 2, 8000, 18000);
         //走M2轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(1, 2, DriverGC::StepMotor_CCW, 3);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(1, 2, DriverGC::StepMotor_CCW, 3);
         break;
     //初始化3号注射轴
     case 3:
@@ -298,9 +347,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(2);
         //设定M1轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(2, 1, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(2, 1, 8000, 18000);
         //走M1轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(2, 1, DriverGC::StepMotor_CCW, 1);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(2, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化4号注射轴
     case 4:
@@ -312,9 +361,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(2);
         //设定M4轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(2, 2, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(2, 2, 8000, 18000);
         //走M4轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(2, 2, DriverGC::StepMotor_CCW, 3);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(2, 2, DriverGC::StepMotor_CCW, 3);
         break;
     //初始化5号注射轴
     case 5:
@@ -326,9 +375,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(3);
         //设定M5轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(3, 1, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(3, 1, 8000, 18000);
         //走M5轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(3, 1, DriverGC::StepMotor_CCW, 1);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(3, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化6号注射轴
     case 6:
@@ -340,9 +389,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(3);
         //设定M6轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(3, 2, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(3, 2, 8000, 18000);
         //走M6轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(3, 2, DriverGC::StepMotor_CCW, 3);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(3, 2, DriverGC::StepMotor_CCW, 3);
         break;
     //初始化7号注射轴
     case 7:
@@ -354,9 +403,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(4);
         //设定M7轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(4, 1, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(4, 1, 8000, 18000);
         //走M7轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(4, 1, DriverGC::StepMotor_CCW, 1);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(4, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化8号注射轴
     case 8:
@@ -368,9 +417,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(4);
         //设定M8轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(4, 2, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(4, 2, 8000, 18000);
         //走M8轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(4, 2, DriverGC::StepMotor_CCW, 3);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(4, 2, DriverGC::StepMotor_CCW, 3);
         break;
     //初始化9号注射轴
     case 9:
@@ -382,9 +431,9 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //保存设定
         DriverGC::Instance()->Special_Save(5);
         //设定M9轴的默认运动速度
-        DriverGC::Instance()->Setting_SM_Speed(5, 1, 6000, 18000);
+        DriverGC::Instance()->Setting_SM_Speed(5, 1, 8000, 18000);
         //走M9轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(5, 1, DriverGC::StepMotor_CCW, 1);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(5, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化10号注射轴
     case 10:
@@ -398,7 +447,7 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //设定M10轴的默认运动速度
         DriverGC::Instance()->Setting_SM_Speed(5, 2, 8000, 18000);
         //走M10轴的CCW极限
-        DriverGC::Instance()->AutoControl_SM_By_Limit(5, 2, DriverGC::StepMotor_CCW, 3);
+        //DriverGC::Instance()->AutoControl_SM_By_Limit(5, 2, DriverGC::StepMotor_CCW, 3);
         break;  
     default:
         //错误参数
@@ -461,11 +510,11 @@ bool Motion::moveAsixToScales(quint16 degree)
         return true;
     }
     // stop current job
-    if (m_stopFlag)
-    {
-        m_stopFlag = false;
-        return true;
-    }
+//    if (m_stopFlag)
+//    {
+//        m_stopFlag = false;
+//        return true;
+//    }
     return true;
 }
 
@@ -475,7 +524,7 @@ bool Motion::moveAsixToScales(quint16 degree)
 bool Motion::detectEncoder()
 {
     DriverGC::Instance()->Inquire_Encoder(6, 2, m_EncoderData);
-    if (abs(abs(m_EncoderData) - m_CurrentDegree * 1200) <= 10)
+    if (abs(abs(m_EncoderData) - m_CurrentDegree * 1200) <= 100)
     {
         return true;
     }
@@ -483,6 +532,7 @@ bool Motion::detectEncoder()
     return false;
 }
 
+// 注液啊！！
 // Take the liquid to bottole
 // Param1: motor number 1~10
 // Parma2: liquid weight
@@ -538,9 +588,8 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
         // If the motor is in the lowest
         if (limitData[limNum] == 1)
         {
-            // Fast rise motor asix
-            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 8000, 18000);
-            DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 10000);
+            m_MoveAsixToTop(boadrAddr, motorChannel);
+
             // Query motor is busy;
             motorBusyStatus = true;
             while (motorBusyStatus)
@@ -554,7 +603,7 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                 }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
-                msleep(100);
+                msleep(200);
             }
         }
         // High speed injection
@@ -577,7 +626,7 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                 }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
-                msleep(50);
+                msleep(200);
             }
             continue;
         }
@@ -601,7 +650,7 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                 }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
-                msleep(50);
+                msleep(100);
                 if (*currentWeight-oldWeight >= weight)
                 {
                     liquidRunStatus = false;
@@ -669,11 +718,12 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     DriverGC::Instance()->Control_ValveOpen(6, sta);
     if (weight > 3)
     {
-        DriverGC::Instance()->Control_Motor(6, 10000);
+        // TODO 测试速度
+        DriverGC::Instance()->Control_Motor(6, 20000);
     }
     else
     {
-        DriverGC::Instance()->Control_Motor(6, 3500);
+        DriverGC::Instance()->Control_Motor(6, 6500);
     }
     loopFlag = true;
 
@@ -690,7 +740,7 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
 
         if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
         {
-            DriverGC::Instance()->Control_Motor(6, 3500);
+            DriverGC::Instance()->Control_Motor(6, 6500);
         }
         // 到重量 关闭电机和阀
         if (*currentWeight - oldWeight >= weight)
@@ -815,6 +865,43 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
     return true;
 }
 
+void Motion::getUserTankTop(bool *flag)
+{
+    // 用户浆料槽top 液位 board6， channel 2
+    QBitArray userTankLimit;
+    DriverGC::Instance()->Inquire_Limit(6, userTankLimit);
+    if (userTankLimit.at(2))
+    {
+        *flag = true;
+    }
+    else
+    {
+        *flag = false;
+    }
+}
+
+void Motion::mixMiddleTank(bool flag)
+{
+    if (flag)
+    {
+        DriverGC::Instance()->Setting_SM_Speed(7, 1, 40000, 12000);
+        if (m_MixTurn)
+        {
+            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_CW);
+            m_MixTurn = false;
+        }
+        else
+        {
+            DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_CCW);
+            m_MixTurn = true;
+        }
+    }
+    else
+    {
+        DriverGC::Instance()->Control_SM(7, 1, DriverGC::StepMotor_Stop);
+    }
+}
+
 
 // 小罐子加注原液
 // 新需求
@@ -831,7 +918,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(0))
     {
         loopFlag = true;
-        valueArray[18] = true;
+        valueArray[20] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -849,7 +936,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(1))
     {
         loopFlag = true;
-        valueArray[20] = true;
+        valueArray[19] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -867,7 +954,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(2))
     {
         loopFlag = true;
-        valueArray[19] = true;
+        valueArray[17] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -885,7 +972,7 @@ bool Motion::topUpTank()
     if(!tankLimit.at(3))
     {
         loopFlag = true;
-        valueArray[17] = true;
+        valueArray[18] = true;
         DriverGC::Instance()->Control_ValveOpen(7, valueArray);
         while (loopFlag)
         {
@@ -914,17 +1001,35 @@ bool Motion::getMiddleTankLevel(double *microLiter)
 }
 
 // 从中桶到外部液槽
-// FIXME 等待实现 参数未定，外部传感器位置未定
-bool Motion::pumpMiddleTankToUserTank(bool OnOff)
+// FIXME 等待测试
+bool Motion::pumpMiddleTankToUserTank()
 {
+    bool loopFlag = true;
+    QBitArray tankLimit;
+    double currentWeight;
+
+    // 先获取原始的液体量
+    double lastWeight;
+    getMiddleTankLevel(&lastWeight);
+    //开pump
     DriverGC::Instance()->Setting_SM_Speed(7, 2, 40000, 40000);
-    if (OnOff)
-    {
-        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_CCW);
-    }
-    else
-    {
-        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_Stop);
+    DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_CCW);
+    // 检测外部液位是否触发
+    // 用户浆料槽top 液位 board6， channel 2
+    while (loopFlag) {
+        sleep(5);
+        getMiddleTankLevel(&currentWeight);
+        DriverGC::Instance()->Inquire_Limit(6, tankLimit);
+        if ((lastWeight-currentWeight >0) && (lastWeight-currentWeight < 40))
+        {
+            qDebug() << "shit it ";
+        }
+        if (tankLimit.at(2) || ((lastWeight-currentWeight >0) && (lastWeight-currentWeight < 200)))
+        {
+            DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_Stop);
+            return true;
+        }
+        lastWeight = currentWeight;
     }
     return true;
 }
@@ -942,7 +1047,7 @@ bool Motion::addWaterMiddleTank(double liter)
 
     targetLiter = currentLiter + liter;
     // 防止超过30L
-    if (targetLiter >= 30)
+    if (targetLiter >= 30000)
     {
         return false;
     }
@@ -958,8 +1063,8 @@ bool Motion::addWaterMiddleTank(double liter)
             loopFlag = false;
             break;
         }
-        msleep(500);
+        msleep(1000);
     }
-    return true;
+        return true;
 }
 

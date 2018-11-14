@@ -43,6 +43,7 @@ bool Scales::openUseSN(const QString &serialNumber, const quint32 &baud)
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
+        qDebug() << info.serialNumber();
         if (info.serialNumber() == serialNumber)
         {
             if (open(info.portName(), baud))
@@ -52,6 +53,7 @@ bool Scales::openUseSN(const QString &serialNumber, const quint32 &baud)
             return false;
         }
     }
+    ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_SCALE_NOT_FOUND);
     return false;
 }
 
