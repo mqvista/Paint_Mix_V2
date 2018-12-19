@@ -50,7 +50,7 @@ bool Motion::closeSerial485()
 // No Params
 bool Motion::initBoard()
 {
-    for(quint8 i=1; i<=8; i++)
+    for(quint8 i=1; i<9; i++)
     {
         if (!DriverGC::Instance()->Special_Reset(i))
         {
@@ -595,12 +595,12 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             while (motorBusyStatus)
             {
                 // stop current job
-                if (m_stopFlag)
-                {
-                    stopDrop(motorNum);
-                    m_stopFlag = false;
-                    return false;
-                }
+//                if (m_stopFlag)
+//                {
+//                    stopDrop(motorNum);
+//                    m_stopFlag = false;
+//                    return false;
+//                }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(200);
@@ -618,12 +618,12 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             while(motorBusyStatus)
             {
                 // stop current job
-                if (m_stopFlag)
-                {
-                    stopDrop(motorNum);
-                    m_stopFlag = false;
-                    return false;
-                }
+//                if (m_stopFlag)
+//                {
+//                    stopDrop(motorNum);
+//                    m_stopFlag = false;
+//                    return false;
+//                }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(200);
@@ -642,12 +642,12 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             while(motorBusyStatus)
             {
                 // stop current job
-                if (m_stopFlag)
-                {
-                    stopDrop(motorNum);
-                    m_stopFlag = false;
-                    return false;
-                }
+//                if (m_stopFlag)
+//                {
+//                    stopDrop(motorNum);
+//                    m_stopFlag = false;
+//                    return false;
+//                }
 
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(100);
@@ -664,6 +664,14 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                     DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 2000);
                 }
             }
+        }
+        // 如果等于的话
+        if ((oldWeight + weight - *currentWeight) < 0.1)
+        {
+            liquidRunStatus = false;
+            motorBusyStatus = false;
+            stopDrop(motorNum);
+            emit finishWeight(*currentWeight-oldWeight);
         }
     }
     return true;
@@ -730,13 +738,13 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     while (loopFlag)
     {
         // stop current job
-        if (m_stopFlag)
-        {
-            DriverGC::Instance()->Control_ValveClose(6, sta);
-            DriverGC::Instance()->Control_Motor(6, 0);
-            m_stopFlag = false;
-            return false;
-        }
+//        if (m_stopFlag)
+//        {
+//            DriverGC::Instance()->Control_ValveClose(6, sta);
+//            DriverGC::Instance()->Control_Motor(6, 0);
+//            m_stopFlag = false;
+//            return false;
+//        }
 
         if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
         {
@@ -825,7 +833,7 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
         currentWeight = &m_SmallScalesValue;
         originalWeight = m_SmallScalesValue;
         oldweight = m_SmallScalesValue;
-        DriverGC::Instance()->Setting_SM_Speed(6, 2, 4000, 12000);
+        DriverGC::Instance()->Setting_SM_Speed(6, 2, 10000, 20000);
         DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
     }
     else if (scaleNum == 2)
@@ -834,7 +842,7 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
         currentWeight = &m_BigScalesValue;
         originalWeight = m_BigScalesValue;
         oldweight = m_BigScalesValue;
-        DriverGC::Instance()->Setting_SM_Speed(8, 1, 4000, 12000);
+        DriverGC::Instance()->Setting_SM_Speed(8, 1, 10000, 20000);
         DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_CW);
     }
     else

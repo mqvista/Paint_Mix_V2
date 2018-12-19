@@ -127,7 +127,7 @@ private:
     QTimer *m_timers;
     bool m_stopFlag = false;
     // 旋转方向
-    bool m_MixTurn = true;;
+    bool m_MixTurn = true;
 };
 
 #endif // MOTION_H

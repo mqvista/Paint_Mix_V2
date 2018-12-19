@@ -31,8 +31,7 @@ void MotionWorker::initDeviceMotor()
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_BOARD_INIT_FAILED);
         return;
     }
-    for (quint8 i=0; i<=10; i++)
-    {
+    for (quint8 i = 0; i <= 10; i++) {
         if (!Motion::Instance()->initAsixMotor(i)) {
             ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_ROTARY_INIT_FAILED);
             return;
@@ -64,13 +63,12 @@ void MotionWorker::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
 // 单次运行方案，执行完毕后停止
 void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
 {
-    if (needRunningFlag)
-    {
+    if (needRunningFlag) {
         emit runningStatus(true);
     }
 
     // 先确保tank液位在最上面
-        Motion::Instance()->topUpTank();
+    Motion::Instance()->topUpTank();
 
     // 设置一个变量保存读取出来的数据
     QMap<quint16, QMap<QString, QString>> formula;
@@ -127,13 +125,12 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
             continue;
         }
     }
-    if (needRunningFlag)
-    {
+    if (needRunningFlag) {
         emit runningStatus(false);
     }
 }
 
-void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singleFormula, quint8 length)
+void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString>> singleFormula, quint8 length)
 {
     // 循环qmap 找出每一个步骤，并执行
     for (quint8 i = 1; i <= length; i++) {
@@ -145,7 +142,7 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singl
         if (subFormula.count("Motor") == 1) {
             quint8 motorNum = quint8(subFormula.value("Motor").toUShort());
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            quint32 weight = quint32(subFormula.value("Weight").toFloat());
             // 运动到指定位置
             if (!Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum))) {
                 // 通知错误处理
@@ -161,7 +158,7 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singl
         // 判断是放清水
         if (subFormula.count("Water") == 1) {
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            quint32 weight = quint32(subFormula.value("Weight").toFloat());
             if (!Motion::Instance()->addWater(weight, scaleNum)) {
                 break;
             }
@@ -186,39 +183,59 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString> > singl
     }
 }
 
-void MotionWorker::runLoopFormula(const QString &formulaName)
+void MotionWorker::runLoopFormula(const QString& formulaName)
 {
     emit runningStatus(true);
     double microLiter = 0;
     bool loopFlag = true;
     QBitArray tankLimit;
-    while (loopFlag)
-    {
+    while (loopFlag) {
         // 关闭标志
         if (m_stopFlag)
         {
             m_stopFlag = false;
+            emit runningStatus(false);
             return;
         }
         // 检测外部液位是否触发
         // 用户浆料槽top 液位 board6， channel 2
-       DriverGC::Instance()->Inquire_Limit(6, tankLimit);
-        if (!tankLimit.at(2))
-        {
+        DriverGC::Instance()->Inquire_Limit(6, tankLimit);
+        if (!tankLimit.at(2)) {
             Motion::Instance()->pumpMiddleTankToUserTank();
         }
+
+        if (m_stopFlag)
+        {
+            m_stopFlag = false;
+            emit runningStatus(false);
+            return;
+        }
+
         // 中桶补充
         sleep(5);
         Motion::Instance()->getMiddleTankLevel(&microLiter);
-        if (microLiter < 25000)
-        {
+        if (microLiter < 25000) {
             runFormula(formulaName, false);
+        }
+
+        if (m_stopFlag)
+        {
+            m_stopFlag = false;
+            emit runningStatus(false);
+            return;
         }
         // 开启中桶搅拌电机
         Motion::Instance()->mixMiddleTank(true);
         sleep(10);
         Motion::Instance()->mixMiddleTank(false);
         sleep(10);
+
+        if (m_stopFlag)
+        {
+            m_stopFlag = false;
+            emit runningStatus(false);
+            return;
+        }
     }
     emit runningStatus(false);
 }
@@ -238,8 +255,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     double finallTankLiter = 0;
     // 获取中桶液位升数
     Motion::Instance()->getMiddleTankLevel(&middleTankLiter);
-    if (middleTankLiter <0)
-    {
+    if (middleTankLiter < 0) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_IS_EMPTY_OR_TANK_SENSER_ERROR);
         // TODO 取消注释
         //return;
@@ -325,65 +341,74 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
 
     // 先代入比例差值最大的目标，并代入对应的桶内重量
-    if (maxDifferenceUnit == 0)
-    {
+    if (maxDifferenceUnit == 0) {
         maxDifferenceUnit = 1;
     }
     fixedFormula[maxDifferenceUnit].insert("MiddleTankLiter", originalFormula.value(maxDifferenceUnit).value("MiddleTankLiter"));
     // 算出目标的每个点所占的系数
-    double newPrecentModulus = fixedFormula.value(maxDifferenceUnit).value("MiddleTankLiter").toDouble() /
-            fixedFormula.value(maxDifferenceUnit).value("Percent").toDouble();;
-    for (quint8 i = 1; i<=length; i++)
-    {
+    double newPrecentModulus = fixedFormula.value(maxDifferenceUnit).value("MiddleTankLiter").toDouble() / fixedFormula.value(maxDifferenceUnit).value("Percent").toDouble();
+    ;
+    for (quint8 i = 1; i <= length; i++) {
         if (i == maxDifferenceUnit)
             continue;
-        if (fixedFormula.value(i).contains("Percent") == 1)
-        {
+        if (fixedFormula.value(i).contains("Percent") == 1) {
             double tempMiddleLiter = fixedFormula.value(i).value("Percent").toDouble() * newPrecentModulus;
             fixedFormula[i].insert("MiddleTankLiter", QString::number(tempMiddleLiter));
         }
     }
 
+
+    bool scaleVoerLoad = false;
     // 新建个qmap 准备参数并运行
     // 按照计算出桶里面的重量比例来秤分量
     QMap<quint16, QMap<QString, QString>> formulaToRun;
-    quint8 count=1;
-    for (quint8 i=1; i<=length; i++)
-    {
+    quint8 count = 1;
+    for (quint8 i = 1; i <= length; i++) {
         double tempOrigWeight, tempFixedWeight;
-        if (originalFormula.value(i).contains("Percent") == 1)
-        {
+        if (originalFormula.value(i).contains("Percent") == 1) {
             tempOrigWeight = originalFormula.value(i).value("MiddleTankLiter").toDouble();
             tempFixedWeight = fixedFormula.value(i).value("MiddleTankLiter").toDouble();
-            if (tempFixedWeight - tempOrigWeight > 0)
-            {
+            if (tempFixedWeight - tempOrigWeight > 0) {
                 QMap<QString, QString> subFormula;
-                if (originalFormula.value(i).contains("Motor") == 1)
-                {
+                if (originalFormula.value(i).contains("Motor") == 1) {
                     subFormula.insert("Motor", originalFormula.value(i).value("Motor"));
                     subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
-                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight - tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
+                    // 判断是否超重小秤
+                    if (originalFormula.value(i).value("Scales") == "1")
+                    {
+                        if (QString::number(tempFixedWeight - tempOrigWeight, 'd', 1) > 200)
+                        {
+                            scaleVoerLoad = true;
+                        }
+                    }
+                    // 判断是否超重大秤
+                    if (originalFormula.value(i).value("Scales") == "1")
+                    {
+                        if (QString::number(tempFixedWeight - tempOrigWeight, 'd', 1) > 3000)
+                        {
+                            scaleVoerLoad = true;
+                        }
+                    }
                     count++;
                     // 统计桶内重量
                     finallTankLiter += tempFixedWeight;
                     continue;
                 }
-                if (originalFormula.value(i).contains("Water") == 1)
-                {
+                if (originalFormula.value(i).contains("Water") == 1) {
                     subFormula.insert("Water", "1");
                     subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
-                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight - tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
                     count++;
                     // 统计桶内重量
                     finallTankLiter += tempFixedWeight;
                     continue;
                 }
-                if (originalFormula.value(i).contains("AddWaterMiddle") == 1)
-                {
+                if (originalFormula.value(i).contains("AddWaterMiddle") == 1) {
                     subFormula.insert("AddWaterMiddle", "1");
-                    subFormula.insert("Weight", QString::number(tempFixedWeight-tempOrigWeight, 'd', 1));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight - tempOrigWeight, 'd', 1));
                     formulaToRun.insert(count, subFormula);
                     count++;
                     // 统计桶内重量
@@ -395,11 +420,16 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
 
     // 先判断桶内容量和秤上分量是否足够这次调整，不够就不调整，并用ERROR_HANDLER 提示用户
-    if (middleTankLiter > 30000)
+    if (middleTankLiter > 30000) {
+        ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_WILL_OVER_LIMIT);
+        return;
+    }
+    if (scaleVoerLoad)
     {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_WILL_OVER_LIMIT);
         return;
     }
+
 
     emit runningStatus(true);
     runFormula(formulaToRun, count);

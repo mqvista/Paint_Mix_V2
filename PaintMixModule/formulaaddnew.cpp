@@ -234,6 +234,22 @@ bool FormulaAddNew::saveFormula(QString fName)
             formula.insert(i+1, tmp_map);
             continue;
         }
+
+        if (m_list.at(i).itemName() == "AdditionPaint")
+        {
+            if (m_list.at(i).addLocal() != "" && m_list.at(i).setWeight() != "")
+            {
+                QMap<QString, QString> tmp_map;
+
+                tmp_map.insert("AdditionPaint", "1");
+
+                // 最后插重量
+                tmp_map.insert("Weight", m_list.at(i).setWeight());
+                // 插入到大的 map 里面
+                formula.insert(i+1, tmp_map);
+                continue;
+            }
+        }
         // 如果有没判断到的内容, 则为空数据
         return false;
     }
