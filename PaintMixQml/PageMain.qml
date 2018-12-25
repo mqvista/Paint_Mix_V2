@@ -35,7 +35,6 @@ Item {
                 Text {
                     id: nameMoveAsix
                     text: qsTr("移动转盘:")
-                    style: Text.Outline
                     anchors.leftMargin: 10
                     font.pointSize: Qt.application.font.pixelSize * 2
                     anchors.left: parent.left
@@ -84,7 +83,7 @@ Item {
 
                 Button {
                     id: button
-                    text: qsTr("move")
+                    text: qsTr("运行")
                     enabled: !taskModule.busy
                     anchors.leftMargin: 10
                     anchors.left: nameComboBox.right
