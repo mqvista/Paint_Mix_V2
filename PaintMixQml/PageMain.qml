@@ -1,10 +1,12 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.3
-//import QtQuick.VirtualKeyboard 2.2
-
+import QtQuick.Layouts 1.3
 
 Item {
     id: item1
+    property bool middleTankAddWaterFlag: false;
+    property bool middleTankPumpToOutsideFlag: false;
+
     Rectangle {
         id: mainRectangle
         width: parent.width / 1.2
@@ -15,161 +17,181 @@ Item {
         border.width: 5
         border.color: "Silver"
 
-        Button {
-            id: button
-            width: 200
-            height: 40
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: parent.height * -0.3
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: parent.width * -0.2
-            text: qsTr("移液到外部")
-            font.pointSize: 28
-            onClicked: {
-                taskModule.test();
-            }
-            enabled: !taskModule.busy
-        }
+        GridLayout {
+            id: gridLayout
+            columns: 1
+            rows: 3
+            anchors.fill: parent
 
-        Text {
-            id: outsideWeightName
-            text: qsTr("移出重量: ")
-            font.pointSize: 28
-            anchors.verticalCenter: button.verticalCenter
-            anchors.horizontalCenter: button.horizontalCenter
-            anchors.horizontalCenterOffset: parent.width * 0.4
-        }
-        Text {
-            id: outsideWeight
-            text: taskModule.pumpOutSideWeight
-            font.pointSize: 28
-            anchors.leftMargin: 10
-            anchors.left: outsideWeightName.right
-            anchors.verticalCenter: outsideWeightName.verticalCenter
-        }
+            Rectangle {
+                id: rectangle
+                implicitWidth: 500
+                implicitHeight: 70
+                color: "#ffffff"
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                border.color: "black"
+                border.width: 3
 
-        Text {
-            id: outsideG
-            text: "g"
-            font.pointSize: 28
-            anchors.leftMargin: 10
-            anchors.left: outsideWeight.right
-            anchors.verticalCenter: outsideWeight.verticalCenter
-        }
+                Text {
+                    id: nameMoveAsix
+                    text: qsTr("移动转盘:")
+                    style: Text.Outline
+                    anchors.leftMargin: 10
+                    font.pointSize: Qt.application.font.pixelSize * 2
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-        Text {
-            id: addWaterName
-            text: qsTr("加水量:")
-            anchors.left: button.left
-            //anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: parent.width * -0.05
-            font.pixelSize: 28
-        }
 
-        TextField {
-            id: textField
-            width: 100
-            height: 40
-            text: qsTr("")
-            anchors.left: addWaterName.right
-            anchors.leftMargin: 10
-            anchors.verticalCenterOffset: 0
-            anchors.verticalCenter: addWaterName.verticalCenter
-            validator: IntValidator {bottom: 1; top: 999;}
-            inputMethodHints: Qt.ImhDigitsOnly
-            font.pointSize: 28
-            onEditingFinished: {
-                addWaterPercent.text = (outsideWeight.text * 1) / (textField.text * 1)
-            }
-            onPressed: {
-                        vkb.visible = true; //当选择输入框的时候才显示键盘
+                ComboBox {
+                    id: nameComboBox
+                    anchors.left: nameMoveAsix.right
+                    anchors.leftMargin: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    model: ListModel {
+                        ListElement {
+                            text: "1"
+                        }
+                        ListElement {
+                            text: "2"
+                        }
+                        ListElement {
+                            text: "3"
+                        }
+                        ListElement {
+                            text: "4"
+                        }
+                        ListElement {
+                            text: "5"
+                        }
+                        ListElement {
+                            text: "6"
+                        }
+                        ListElement {
+                            text: "7"
+                        }
+                        ListElement {
+                            text: "8"
+                        }
+                        ListElement {
+                            text: "9"
+                        }
+                        ListElement {
+                            text: "10"
+                        }
                     }
-        }
+                }
 
-        Text {
-            id: addWaterLable
-            text: qsTr("L")
-            anchors.leftMargin: 10
-            anchors.left: textField.right
-            anchors.verticalCenter: textField.verticalCenter
-            font.pixelSize: 28
-        }
-
-        Text {
-            id: addWaterPercentName
-            text: qsTr("稀释比例:")
-            anchors.left: button.left
-            anchors.top: addWaterName.bottom
-            anchors.topMargin: 50
-            font.pixelSize: 28
-        }
-
-        Button {
-            id: stopButton
-            y: 180
-            height: 40
-            text: qsTr("停止任务")
-            font.pointSize: 28
-            anchors.left: addWaterPercentName.right
-            anchors.leftMargin: 140
-            anchors.verticalCenter: addWaterPercentName.verticalCenter
-            enabled: !taskModule.busy
-            onClicked: {
-                taskModule.addWaterOutside(textField.text)
+                Button {
+                    id: button
+                    text: qsTr("move")
+                    enabled: !taskModule.busy
+                    anchors.leftMargin: 10
+                    anchors.left: nameComboBox.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        pageSecond.moveAsix(nameComboBox.currentText)
+                    }
+                }
             }
-        }
 
-        Text {
-            id: addWaterPercent
-            text: "0"
-            anchors.verticalCenter: addWaterPercentName.verticalCenter
-            anchors.leftMargin: 10
-            anchors.left: addWaterPercentName.right
-            font.pixelSize: 28
-        }
+            Rectangle {
+                id: rectangle1
+                implicitWidth: 500
+                implicitHeight: 70
+                color: "#ffffff"
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                border.color: "black"
+                border.width: 3
 
-        Text {
-            id: addWaterPercentLable
-            text: "%"
-            anchors.leftMargin: 5
-            anchors.verticalCenter: addWaterPercentName.verticalCenter
-            anchors.left: addWaterPercent.right
-            font.pixelSize: 28
-        }
+                Button {
+                    id: buttonOpenMiddleTankToUserTank
+                    text: qsTr("开启中桶抽水泵")
+                    enabled: !taskModule.busy
+                    anchors.leftMargin: 10
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    focusPolicy: Qt.NoFocus
+                    onReleased:
+                    {
+                        middleTankPumpToOutsideFlag = true;
+                        pageSecond.openMiddleTankToOutsidePump();
+                    }
 
-        Button {
-            id: button1
-            y: 180
-            height: 40
-            text: qsTr("加水")
-            font.pointSize: 28
-            anchors.verticalCenterOffset: 0
-            anchors.left: textField.right
-            anchors.leftMargin: 60
-            anchors.verticalCenter: addWaterName.verticalCenter
-            enabled: taskModule.busy
-            onClicked: {
-                if (taskModule.busy)
-                {
-                    taskModule.stopCurrentJob()
+                }
+                Button {
+                    id: buttonCloseMiddleTankToUserTank
+                    text: qsTr("关闭中桶抽水泵")
+                    enabled: taskModule.busy && middleTankPumpToOutsideFlag
+                    anchors.leftMargin: 10
+                    anchors.left: buttonOpenMiddleTankToUserTank.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    focusPolicy: Qt.NoFocus
+                    onReleased:
+                    {
+                        pageSecond.closeMiddleTankToOutsidePump()
+                        middleTankPumpToOutsideFlag = false;
+                    }
+                }
+                Text {
+                    id: nameMiddleTank
+                    text: qsTr("中桶读数:")
+                    anchors.left: buttonCloseMiddleTankToUserTank.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pointSize: Qt.application.font.pixelSize * 2
+                }
+                Text {
+                    text: taskModule.middleTankLevel
+                    anchors.left: nameMiddleTank.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pointSize: Qt.application.font.pixelSize * 2
+                }
+            }
+
+            Rectangle {
+                id: rectangle2
+                implicitWidth: 500
+                implicitHeight: 70
+                color: "#ffffff"
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                border.color: "black"
+                border.width: 3
+
+
+
+                Button {
+                    id: buttonOpenMiddleTankAddWater
+                    text: qsTr("中桶开启加水")
+                    enabled: !taskModule.busy
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        middleTankAddWaterFlag = true;
+                        pageSecond.openMiddleTankAddWaterPump();
+                    }
+
+                }
+                Button {
+                    id: buttonCloseMiddleTankAddWater
+                    text: qsTr("中桶关闭加水")
+                    enabled: taskModule.busy && middleTankAddWaterFlag == true
+                    anchors.left: buttonOpenMiddleTankAddWater.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        pageSecond.closeMiddleTankAddWaterPump()
+                        middleTankAddWaterFlag = false;
+                    }
                 }
             }
         }
     }
-
-
-//    InputPanel {
-//        id: vkb
-//        visible: false
-//        anchors.right: parent.right
-//        anchors.left: parent.left
-//        anchors.bottom: parent.bottom
-//        //这种集成方式下点击隐藏键盘的按钮是没有效果的，
-//        //只会改变active，因此我们自己处理一下
-//        onActiveChanged: {
-//            if(!active) { visible = false; }
-//            }
-//       }
-
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

@@ -62,6 +62,11 @@ QString TaskModule::pumpOutSideWeight()
     return m_pumpOutSideWeight;
 }
 
+QString TaskModule::middleTankLevel()
+{
+    return m_middleTankLevel;
+}
+
 void TaskModule::setPumpOutSideWeight(QString value)
 {
     m_pumpOutSideWeight = value;
@@ -78,6 +83,12 @@ void TaskModule::setScaleBig(QString value)
 {
     m_scaleBig = value;
     emit scaleBigChanged();
+}
+
+void TaskModule::setMiddleTankLevel(QString value)
+{
+    m_middleTankLevel = value;
+    emit middleTankLevelChanged();
 }
 
 bool TaskModule::getBusy()
@@ -117,4 +128,15 @@ void TaskModule::getPumpOutSideWeightFromMotion(double value)
     qDebug()<< value;
     QString tmp = QString::number(value, 'f', 1);
     setPumpOutSideWeight(tmp);
+}
+
+void TaskModule::getMiddleTankLevel(double fWeight)
+{
+    QString tmp = QString::number(fWeight, 'f', 2);
+    setMiddleTankLevel(tmp);
+}
+
+void TaskModule::getResetGridViewPoint()
+{
+    emit resetGridViewPoint();
 }

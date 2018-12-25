@@ -65,7 +65,8 @@ HEADERS += \
     PaintMixModule/formulaaddition.h \
     utils/loginfo.h \
     utils/errorhandle.h \
-    testUseModule/pagesecond.h
+    testUseModule/pagesecond.h \
+    utils/windowfilter.h
 
 # 添加机台驱动
 unix:!macx: LIBS += -L$$PWD/DriverGC/arm_linux/ -lDriverGC

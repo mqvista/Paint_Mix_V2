@@ -227,6 +227,25 @@ void FormulaGridView::reflushUseName(QString formulaName)
             append(FormulaGrid(name, setValue, realValue, addLocal));
             continue;
         }
+
+        // 判断是否是泵液
+        if (subDetail.count("AdditionPaint") == 1)
+        {
+            QString name = "泵液" + subDetail.value("AdditionPaint");
+            QString setValue = subDetail.value("Weight") + "g";
+            QString realValue = "-----";
+            QString addLocal;
+            if (subDetail.value("Scales") == "1")
+            {
+                addLocal = "小秤";
+            }
+            else if (subDetail.value("Scales") == "2")
+            {
+                addLocal = "大秤";
+            }
+            append(FormulaGrid(name, setValue, realValue, addLocal));
+            continue;
+        }
     }
 }
 

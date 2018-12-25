@@ -37,6 +37,8 @@ void MotionWorker::initDeviceMotor()
             return;
         }
     }
+    // TODO
+    getRunningStatus(false);
     emit isIniting(false);
 }
 
@@ -66,9 +68,6 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
     if (needRunningFlag) {
         emit runningStatus(true);
     }
-
-    // 先确保tank液位在最上面
-    Motion::Instance()->topUpTank();
 
     // 设置一个变量保存读取出来的数据
     QMap<quint16, QMap<QString, QString>> formula;
@@ -124,7 +123,20 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
             }
             continue;
         }
+        // 判断是否是从蠕动泵加液
+        if (subFormula.count("AdditionPaint") == 1)
+        {
+            //quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
+            quint32 weight = subFormula.value("Weight").toUInt();
+            quint8 pumpNum = quint8(subFormula.value("AdditionPaint").toUShort());
+            if (!Motion::Instance()->pumpPaint(pumpNum, weight))
+            {
+                break;
+            }
+            continue;
+        }
     }
+    emit resetGuidViewPoint();
     if (needRunningFlag) {
         emit runningStatus(false);
     }
@@ -180,7 +192,20 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString>> single
             }
             continue;
         }
+        // 判断是否是从蠕动泵加液
+        if (subFormula.count("AdditionPaint") == 1)
+        {
+            //quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
+            quint32 weight = subFormula.value("Weight").toUInt();
+            quint8 pumpNum = quint8(subFormula.value("AdditionPaint").toUShort());
+            if (!Motion::Instance()->pumpPaint(pumpNum, weight))
+            {
+                break;
+            }
+            continue;
+        }
     }
+    emit resetGuidViewPoint();
 }
 
 void MotionWorker::runLoopFormula(const QString& formulaName)
@@ -236,6 +261,7 @@ void MotionWorker::runLoopFormula(const QString& formulaName)
             emit runningStatus(false);
             return;
         }
+        emit resetGuidViewPoint();
     }
     emit runningStatus(false);
 }
@@ -243,6 +269,7 @@ void MotionWorker::runLoopFormula(const QString& formulaName)
 // 单次调整用的
 void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormula)
 {
+    emit runningStatus(true);
     // 先读取原始的参数, 计算出原始的比例
     qint16 length;
     // 原始的方案重量
@@ -257,8 +284,8 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     Motion::Instance()->getMiddleTankLevel(&middleTankLiter);
     if (middleTankLiter < 0) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_IS_EMPTY_OR_TANK_SENSER_ERROR);
-        // TODO 取消注释
-        //return;
+        emit runningStatus(false);
+        return;
     }
     fileReadWrite.readProfileDetail(formulaName, &originalFormula, &length);
 
@@ -415,6 +442,17 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
                     finallTankLiter += tempFixedWeight;
                     continue;
                 }
+                /////////////////////////////////////////////////////////////
+                if (originalFormula.value(i).contains("AdditionPaint") == 1)
+                {
+                    subFormula.insert("AdditionPaint", originalFormula.value(i).value("AdditionPaint"));
+                    subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
+                    subFormula.insert("Weight", QString::number(tempFixedWeight - tempOrigWeight, 'd', 1));
+                    count++;
+                    // 统计桶内重量
+                    finallTankLiter += tempFixedWeight;
+                    continue;
+                }
             }
         }
     }
@@ -422,25 +460,29 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     // 先判断桶内容量和秤上分量是否足够这次调整，不够就不调整，并用ERROR_HANDLER 提示用户
     if (middleTankLiter > 30000) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_WILL_OVER_LIMIT);
+        emit runningStatus(false);
         return;
     }
     if (scaleVoerLoad)
     {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_WILL_OVER_LIMIT);
+        emit runningStatus(false);
         return;
     }
 
-
-    emit runningStatus(true);
+    // 正式运行
     runFormula(formulaToRun, count);
     emit runningStatus(false);
+    emit resetGuidViewPoint();
     fileReadWrite.replaceProfileDetail(formulaName, newFormula, length);
 
     // TODO QML 设定微调不能超过2G,单个颜料
 }
 
+// only for seconfPage
 void MotionWorker::moveAsix(quint8 num)
 {
+    emit runningStatus(true);
     switch (num) {
     case 1:
         Motion::Instance()->moveAsixToScales(Motion::scales1Motor01);
@@ -475,32 +517,72 @@ void MotionWorker::moveAsix(quint8 num)
     default:
         break;
     }
+    emit runningStatus(false);
 }
 
-void MotionWorker::getExternADCValue()
+// for user control
+void MotionWorker::openMiddleTankPumpToOutside()
 {
-    double tmp;
-    Motion::Instance()->getMiddleTankLevel(&tmp);
+    emit runningStatus(true);
+    Motion::Instance()->controlMiddleTankToOutside(true);
+    msleep(500);
+    m_MiddleTankTimer->start(300);
 }
 
-// test use
+// for user control
+void MotionWorker::closeMiddleTankPumpToOutside()
+{
+    m_MiddleTankTimer->stop();
+    msleep(500);
+    Motion::Instance()->controlMiddleTankToOutside(false);
+    emit runningStatus(false);
+}
+
+// for user control
 void MotionWorker::openExtrenPump()
 {
-    //Motion::Instance()->pumpMiddleTankToUserTank(true);
+    emit runningStatus(true);
+    Motion::Instance()->controlMiddleTankAddWater(true);
+    msleep(500);
+    m_MiddleTankTimer->start(300);
 }
 
-// test use
+// for user control
 void MotionWorker::closeExtrenPump()
 {
-    //Motion::Instance()->pumpMiddleTankToUserTank(false);
+    m_MiddleTankTimer->stop();
+    msleep(500);
+    Motion::Instance()->controlMiddleTankAddWater(false);
+    emit runningStatus(false);
 }
 
 MotionWorker::MotionWorker()
 {
     qRegisterMetaType<FixedType>("FixedType");
+    m_MiddleTankTimer = new QTimer(this);
+    connect(this, &MotionWorker::runningStatus, this, &MotionWorker::getRunningStatus);
+    connect(m_MiddleTankTimer, &QTimer::timeout, this, &MotionWorker::getTimerReflushTank);
 }
 
 void MotionWorker::getStopCurrentSignal()
 {
     m_stopFlag = true;
+}
+
+void MotionWorker::getTimerReflushTank()
+{
+    double tankLevel;
+    Motion::Instance()->getMiddleTankLevel(&tankLevel);
+}
+
+void MotionWorker::getRunningStatus(bool value)
+{
+    if (value)
+    {
+        m_MiddleTankTimer->stop();
+    }
+    else
+    {
+        m_MiddleTankTimer->start(300);
+    }
 }

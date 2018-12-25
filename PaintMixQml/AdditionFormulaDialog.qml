@@ -93,6 +93,8 @@ Popup {
                                     return "注水"
                                 if (ItemName == "PumpScaleOutside")
                                     return "移液"
+                                if (ItemName == "AdditionPaint")
+                                    return "泵液"
                             }
                             font.underline: true
                             font.pointSize: Qt.application.font.pixelSize * 1.5
@@ -103,7 +105,7 @@ Popup {
                         // 第二个套装
                         Text {
                             id: motorText
-                            text: "轴号:"
+                            text: "编号:"
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: motionText.right

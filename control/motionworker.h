@@ -33,16 +33,17 @@ public:
 
     // testUSE
     Q_INVOKABLE void moveAsix(quint8 num);
-    Q_INVOKABLE void getExternADCValue();
+    // for user control open close
+    Q_INVOKABLE void openMiddleTankPumpToOutside();
+    Q_INVOKABLE void closeMiddleTankPumpToOutside();
     Q_INVOKABLE void openExtrenPump();
     Q_INVOKABLE void closeExtrenPump();
-
-
 
 private:
     explicit MotionWorker();
     FileReadWrite fileReadWrite;
     bool m_stopFlag = false;
+    QTimer *m_MiddleTankTimer;
 
 
 signals:
@@ -50,10 +51,14 @@ signals:
     void isIniting(bool status);
     // 通知 model 系统正在运动中
     void runningStatus(bool value);
+    void resetGuidViewPoint();
 
 public slots:
     // 接受来自UI的停止信号
     void getStopCurrentSignal();
+    void getTimerReflushTank();
+    // 控制刷新middle tank
+    void getRunningStatus(bool value);
 };
 
 #endif // MOTIONWORKER_H

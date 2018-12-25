@@ -66,6 +66,8 @@ void Service::initSignalSlotConnect()
     connect(MotionWorker::Instance(), &MotionWorker::isIniting, &m_IndexModule, &IndexModule::setIsnitialization);
     // qml 取得实际注液量
     connect(Motion::Instance(), &Motion::finishWeight, &m_TaskModule, &TaskModule::getFinishWeight);
+    // 刷新gridview界面的光标
+    connect(MotionWorker::Instance(), &MotionWorker::resetGuidViewPoint, &m_TaskModule, &TaskModule::getResetGridViewPoint);
 
     connect(MotionWorker::Instance(), &MotionWorker::runningStatus, &m_TaskModule, &TaskModule::getRunningStatus);
 
@@ -73,6 +75,8 @@ void Service::initSignalSlotConnect()
     // 停止当前工作
     connect(&m_TaskModule, &TaskModule::stopCurrentJobSignal, Motion::Instance(), &Motion::getStopCurrentSignal);
     connect(&m_TaskModule, &TaskModule::stopCurrentJobSignal, MotionWorker::Instance(), &MotionWorker::getStopCurrentSignal);
+    // 连接广播的中桶液位
+    connect(Motion::Instance(), &Motion::broadCaseMiddleTankLevel, &m_TaskModule, &TaskModule::getMiddleTankLevel);
 }
 
 void Service::initSystem()

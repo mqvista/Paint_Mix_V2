@@ -18,9 +18,17 @@ Item {
     Connections {
         target: taskModule
         onTaskFinishWeight: {
-            console.log(value);
+            //console.log(value);
             formulaGrid.reflushRealValue(formulaGridView.currentIndex, value);
             formulaGridView.currentIndex += 1;
+        }
+    }
+
+    Connections {
+        target: taskModule
+        onResetGridViewPoint:
+        {
+            formulaGridView.currentIndex = 0;
         }
     }
 
@@ -98,7 +106,7 @@ Item {
                                 deleteMessageDialog.open()
                             }
                         }
-                    }                    
+                    }
                 }
                 //切换触发区域
                 MouseArea {
@@ -460,4 +468,30 @@ Item {
         anchors.verticalCenter: nameBigScale.verticalCenter
         font.pointSize: Qt.application.font.pixelSize * 2
     }
+
+    Text {
+        id: nameMiddleTank
+        text: qsTr("中桶读数:")
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.78
+        anchors.left: parent.left
+        anchors.leftMargin: parent.width * 0.02
+        font.pointSize: Qt.application.font.pixelSize * 2
+    }
+    Text {
+        text: taskModule.middleTankLevel
+        anchors.left: nameMiddleTank.right
+        anchors.leftMargin: 10
+        anchors.verticalCenter: nameMiddleTank.verticalCenter
+        font.pointSize: Qt.application.font.pixelSize * 2
+    }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}D{i:1;invisible:true}D{i:2;invisible:true}
+D{i:13;invisible:true}D{i:4;invisible:true}D{i:25;invisible:true}D{i:16;invisible:true}
+D{i:28;invisible:true}D{i:27;invisible:true}D{i:30;invisible:true}D{i:29;invisible:true}
+D{i:32;invisible:true}D{i:31;invisible:true}D{i:33;invisible:true}D{i:35;invisible:true}
+D{i:37;invisible:true}
+}
+ ##^##*/

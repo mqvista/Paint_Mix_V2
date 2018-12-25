@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include "DriverGC.h"
 #include "scalesworker.h"
+#include "utils/windowfilter.h"
 
 //////////////////////////////////////////////////////////
 /// \brief The Motion class
@@ -53,13 +54,20 @@ public:
 //    void reflushOutSideSenser();
 
     // 给大容量补充原液
+    // 已经遗弃
     bool topUpTank();
     // 获取中间桶的液位
     bool getMiddleTankLevel(double *microLiter);
     // 抽混合液体到外部
     bool pumpMiddleTankToUserTank();
+    // 手工开启中桶抽水泵
+    void controlMiddleTankToOutside(bool value);
+    // 手工开启中桶加水
+    void controlMiddleTankAddWater(bool value);
     // 给中通加水
     bool addWaterMiddleTank(double liter);
+    // Add water to scales small or big
+    bool pumpPaint(quint8 pumpNum, quint32 weight);
 
 
 
@@ -106,6 +114,7 @@ public slots:
 signals:
     void finishWeight(double fWeight);
     void pumpToOutsideWeight(double fWeight);
+    void broadCaseMiddleTankLevel(double fWeight);
 
 
 private:
@@ -128,6 +137,7 @@ private:
     bool m_stopFlag = false;
     // 旋转方向
     bool m_MixTurn = true;
+    UWindowFilter<quint16> uWindowFilter;
 };
 
 #endif // MOTION_H

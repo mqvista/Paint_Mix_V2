@@ -11,9 +11,10 @@ class PageSecond : public QObject
 public:
     explicit PageSecond(QObject *parent = nullptr);
     Q_INVOKABLE void moveAsix(QString num);
-    Q_INVOKABLE void getExternADCValue();
-    Q_INVOKABLE void openPump();
-    Q_INVOKABLE void closePump();
+    Q_INVOKABLE void openMiddleTankToOutsidePump();
+    Q_INVOKABLE void closeMiddleTankToOutsidePump();
+    Q_INVOKABLE void openMiddleTankAddWaterPump();
+    Q_INVOKABLE void closeMiddleTankAddWaterPump();
 
 signals:
 

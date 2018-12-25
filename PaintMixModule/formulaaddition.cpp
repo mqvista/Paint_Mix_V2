@@ -128,7 +128,7 @@ void FormulaAddition::reflush(QString fName)
         QMap<QString, QString> tempFormula;
         tempFormula = formula.value(i);
 
-        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle"))
+        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle") || tempFormula.contains("AdditionPaint"))
         {
             totalWeight += tempFormula.value("Weight").toLong();
         }
@@ -142,7 +142,7 @@ void FormulaAddition::reflush(QString fName)
         // 获取数据
         QMap<QString, QString> tempFormula;
         tempFormula = formula.value(i);
-        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle"))
+        if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle") || tempFormula.contains("AdditionPaint"))
         {
             double tempPercent = tempFormula.value("Weight").toDouble() / totalWeight * 100;
             calcPercent[i-1] = QString::number(tempPercent, 'f', 1);
@@ -219,6 +219,22 @@ void FormulaAddition::reflush(QString fName)
             }
             continue;
         }
+        //
+        // 判断是否是泵液 ？
+        if (tempFormula.contains("AdditionPaint"))
+        {
+            QVariant itemName = "AdditionPaint";
+            setData(index, itemName, ItemNameRole);
+            QVariant motor = tempFormula.value("AdditionPaint");
+            setData(index, motor, MotorNumRole);
+            QVariant scales = tempFormula.value("Scales");
+            setData(index, scales, AddLocalRole);
+            QVariant weight = tempFormula.value("Weight");
+            setData(index, weight, SetWeightRole);
+            QVariant percernt = calcPercent.at(i-1);
+            setData(index, percernt, PercentRole);
+            continue;
+        }
     }
 }
 
@@ -228,7 +244,7 @@ void FormulaAddition::reflushOffsetPercent()
     // 先计算重量的总和
     for (int i=0; i<m_list.count(); i++)
     {
-        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle")
+        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle" || m_list.at(i).itemName() == "AdditionPaint")
         {
             totalWeight += m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
         }
@@ -238,7 +254,7 @@ void FormulaAddition::reflushOffsetPercent()
     for (int i=0; i<m_list.count(); i++)
     {
         // 先计算重量的总和
-        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle")
+        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle" || m_list.at(i).itemName() == "AdditionPaint")
         {
             // 先设定下 index
             QModelIndex index = this->index(i);
@@ -316,13 +332,27 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
             continue;
         }
 
-
-
         if (m_list.at(i).itemName() == "PumpScaleOutside")
         {
             QMap<QString, QString> tmp_map;
             // 先插 exchange  号码无所谓
             tmp_map.insert("PumpScaleOutside", m_list.at(i).addLocal());
+            // 插入到大的 map 里面
+            formula.insert(quint8(i+1), tmp_map);
+            continue;
+        }
+
+        if (m_list.at(i).itemName() == "AdditionPaint")
+        {
+            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+
+            QMap<QString, QString> tmp_map;
+            // 先插AdditionPaint  号码无所谓
+            tmp_map.insert("AdditionPaint", m_list.at(i).motorNum());
+            // 再插秤号
+            tmp_map.insert("Scales", m_list.at(i).addLocal());
+            // 最后插重量
+            tmp_map.insert("Weight", QString::number(weight));
             // 插入到大的 map 里面
             formula.insert(quint8(i+1), tmp_map);
             continue;

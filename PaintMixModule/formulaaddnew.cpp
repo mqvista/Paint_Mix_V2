@@ -241,8 +241,9 @@ bool FormulaAddNew::saveFormula(QString fName)
             {
                 QMap<QString, QString> tmp_map;
 
-                tmp_map.insert("AdditionPaint", "1");
-
+                tmp_map.insert("AdditionPaint", m_list.at(i).motorNum());
+                // 再插秤号
+                tmp_map.insert("Scales", m_list.at(i).addLocal());
                 // 最后插重量
                 tmp_map.insert("Weight", m_list.at(i).setWeight());
                 // 插入到大的 map 里面
@@ -276,7 +277,7 @@ bool FormulaAddNew::updatePercent()
     // 先计算重量的总和
     for (int i=0; i<m_list.count(); i++)
     {
-        if ((m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
+        if ((m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AdditionPaint")
                 && m_list.at(i).setWeight() != "")
         {
             m_totalWeight += m_list.at(i).setWeight().toUInt();
@@ -288,7 +289,7 @@ bool FormulaAddNew::updatePercent()
     for (int i=0; i<m_list.count(); i++)
     {
         // 先计算重量的总和
-        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water")
+        if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AdditionPaint")
         {
             // 先设定下 index
             QModelIndex index = this->index(i);

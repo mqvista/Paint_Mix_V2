@@ -13,6 +13,7 @@ class TaskModule : public QObject
     Q_PROPERTY(QString scaleBig READ scaleBig WRITE setScaleBig NOTIFY scaleBigChanged)
     Q_PROPERTY(QString pumpOutSideWeight READ pumpOutSideWeight WRITE setPumpOutSideWeight NOTIFY pumpOutSideWeightChanged)
     Q_PROPERTY(bool busy READ getBusy WRITE setBusy NOTIFY busyChanged)
+    Q_PROPERTY(QString middleTankLevel READ middleTankLevel WRITE setMiddleTankLevel NOTIFY middleTankLevelChanged)
 
 public:
     explicit TaskModule(QObject *parent = nullptr);
@@ -27,9 +28,11 @@ public:
     QString scaleSmall();
     QString scaleBig();
     QString pumpOutSideWeight();
+    QString middleTankLevel();
     void setPumpOutSideWeight(QString value);
     void setScaleSmall(QString value);
     void setScaleBig(QString value);
+    void setMiddleTankLevel(QString value);
 
     bool getBusy();
     void setBusy(bool value);
@@ -40,7 +43,9 @@ signals:
     void taskFinishWeight(QString value);
     void busyChanged();
     void pumpOutSideWeightChanged();
+    void middleTankLevelChanged();
     void stopCurrentJobSignal();
+    void resetGridViewPoint();
 
 public slots:
     void getScaleSmallSlot(double value);
@@ -50,12 +55,17 @@ public slots:
     void getRunningStatus(bool value);
     // 从motion 总获取总的移出重量
     void getPumpOutSideWeightFromMotion(double value);
+    // 获取中桶
+    void getMiddleTankLevel(double fWeight);
+    // 从 worker 获取gridview光标复位信号
+    void getResetGridViewPoint();
 
 private:
     QString m_scaleSmall;
     QString m_scaleBig;
     QString m_pumpOutSideWeight;
     bool m_busy;
+    QString m_middleTankLevel;
 };
 
 #endif // TASKMODULE_H

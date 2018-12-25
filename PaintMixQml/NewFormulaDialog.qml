@@ -107,6 +107,19 @@ Popup {
                                     localComboBoxModel.clear()
                                     localComboBoxModel.append({text: "小秤"})
                                     localComboBoxModel.append({text: "大秤"})
+                                    // add motor number
+                                    motorComboBoxModel.clear()
+                                    motorComboBoxModel.append({text: "1"})
+                                    motorComboBoxModel.append({text: "2"})
+                                    motorComboBoxModel.append({text: "3"})
+                                    motorComboBoxModel.append({text: "4"})
+                                    motorComboBoxModel.append({text: "5"})
+                                    motorComboBoxModel.append({text: "6"})
+                                    motorComboBoxModel.append({text: "7"})
+                                    motorComboBoxModel.append({text: "8"})
+                                    motorComboBoxModel.append({text: "9"})
+                                    motorComboBoxModel.append({text: "10"})
+
                                 }
                                 if (currentIndex == 1)
                                 {
@@ -115,6 +128,7 @@ Popup {
                                     localComboBoxModel.append({text: "小秤"})
                                     localComboBoxModel.append({text: "大秤"})
                                     localComboBoxModel.append({text: "中桶"})
+                                    motorComboBoxModel.clear()
                                 }
                                 if (currentIndex == 2)
                                 {
@@ -122,6 +136,7 @@ Popup {
                                     localComboBoxModel.clear()
                                     localComboBoxModel.append({text: "小秤"})
                                     localComboBoxModel.append({text: "大秤"})
+                                    motorComboBoxModel.clear()
 
                                 }
                                 if (currentIndex == 3)
@@ -130,6 +145,15 @@ Popup {
                                     localComboBoxModel.clear()
                                     localComboBoxModel.append({text: "小秤"})
                                     localComboBoxModel.append({text: "大秤"})
+                                    localComboBox.currentIndex = 1
+                                    // add motor number
+                                    motorComboBoxModel.clear()
+                                    motorComboBoxModel.append({text: "1"})
+                                    motorComboBoxModel.append({text: "2"})
+                                    motorComboBoxModel.append({text: "3"})
+                                    motorComboBoxModel.append({text: "4"})
+
+
                                 }
                                 // 更新百分比
                                 formulaAddNew.updatePercent();
@@ -139,7 +163,7 @@ Popup {
                         Text {
                             id: motorText
                             visible: motionComboBox.currentText != "移出" && motionComboBox.currentText != "泵水"
-                            text: "轴号: "
+                            text: "编号: "
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: motionComboBox.right
@@ -147,10 +171,11 @@ Popup {
                         }
                         ComboBox {
                             id: motorComboBox
-                            visible: motionComboBox.currentText != "移出" && motionComboBox.currentText != "泵水" && motionComboBox.currentText != "泵液"
+                            visible: motionComboBox.currentText != "移出" && motionComboBox.currentText != "泵水"
                             width: 82
                             height: 35
                             model: ListModel {
+                                id: motorComboBoxModel
                                 ListElement {text: "1"}
                                 ListElement {text: "2"}
                                 ListElement {text: "3"}
@@ -182,6 +207,7 @@ Popup {
                             anchors.left: motorComboBox.right
                             anchors.leftMargin: 5
                         }
+
                         ComboBox {
                             id: localComboBox
                             visible: true
@@ -192,12 +218,13 @@ Popup {
                                 ListElement {text: "小秤"}
                                 ListElement {text: "大秤"}
                             }
+                            enabled: motionComboBox.currentText != "泵液"
+                            //editable: motionComboBox.currentText != "泵液"
                             font.pointSize: Qt.application.font.pixelSize * 1.2
                             currentIndex: -1
                             anchors.left: localName.right
                             anchors.verticalCenter: parent.verticalCenter
                             onCurrentIndexChanged: {
-                                console.log(currentIndex)
                                 if (currentIndex == 0)
                                 {
                                     AddLocal = "1"
@@ -213,12 +240,10 @@ Popup {
                             }
                         }
 
-
-
                         // 第四个套装
                         Text {
                             id: weightName
-                            visible: motionComboBox.currentText != "移液"
+                            visible: motionComboBox.currentText != "移出"
                             text: "重量: "
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             anchors.verticalCenter: parent.verticalCenter
@@ -227,7 +252,7 @@ Popup {
                         }
                         TextField {
                             id: weightTextField
-                            visible: motionComboBox.currentText != "移液"
+                            visible: motionComboBox.currentText != "移出"
                             anchors.left: weightName.right
                             anchors.verticalCenter: parent.verticalCenter
                             width: 80
@@ -236,7 +261,6 @@ Popup {
                             inputMethodHints: Qt.ImhDigitsOnly
                             onEditingFinished: {
                                 SetWeight = text
-
                                 // 更新百分比
                                 formulaAddNew.updatePercent();
                             }

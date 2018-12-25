@@ -43,8 +43,9 @@ Page {
                     font.pointSize: 30
                     anchors.bottom: parent.bottom
                     height: parent.height
+                    enabled: !taskModule.busy
                     background: Rectangle {
-                        color: paintMixTabBar.currentIndex === 0 ? "silver" : "#1e90ff"
+                        color: paintMixTabBar.currentIndex === 0 ? "#1e90ff" : "silver"
                     }
                     onClicked: {
                         //console.log("reflush ouside");
@@ -52,12 +53,13 @@ Page {
                 }
                 TabButton {
                     id: tabButtonProfile
-                    text: qsTr("外部颜料")
+                    text: qsTr("系统维护")
                     font.pointSize: 30
                     anchors.bottom: parent.bottom
                     height: parent.height
+                    enabled: !taskModule.busy
                     background: Rectangle {
-                        color: paintMixTabBar.currentIndex === 1 ? "silver" : "#1e90ff"
+                        color: paintMixTabBar.currentIndex === 1 ? "#1e90ff" : "silver"
                     }
                     onClicked: {
                         //console.log("reflush ouside");

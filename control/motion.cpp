@@ -32,7 +32,7 @@ bool Motion::openSerial485(QString portSN)
     // NOTE Get Serial Error
     connect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
     // NOTE Get Debug Data
-    //connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
     return true;
 }
 
@@ -60,8 +60,6 @@ bool Motion::initBoard()
         {
             return false;
         }
-        //DriverGC::Instance()->Special_Reset(i);
-        //DriverGC::Instance()->Special_Init(i);
     }
     return true;
 }
@@ -86,7 +84,6 @@ void Motion::driverGCDebugInfo(QString msg, QDateTime curTime)
 void Motion::getSmallScalesValue(double value)
 {
     m_SmallScalesValue = value;
-    //qDebug()<< "Small_Scales:" << m_SmallScalesValue;
 }
 
 // Get the big scales senser data (is a slot)
@@ -94,7 +91,6 @@ void Motion::getSmallScalesValue(double value)
 void Motion::getBigScalesValue(double value)
 {
     m_BigScalesValue = value;
-    //qDebug()<< "Big_Scales:" << m_BigScalesValue;
 }
 
 void Motion::getStopCurrentSignal()
@@ -235,8 +231,7 @@ void Motion::waitWhileFree(quint16 motor)
 void Motion::m_MoveAsixToTop(quint8 boadrAddr, quint8 motorChannel)
 {
     // Fast rise motor asix
-    DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 15000, 20000);
-    //DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 10000);
+    DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 30000, 90000);
     // 应为每个电机轴的高度都不一样，需要设置不同的上移步数
     if (boadrAddr == 1 && motorChannel == 1)
     {
@@ -277,7 +272,6 @@ void Motion::m_MoveAsixToTop(quint8 boadrAddr, quint8 motorChannel)
     else if (boadrAddr == 5 && motorChannel == 2)
     {
         DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 12000);
-
     }
 }
 
@@ -304,8 +298,6 @@ bool Motion::initAsixMotor(quint8 motorNum)
         //清除编码器数值 并保存清除过后的编码器数值
         DriverGC::Instance()->Setting_Encoder_Zero(6, 2);
         DriverGC::Instance()->Inquire_Encoder(6, 2, m_EncoderData);
-        //默认初始化后停留在10号轴
-        //m_CurrentMotor = 10;
         //9号轴的绝对角度为0
         m_CurrentDegree = 0;
         break;
@@ -320,8 +312,6 @@ bool Motion::initAsixMotor(quint8 motorNum)
         DriverGC::Instance()->Special_Save(1);
         //设定M1轴的默认运动速度
         DriverGC::Instance()->Setting_SM_Speed(1, 1, 8000, 18000);
-        //走M1轴的CCW极限
-        //DriverGC::Instance()->AutoControl_SM_By_Limit(1, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化2号注射轴
     case 2:
@@ -334,8 +324,6 @@ bool Motion::initAsixMotor(quint8 motorNum)
         DriverGC::Instance()->Special_Save(1);
         //设定M2轴的默认运动速度
         DriverGC::Instance()->Setting_SM_Speed(1, 2, 8000, 18000);
-        //走M2轴的CCW极限
-        //DriverGC::Instance()->AutoControl_SM_By_Limit(1, 2, DriverGC::StepMotor_CCW, 3);
         break;
     //初始化3号注射轴
     case 3:
@@ -348,8 +336,6 @@ bool Motion::initAsixMotor(quint8 motorNum)
         DriverGC::Instance()->Special_Save(2);
         //设定M1轴的默认运动速度
         DriverGC::Instance()->Setting_SM_Speed(2, 1, 8000, 18000);
-        //走M1轴的CCW极限
-        //DriverGC::Instance()->AutoControl_SM_By_Limit(2, 1, DriverGC::StepMotor_CCW, 1);
         break;
     //初始化4号注射轴
     case 4:
@@ -509,12 +495,6 @@ bool Motion::moveAsixToScales(quint16 degree)
     {
         return true;
     }
-    // stop current job
-//    if (m_stopFlag)
-//    {
-//        m_stopFlag = false;
-//        return true;
-//    }
     return true;
 }
 
@@ -539,6 +519,8 @@ bool Motion::detectEncoder()
 // Param3: scales number 1 or 2 (1 is scale small, 2 is scale big)
 bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
 {
+    // 等待稳定
+    sleep(2);
     // Set motion state to make the liquie function is always run
     bool liquidRunStatus = true;
     // Set motor busy status;
@@ -548,10 +530,12 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
     if (scalesNum == 1)
     {
         oldWeight = m_SmallScalesValue;
+        qDebug() << "liquidOutWeight:" << oldWeight;
     }
     else
     {
         oldWeight = m_BigScalesValue;
+        qDebug() << "liquidOutWeight:" << oldWeight;
     }
     // Get which limit channel is you need
     quint8 motorChannel;
@@ -594,61 +578,60 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
             motorBusyStatus = true;
             while (motorBusyStatus)
             {
-                // stop current job
-//                if (m_stopFlag)
-//                {
-//                    stopDrop(motorNum);
-//                    m_stopFlag = false;
-//                    return false;
-//                }
-
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(200);
             }
         }
         // High speed injection
-        // 差大于3g
-        if (oldWeight + weight - *currentWeight > 3)
+        // 差大于4g
+        if (oldWeight + weight - *currentWeight > 4)
         {
             //设定慢速注射
-            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 4000, 12000);
+            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 15000, 50000);
             DriverGC::Instance()->AutoControl_SM_By_Limit(boadrAddr, motorChannel, DriverGC::StepMotor_CCW, limNum);
             //等待任务完成
             motorBusyStatus = true;
             while(motorBusyStatus)
             {
-                // stop current job
-//                if (m_stopFlag)
-//                {
-//                    stopDrop(motorNum);
-//                    m_stopFlag = false;
-//                    return false;
-//                }
-
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
-                msleep(200);
+                msleep(500);
+            }
+            continue;
+        }
+        // Middle speed injection
+        // 差大于1g
+        if (oldWeight + weight - *currentWeight > 1)
+        {
+            //设定慢速注射
+            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 5000, 12000);
+            DriverGC::Instance()->AutoControl_SM_By_Limit(boadrAddr, motorChannel, DriverGC::StepMotor_CCW, limNum);
+            //等待任务完成
+            motorBusyStatus = true;
+            while(motorBusyStatus)
+            {
+                DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
+                //////
+                if (oldWeight + weight - *currentWeight <= 1)
+                {
+                    stopDrop(motorNum);
+                    motorBusyStatus = false;
+                }
+                //////
+                msleep(500);
             }
             continue;
         }
         // Low speed injection
-        // 差小于3g
+        // 差小于1g
         if (*currentWeight - oldWeight < weight)
         {
             //设定慢速注射
-            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 200, 1200);
+            DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 250, 2000);
             DriverGC::Instance()->AutoControl_SM_By_Limit(boadrAddr, motorChannel, DriverGC::StepMotor_CCW, limNum);
             //查询是否在自动控制
             motorBusyStatus = true;
             while(motorBusyStatus)
             {
-                // stop current job
-//                if (m_stopFlag)
-//                {
-//                    stopDrop(motorNum);
-//                    m_stopFlag = false;
-//                    return false;
-//                }
-
                 DriverGC::Instance()->Inquire_Status(boadrAddr, motorChannel, motorBusyStatus);
                 msleep(100);
                 if (*currentWeight-oldWeight >= weight)
@@ -656,23 +639,24 @@ bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
                     liquidRunStatus = false;
                     motorBusyStatus = false;
                     stopDrop(motorNum);
-                    // 发射信号 告诉界面最终的重量, 先等待数值稳定
-                    msleep(500);
-                    emit finishWeight(*currentWeight-oldWeight);
                     //高速回抽
-                    DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 8000, 18000);
-                    DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 2000);
+                    DriverGC::Instance()->Setting_SM_Speed(boadrAddr, motorChannel, 20000, 50000);
+                    DriverGC::Instance()->AutoControl_SM_By_Step(boadrAddr, motorChannel, 5000);
+                    // 发射信号 告诉界面最终的重量, 先等待数值稳定
+                    sleep(2);
+                    emit finishWeight(*currentWeight-oldWeight);
+
                 }
             }
         }
         // 如果等于的话
-        if ((oldWeight + weight - *currentWeight) < 0.1)
+        /*if ((oldWeight + weight - *currentWeight) < 0.1)
         {
             liquidRunStatus = false;
             motorBusyStatus = false;
             stopDrop(motorNum);
             emit finishWeight(*currentWeight-oldWeight);
-        }
+        }*/
     }
     return true;
 }
@@ -702,6 +686,9 @@ bool Motion::stopDrop(quint8 motorNum)
 // Param2: scales Number 1 or 2
 bool Motion::addWater(quint32 weight, quint8 scalesNum)
 {
+    // 等待稳定
+    sleep(2);
+
     QBitArray sta(24);
     sta.fill(false);
     double* currentWeight;
@@ -723,6 +710,9 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
         // Big scale valve
         sta.setBit(1);
     }
+    // //
+    qDebug()<< "oldWaterWeight" << oldWeight;
+    // //
     DriverGC::Instance()->Control_ValveOpen(6, sta);
     if (weight > 3)
     {
@@ -731,24 +721,15 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
     }
     else
     {
-        DriverGC::Instance()->Control_Motor(6, 6500);
+        DriverGC::Instance()->Control_Motor(6, 4000);
     }
     loopFlag = true;
 
     while (loopFlag)
     {
-        // stop current job
-//        if (m_stopFlag)
-//        {
-//            DriverGC::Instance()->Control_ValveClose(6, sta);
-//            DriverGC::Instance()->Control_Motor(6, 0);
-//            m_stopFlag = false;
-//            return false;
-//        }
-
-        if((oldWeight + weight - *currentWeight < 3) && (*currentWeight - oldWeight < weight -1))
+        if ((oldWeight + weight - *currentWeight < 3) /*&& (*currentWeight - oldWeight < weight -1)*/)
         {
-            DriverGC::Instance()->Control_Motor(6, 6500);
+            DriverGC::Instance()->Control_Motor(6, 4000);
         }
         // 到重量 关闭电机和阀
         if (*currentWeight - oldWeight >= weight)
@@ -757,7 +738,7 @@ bool Motion::addWater(quint32 weight, quint8 scalesNum)
             DriverGC::Instance()->Control_Motor(6, 0);
             loopFlag = false;
             // 发射信号 告诉界面最终的重量, 先等待数值稳定
-            msleep(500);
+            sleep(2);
             emit finishWeight(*currentWeight-oldWeight);
             return true;
         }
@@ -822,6 +803,7 @@ quint16 Motion::converyDegree(quint8 motorNum, quint8 scaleNum)
 // 新增
 bool Motion::pumpToOutSide(quint8 scaleNum)
 {
+    sleep(1);
     bool loopFlag = true;
     double* currentWeight;
     double originalWeight;
@@ -833,7 +815,7 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
         currentWeight = &m_SmallScalesValue;
         originalWeight = m_SmallScalesValue;
         oldweight = m_SmallScalesValue;
-        DriverGC::Instance()->Setting_SM_Speed(6, 2, 10000, 20000);
+        DriverGC::Instance()->Setting_SM_Speed(6, 2, 6000, 20000);
         DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
     }
     else if (scaleNum == 2)
@@ -842,7 +824,7 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
         currentWeight = &m_BigScalesValue;
         originalWeight = m_BigScalesValue;
         oldweight = m_BigScalesValue;
-        DriverGC::Instance()->Setting_SM_Speed(8, 1, 10000, 20000);
+        DriverGC::Instance()->Setting_SM_Speed(8, 1,30000, 80000);
         DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_CW);
     }
     else
@@ -866,10 +848,11 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
         }
         oldweight = *currentWeight;
         // 等待500ms抽取时间
-        msleep(500);
+        msleep(2000);
     }
     // 给界面提供数据
-    emit pumpToOutsideWeight(originalWeight - *currentWeight);
+    sleep(1);
+    emit finishWeight(oldweight-*currentWeight);
     return true;
 }
 
@@ -912,7 +895,7 @@ void Motion::mixMiddleTank(bool flag)
 
 
 // 小罐子加注原液
-// 新需求
+// 已经遗弃
 bool Motion::topUpTank()
 {
     bool loopFlag;
@@ -921,7 +904,6 @@ bool Motion::topUpTank()
     QBitArray tankLimit;
 
     moveAsixToScales(scales1Motor09);
-    //
     DriverGC::Instance()->Inquire_Limit(8, tankLimit);
     if(!tankLimit.at(0))
     {
@@ -1000,11 +982,23 @@ bool Motion::topUpTank()
 // 获取中间罐桶的液体升数
 bool Motion::getMiddleTankLevel(double *microLiter)
 {
-    qint16 adcValue;
+    qint16 adcValue = 0;
+    quint32 filtedAdcValue = 0;
     DriverGC::Instance()->Inquire_ExADC(7, 0, adcValue);
-    if (adcValue <0)
-        adcValue = 0;
-    *microLiter = 1.582 * adcValue - 1223;
+
+    //filtedAdcValue = uWindowFilter.Get(adcValue);
+    for (int i=0; i<10; i++)
+    {
+        DriverGC::Instance()->Inquire_ExADC(7, 0, adcValue);
+        filtedAdcValue += adcValue;
+    }
+    filtedAdcValue /= 10;
+    // calc real lite
+    if (filtedAdcValue <0)
+        filtedAdcValue = 0;
+    *microLiter = 1.426 * filtedAdcValue - 2890;
+    //qDebug() << "TankADC:" << filtedAdcValue;
+    emit broadCaseMiddleTankLevel(*microLiter);
     return true;
 }
 
@@ -1020,7 +1014,7 @@ bool Motion::pumpMiddleTankToUserTank()
     double lastWeight;
     getMiddleTankLevel(&lastWeight);
     //开pump
-    DriverGC::Instance()->Setting_SM_Speed(7, 2, 40000, 40000);
+    DriverGC::Instance()->Setting_SM_Speed(7, 2, 30000, 40000);
     DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_CCW);
     // 检测外部液位是否触发
     // 用户浆料槽top 液位 board6， channel 2
@@ -1040,6 +1034,35 @@ bool Motion::pumpMiddleTankToUserTank()
         lastWeight = currentWeight;
     }
     return true;
+}
+
+void Motion::controlMiddleTankToOutside(bool value)
+{
+    if (value)
+    {
+        DriverGC::Instance()->Setting_SM_Speed(7, 2, 30000, 40000);
+        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_CCW);
+    }
+    else
+    {
+        DriverGC::Instance()->Control_SM(7, 2, DriverGC::StepMotor_Stop);
+    }
+}
+
+void Motion::controlMiddleTankAddWater(bool value)
+{
+    QBitArray valueArray(24);
+    valueArray.fill(false);
+    // 水泵 22 port
+    valueArray[21] = true;
+    if (value)
+    {
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+    }
+    else
+    {
+        DriverGC::Instance()->Control_ValveClose(7, valueArray);
+    }
 }
 
 bool Motion::addWaterMiddleTank(double liter)
@@ -1073,6 +1096,54 @@ bool Motion::addWaterMiddleTank(double liter)
         }
         msleep(1000);
     }
-        return true;
+    return true;
+}
+
+// 从蠕动泵加液
+bool Motion::pumpPaint(quint8 pumpNum, quint32 weight)
+{
+    // 等待稳定
+    sleep(1);
+    QBitArray valueArray(24);
+    valueArray.fill(false);
+    double* currentWeight;
+    currentWeight = &m_BigScalesValue;
+    double oldWeight;
+    oldWeight = m_BigScalesValue;
+
+    bool loopFlag = true;
+
+    switch (pumpNum) {
+    case 1:
+        valueArray[17] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        break;
+    case 2:
+        valueArray[18] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        break;
+    case 3:
+        valueArray[20] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        break;
+    case 4:
+        valueArray[19] = true;
+        DriverGC::Instance()->Control_ValveOpen(7, valueArray);
+        break;
+    default:
+        break;
+    }
+    while (loopFlag)
+    {
+        msleep(300);
+        if (*currentWeight-oldWeight >= weight)
+        {
+            DriverGC::Instance()->Control_ValveClose(7, valueArray);
+            loopFlag = false;
+            sleep(1);
+            emit finishWeight(*currentWeight-oldWeight);
+        }
+    }
+    return true;
 }
 
