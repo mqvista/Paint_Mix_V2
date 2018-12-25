@@ -257,7 +257,7 @@ Popup {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 80
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            validator: IntValidator {bottom: 1; top: 9999;}
+                            validator: IntValidator {bottom: 1; top: 99999;}
                             inputMethodHints: Qt.ImhDigitsOnly
                             onEditingFinished: {
                                 SetWeight = text
