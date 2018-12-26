@@ -17,6 +17,7 @@ ApplicationWindow {
 
         ToolButton {
             id: toolButton
+            enabled: !taskModule.busy
             anchors.verticalCenter: parent.verticalCenter
             text: stackView.depth > 1 ? "\u25C0" : "\u2630"
             opacity: 0.8
