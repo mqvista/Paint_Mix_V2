@@ -14,7 +14,7 @@ void SystemControl::systemReboot()
 
 void SystemControl::systemShutdown()
 {
-    process.start("sudo poweroff");
+    process.start("sudo shutdown -t 0");
     process.waitForFinished();
     process.close();
 }

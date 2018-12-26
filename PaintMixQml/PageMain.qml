@@ -211,12 +211,12 @@ Item {
                 }
                 Button {
                     id: buttonSystemShutdown
-                    text: qsTr("NULL")
+                    text: qsTr("系统关机")
                     anchors.left: buttonSystemReboot.right
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
                     onReleased: {
-
+                        taskModule.systemShutdown()
                     }
                 }
             }

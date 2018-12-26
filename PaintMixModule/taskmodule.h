@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE void stopCurrentJob();
     Q_INVOKABLE void runLoopFormula(QString formulaName);
     Q_INVOKABLE void systemReboot();
+    Q_INVOKABLE void systemShutdown();
 
 
     QString scaleSmall();

@@ -52,6 +52,11 @@ void TaskModule::systemReboot()
     m_systemControl.systemReboot();
 }
 
+void TaskModule::systemShutdown()
+{
+    m_systemControl.systemShutdown();
+}
+
 
 QString TaskModule::scaleSmall()
 {
