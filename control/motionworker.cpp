@@ -525,7 +525,7 @@ void MotionWorker::openMiddleTankPumpToOutside()
 {
     emit runningStatus(true);
     Motion::Instance()->controlMiddleTankToOutside(true);
-    msleep(500);
+    sleep(1);
     m_MiddleTankTimer->start(300);
 }
 
@@ -533,7 +533,7 @@ void MotionWorker::openMiddleTankPumpToOutside()
 void MotionWorker::closeMiddleTankPumpToOutside()
 {
     m_MiddleTankTimer->stop();
-    msleep(500);
+    sleep(1);
     Motion::Instance()->controlMiddleTankToOutside(false);
     emit runningStatus(false);
 }
@@ -543,15 +543,15 @@ void MotionWorker::openExtrenPump()
 {
     emit runningStatus(true);
     Motion::Instance()->controlMiddleTankAddWater(true);
-    msleep(500);
-    m_MiddleTankTimer->start(300);
+    sleep(1);
+    m_MiddleTankTimer->start(500);
 }
 
 // for user control
 void MotionWorker::closeExtrenPump()
 {
     m_MiddleTankTimer->stop();
-    msleep(500);
+    sleep(1);
     Motion::Instance()->controlMiddleTankAddWater(false);
     emit runningStatus(false);
 }
