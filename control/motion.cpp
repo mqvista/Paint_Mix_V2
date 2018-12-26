@@ -32,7 +32,7 @@ bool Motion::openSerial485(QString portSN)
     // NOTE Get Serial Error
     connect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
     // NOTE Get Debug Data
-    connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    //connect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
     return true;
 }
 
@@ -42,7 +42,7 @@ bool Motion::closeSerial485()
 {
     DriverGC::Instance()->Close();
     disconnect(DriverGC::Instance(), &DriverGC::ErrorOut, this, &Motion::serial485Error);
-    disconnect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
+    //disconnect(DriverGC::Instance(), &DriverGC::DebugOut, this, &Motion::driverGCDebugInfo);
     return true;
 }
 
