@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "control/motionworker.h"
+#include "utils/systemcontrol.h"
 
 
 class TaskModule : public QObject
@@ -23,6 +24,7 @@ public:
     Q_INVOKABLE void addWaterOutside(QString liter);
     Q_INVOKABLE void stopCurrentJob();
     Q_INVOKABLE void runLoopFormula(QString formulaName);
+    Q_INVOKABLE void systemReboot();
 
 
     QString scaleSmall();
@@ -66,6 +68,7 @@ private:
     QString m_pumpOutSideWeight;
     bool m_busy;
     QString m_middleTankLevel;
+    SystemControl m_systemControl;
 };
 
 #endif // TASKMODULE_H

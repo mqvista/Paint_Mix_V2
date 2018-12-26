@@ -20,7 +20,7 @@ Item {
         GridLayout {
             id: gridLayout
             columns: 1
-            rows: 3
+            rows: 4
             anchors.fill: parent
 
             Rectangle {
@@ -183,6 +183,40 @@ Item {
                     onReleased: {
                         pageSecond.closeMiddleTankAddWaterPump()
                         middleTankAddWaterFlag = false;
+                    }
+                }
+            }
+
+            Rectangle {
+                id: rectangle3
+                implicitWidth: 500
+                implicitHeight: 70
+                color: "#ffffff"
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                border.color: "black"
+                border.width: 3
+
+
+
+                Button {
+                    id: buttonSystemReboot
+                    text: qsTr("系统重启")
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        taskModule.systemReboot()
+                    }
+
+                }
+                Button {
+                    id: buttonSystemShutdown
+                    text: qsTr("NULL")
+                    anchors.left: buttonSystemReboot.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+
                     }
                 }
             }

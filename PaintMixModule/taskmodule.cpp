@@ -46,6 +46,12 @@ void TaskModule::runLoopFormula(QString formulaName)
                               Q_ARG(QString, formulaName));
 }
 
+void TaskModule::systemReboot()
+{
+
+    m_systemControl.systemReboot();
+}
+
 
 QString TaskModule::scaleSmall()
 {
