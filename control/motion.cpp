@@ -517,7 +517,7 @@ bool Motion::detectEncoder()
 // Param1: motor number 1~10
 // Parma2: liquid weight
 // Param3: scales number 1 or 2 (1 is scale small, 2 is scale big)
-bool Motion::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
+bool Motion::liquidOut(quint8 motorNum, double weight, quint8 scalesNum)
 {
     // 等待稳定
     sleep(2);
@@ -684,7 +684,7 @@ bool Motion::stopDrop(quint8 motorNum)
 // 给大秤和小秤加水
 // Parma1: weight
 // Param2: scales Number 1 or 2
-bool Motion::addWater(quint32 weight, quint8 scalesNum)
+bool Motion::addWater(double weight, quint8 scalesNum)
 {
     // 等待稳定
     sleep(2);
@@ -1100,7 +1100,7 @@ bool Motion::addWaterMiddleTank(double liter)
 }
 
 // 从蠕动泵加液
-bool Motion::pumpPaint(quint8 pumpNum, quint32 weight)
+bool Motion::pumpPaint(quint8 pumpNum, double weight)
 {
     // 等待稳定
     sleep(1);

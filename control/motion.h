@@ -35,11 +35,11 @@ public:
     // detect is the motion with encoder area
     bool detectEncoder();
     // Take the liquid to bottole
-    bool liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum);
+    bool liquidOut(quint8 motorNum, double weight, quint8 scalesNum);
     // Stop the motor motion
     bool stopDrop(quint8 motorNum);
     // Add water to scales small or big
-    bool addWater(quint32 weight, quint8 scalesNum);
+    bool addWater(double weight, quint8 scalesNum);
     // Convery motorNum and scale Num to degree
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
     // 新机构设计, 所有的液体移除到外部的桶, 使用蠕动泵, 参数秤的编号 1和2
@@ -67,7 +67,7 @@ public:
     // 给中通加水
     bool addWaterMiddleTank(double liter);
     // Add water to scales small or big
-    bool pumpPaint(quint8 pumpNum, quint32 weight);
+    bool pumpPaint(quint8 pumpNum, double weight);
 
 
 

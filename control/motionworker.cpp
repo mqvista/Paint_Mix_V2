@@ -47,7 +47,7 @@ void MotionWorker::closeSerial485()
     Motion::Instance()->closeSerial485();
 }
 
-void MotionWorker::addWater(quint32 weight, quint8 scalesNum)
+void MotionWorker::addWater(double weight, quint8 scalesNum)
 {
     Motion::Instance()->addWater(weight, scalesNum);
 }
@@ -57,7 +57,7 @@ void MotionWorker::initAsix(quint8 motorNum)
     Motion::Instance()->initAsixMotor(motorNum);
 }
 
-void MotionWorker::liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum)
+void MotionWorker::liquidOut(quint8 motorNum, double weight, quint8 scalesNum)
 {
     Motion::Instance()->liquidOut(motorNum, weight, scalesNum);
 }
@@ -85,7 +85,7 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
         if (subFormula.count("Motor") == 1) {
             quint8 motorNum = quint8(subFormula.value("Motor").toUShort());
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             // 运动到指定位置
             if (!Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum))) {
                 // 通知错误处理
@@ -101,7 +101,7 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
         // 判断是放清水
         if (subFormula.count("Water") == 1) {
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             if (!Motion::Instance()->addWater(weight, scaleNum)) {
                 break;
             }
@@ -127,7 +127,7 @@ void MotionWorker::runFormula(const QString& formulaName, bool needRunningFlag)
         if (subFormula.count("AdditionPaint") == 1)
         {
             //quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             quint8 pumpNum = quint8(subFormula.value("AdditionPaint").toUShort());
             if (!Motion::Instance()->pumpPaint(pumpNum, weight))
             {
@@ -154,7 +154,7 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString>> single
         if (subFormula.count("Motor") == 1) {
             quint8 motorNum = quint8(subFormula.value("Motor").toUShort());
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = quint32(subFormula.value("Weight").toFloat());
+            double weight = quint32(subFormula.value("Weight").toDouble());
             // 运动到指定位置
             if (!Motion::Instance()->moveAsixToScales(Motion::Instance()->converyDegree(motorNum, scaleNum))) {
                 // 通知错误处理
@@ -170,7 +170,7 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString>> single
         // 判断是放清水
         if (subFormula.count("Water") == 1) {
             quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = quint32(subFormula.value("Weight").toFloat());
+            double weight = quint32(subFormula.value("Weight").toDouble());
             if (!Motion::Instance()->addWater(weight, scaleNum)) {
                 break;
             }
@@ -196,7 +196,7 @@ void MotionWorker::runFormula(const QMap<quint16, QMap<QString, QString>> single
         if (subFormula.count("AdditionPaint") == 1)
         {
             //quint8 scaleNum = quint8(subFormula.value("Scales").toUShort());
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             quint8 pumpNum = quint8(subFormula.value("AdditionPaint").toUShort());
             if (!Motion::Instance()->pumpPaint(pumpNum, weight))
             {
@@ -297,7 +297,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
 
         // 判断是否有 weight
         if (subFormula.count("Weight") == 1) {
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             originalWeight += weight;
         }
     }
@@ -321,7 +321,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
 
         // 判断是否有 weight
         if (subFormula.count("Weight") == 1) {
-            quint32 weight = subFormula.value("Weight").toUInt();
+            double weight = subFormula.value("Weight").toDouble();
             fixedWeight += weight;
         }
     }

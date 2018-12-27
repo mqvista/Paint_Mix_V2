@@ -18,9 +18,9 @@ public:
     Q_INVOKABLE void openSerial485();
     Q_INVOKABLE void initDeviceMotor();
     Q_INVOKABLE void closeSerial485();
-    Q_INVOKABLE void addWater(quint32 weight, quint8 scalesNum);
+    Q_INVOKABLE void addWater(double weight, quint8 scalesNum);
     Q_INVOKABLE void initAsix(quint8 motorNum);
-    Q_INVOKABLE void liquidOut(quint8 motorNum, quint32 weight, quint8 scalesNum);
+    Q_INVOKABLE void liquidOut(quint8 motorNum, double weight, quint8 scalesNum);
     Q_INVOKABLE void runFormula(const QString& formulaName, bool needRunningFlag = true);
     // 微调用单次运行
     void runFormula(const QMap<quint16, QMap<QString, QString>> singleFormula, quint8 length);
