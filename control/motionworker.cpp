@@ -392,6 +392,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     quint8 count = 1;
     for (quint8 i = 1; i <= length; i++) {
         double tempOrigWeight, tempFixedWeight;
+        // 先判断有无Precent的
         if (originalFormula.value(i).contains("Percent") == 1) {
             tempOrigWeight = originalFormula.value(i).value("MiddleTankLiter").toDouble();
             tempFixedWeight = fixedFormula.value(i).value("MiddleTankLiter").toDouble();
@@ -448,6 +449,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
                     subFormula.insert("AdditionPaint", originalFormula.value(i).value("AdditionPaint"));
                     subFormula.insert("Scales", originalFormula.value(i).value("Scales"));
                     subFormula.insert("Weight", QString::number(tempFixedWeight - tempOrigWeight, 'd', 1));
+                    formulaToRun.insert(count, subFormula);
                     count++;
                     // 统计桶内重量
                     finallTankLiter += tempFixedWeight;
@@ -456,6 +458,14 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
             }
         }
     }
+    QMap<QString, QString> subFormula;
+    subFormula.insert("PumpScaleOutside", "1");
+    formulaToRun.insert(count, subFormula);
+    count++;
+    subFormula.clear();
+    subFormula.insert("PumpScaleOutside", "2");
+    formulaToRun.insert(count, subFormula);
+    count++;
 
     // 先判断桶内容量和秤上分量是否足够这次调整，不够就不调整，并用ERROR_HANDLER 提示用户
     if (middleTankLiter > 30000) {
