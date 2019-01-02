@@ -282,6 +282,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     double finallTankLiter = 0;
     // 获取中桶液位升数
     Motion::Instance()->getMiddleTankLevel(&middleTankLiter);
+    //middleTankLiter = 15000;
     if (middleTankLiter < 0) {
         ErrorHandle::Instance()->collectionError(ErrorHandle::ERROR_TANK_IS_EMPTY_OR_TANK_SENSER_ERROR);
         emit runningStatus(false);
@@ -289,7 +290,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
     fileReadWrite.readProfileDetail(formulaName, &originalFormula, &length);
 
-    // 循环qmap 找出每一个步骤，统计总重量
+    // 循环原始的qmap 找出每一个步骤，统计总重量
     for (quint8 i = 1; i <= length; i++) {
         // 建立一个子 qmap， 存储循环出来的数据
         QMap<QString, QString> subFormula;
@@ -302,7 +303,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
         }
     }
 
-    // 把百分比带入原来的里面
+    // 把百分比带入原始的formula里面
     for (quint8 i = 1; i <= length; i++) {
         if (originalFormula.value(i).count("Weight") == 1) {
             double percent = originalFormula.value(i).value("Weight").toDouble() / originalWeight;
@@ -313,7 +314,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
         }
     }
 
-    // 循环qmap 找出每一个步骤，统计总重量
+    // 循环调整的qmap 找出每一个步骤，统计总重量
     for (quint8 i = 1; i <= length; i++) {
         // 建立一个子 qmap， 存储循环出来的数据
         QMap<QString, QString> subFormula;
@@ -326,7 +327,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
         }
     }
 
-    // 把百分比带入原来的里面
+    // 把百分比带入调整的formula里面
     for (quint8 i = 1; i <= length; i++) {
         if (fixedFormula.value(i).count("Weight") == 1) {
             double percent = fixedFormula.value(i).value("Weight").toDouble() / fixedWeight;
@@ -334,7 +335,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
         }
     }
 
-    //求出差旧的和新的差最大的重量
+    //求出差旧的和差新的最大的重量
     double maxDifference = 0;
     quint8 maxDifferenceUnit = 0;
 
@@ -343,7 +344,7 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     quint8 diffAUnit = 0;
     double diffB = 0;
     quint8 diffBUnit = 0;
-    // 注意从2开始
+    // 应为取得是value,而非序号，所以从1开始
     for (quint8 i = 1; i <= length; i++) {
         if (fixedFormula.value(i).count("Weight") == 1) {
             if (diffA <= 0) {
@@ -368,9 +369,11 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     }
 
     // 先代入比例差值最大的目标，并代入对应的桶内重量
+    // 有可能会出现都是maxDiff没改变，就直接赋1
     if (maxDifferenceUnit == 0) {
         maxDifferenceUnit = 1;
     }
+    // TODO TEST
     fixedFormula[maxDifferenceUnit].insert("MiddleTankLiter", originalFormula.value(maxDifferenceUnit).value("MiddleTankLiter"));
     // 算出目标的每个点所占的系数
     double newPrecentModulus = fixedFormula.value(maxDifferenceUnit).value("MiddleTankLiter").toDouble() / fixedFormula.value(maxDifferenceUnit).value("Percent").toDouble();
