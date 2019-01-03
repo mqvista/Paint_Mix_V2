@@ -271,7 +271,6 @@ bool FormulaAddNew::saveFormula(QString fName)
 
 bool FormulaAddNew::updatePercent()
 {
-    //quint32 m_totalWeight = 0;
     m_totalWeight = 0;
     emit totalWeightChanged();
     // 先计算重量的总和
@@ -280,7 +279,7 @@ bool FormulaAddNew::updatePercent()
         if ((m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AdditionPaint")
                 && m_list.at(i).setWeight() != "")
         {
-            m_totalWeight += m_list.at(i).setWeight().toUInt();
+            m_totalWeight += m_list.at(i).setWeight().toDouble();
         }
     }
     emit totalWeightChanged();
@@ -294,11 +293,11 @@ bool FormulaAddNew::updatePercent()
             // 先设定下 index
             QModelIndex index = this->index(i);
 
-            if (m_list.at(i).setWeight().toInt() > 0)
+            if (m_list.at(i).setWeight().toDouble() > 0)
             {
                 // 除一下知道百分比
-                float percent;
-                percent = m_list.at(i).setWeight().toFloat() / m_totalWeight * 100;
+                double percent;
+                percent = m_list.at(i).setWeight().toDouble() / m_totalWeight * 100;
                 // 转到 qv 里面
                 QVariant qv = QString::number(double(percent), 'f', 2);
                 // 最后设定进去
@@ -316,9 +315,10 @@ bool FormulaAddNew::updatePercent()
     return true;
 }
 
-quint32 FormulaAddNew::totalWeight()
+double FormulaAddNew::totalWeight()
 {
-    return m_totalWeight;
+    QString tm = QString::number(m_totalWeight, 'f', 2);
+    return tm.toDouble();
 }
 
 QHash<int, QByteArray> FormulaAddNew::roleNames() const

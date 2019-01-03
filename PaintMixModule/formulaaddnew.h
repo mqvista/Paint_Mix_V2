@@ -65,7 +65,7 @@ private:
 
 class FormulaAddNew : public QAbstractListModel {
     Q_OBJECT
-    Q_PROPERTY(quint32 totalWeight READ totalWeight NOTIFY totalWeightChanged)
+    Q_PROPERTY(double totalWeight READ totalWeight NOTIFY totalWeightChanged)
 
 public:
     enum {
@@ -109,14 +109,14 @@ public:
     //
     Q_INVOKABLE bool updatePercent();
 
-    quint32 totalWeight();
+    double totalWeight();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
     QList<AddNewModel> m_list;
-    quint32 m_totalWeight;
+    double m_totalWeight;
 
 signals:
     void totalWeightChanged();

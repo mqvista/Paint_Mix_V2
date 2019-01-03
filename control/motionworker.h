@@ -38,6 +38,8 @@ public:
     Q_INVOKABLE void closeMiddleTankPumpToOutside();
     Q_INVOKABLE void openExtrenPump();
     Q_INVOKABLE void closeExtrenPump();
+    Q_INVOKABLE void openTankMuxer();
+    Q_INVOKABLE void closeTankMuxer();
 
 private:
     explicit MotionWorker();

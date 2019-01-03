@@ -119,7 +119,7 @@ void FormulaAddition::reflush(QString fName)
     fileReadWrite.readProfileDetail(fName, &formula, &detailLength);
 
     // 计算原来的克重
-    quint32 totalWeight = 0;
+    double totalWeight = 0;
     QList<QString> calcPercent;
     // 先算总重量
     for (quint16 i=1; i<= detailLength; i++)
@@ -130,7 +130,7 @@ void FormulaAddition::reflush(QString fName)
 
         if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle") || tempFormula.contains("AdditionPaint"))
         {
-            totalWeight += tempFormula.value("Weight").toLong();
+            totalWeight += tempFormula.value("Weight").toDouble();
         }
     }
     // 计算原来的百分比
@@ -145,7 +145,7 @@ void FormulaAddition::reflush(QString fName)
         if (tempFormula.contains("Motor") || tempFormula.contains("Water") || tempFormula.contains("AddWaterMiddle") || tempFormula.contains("AdditionPaint"))
         {
             double tempPercent = tempFormula.value("Weight").toDouble() / totalWeight * 100;
-            calcPercent[i-1] = QString::number(tempPercent, 'f', 1);
+            calcPercent[i-1] = QString::number(tempPercent, 'f', 2);
         }
     }
 
@@ -240,13 +240,13 @@ void FormulaAddition::reflush(QString fName)
 
 void FormulaAddition::reflushOffsetPercent()
 {
-    qint32 totalWeight = 0;
+    double totalWeight = 0;
     // 先计算重量的总和
     for (int i=0; i<m_list.count(); i++)
     {
         if (m_list.at(i).itemName() == "Motor" || m_list.at(i).itemName() == "Water" || m_list.at(i).itemName() == "AddWaterMiddle" || m_list.at(i).itemName() == "AdditionPaint")
         {
-            totalWeight += m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            totalWeight += m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble();
         }
     }
 
@@ -263,7 +263,7 @@ void FormulaAddition::reflushOffsetPercent()
             double percent;
             percent = (m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble()) / totalWeight * 100;
             // 转到 qv 里面
-            QVariant qv = QString::number(percent, 'f', 1);
+            QVariant qv = QString::number(percent, 'f', 2);
             // 最后设定进去
             setData(index, qv, OffsetPercentRole);
         }
@@ -305,7 +305,7 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
 
         if (m_list.at(i).itemName() == "Water" && (m_list.at(i).addLocal() != "3"))
         {
-            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            double weight = m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble();
 
                 QMap<QString, QString> tmp_map;
                 // 先插water  号码无所谓
@@ -321,7 +321,7 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
 
         if (m_list.at(i).itemName() == "Water" && (m_list.at(i).addLocal() == "3"))
         {
-            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            qint32 weight = m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble();
             QMap<QString, QString> tmp_map;
             // 先插 name 号码无所谓
             tmp_map.insert("AddWaterMiddle", "1");
@@ -344,7 +344,7 @@ QMap<quint16, QMap<QString, QString> > FormulaAddition::getFormulaDetail()
 
         if (m_list.at(i).itemName() == "AdditionPaint")
         {
-            qint32 weight = m_list.at(i).setWeight().toInt() + m_list.at(i).offset().toInt();
+            double weight = m_list.at(i).setWeight().toDouble() + m_list.at(i).offset().toDouble();
 
             QMap<QString, QString> tmp_map;
             // 先插AdditionPaint  号码无所谓

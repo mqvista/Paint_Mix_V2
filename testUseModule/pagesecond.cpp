@@ -29,3 +29,13 @@ void PageSecond::closeMiddleTankAddWaterPump()
 {
     QMetaObject::invokeMethod(MotionWorker::Instance(), "closeExtrenPump", Qt::QueuedConnection);
 }
+
+void PageSecond::openMiddleTankMix()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "openTankMuxer", Qt::QueuedConnection);
+}
+
+void PageSecond::closeMiddleTankMix()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "closeTankMuxer", Qt::QueuedConnection);
+}

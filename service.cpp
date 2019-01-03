@@ -21,9 +21,9 @@ Service::Service(QQmlApplicationEngine *appEng, QObject *parent) : QObject(paren
     // 初始化信号连接
     initSignalSlotConnect();
     // 开启 loading 画面
-    m_IndexModule.setIsnitialization(true);
+    //m_IndexModule.setIsnitialization(true);
     // 开启相应的硬件端口，并初始化硬件
-    initSystem();
+    //initSystem();
 }
 
 Service::~Service()

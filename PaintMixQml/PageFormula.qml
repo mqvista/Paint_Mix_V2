@@ -379,7 +379,6 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: parent.width * 0.45
         onClicked: {
-            console.log()
             formulaAddition.reflush(formulaList.getNameUseIndex(formulaListView.currentIndex))
             additionFormula.open()
             // 设定微调方案对话框的位置 x 在中间 y 在中间靠上

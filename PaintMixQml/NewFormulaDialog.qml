@@ -97,7 +97,29 @@ Popup {
                                 ListElement {text: "泵液"}
                             }
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            currentIndex: -1
+                            //currentIndex: -1
+                            currentIndex: {
+                                if (ItemName == "Motor")
+                                {
+                                    return 0
+                                }
+                                else if (ItemName == "Water")
+                                {
+                                    return 1
+                                }
+                                else if (ItemName == "Exchange")
+                                {
+                                    return 2
+                                }
+                                else if (ItemName == "AdditionPaint")
+                                {
+                                    return 3
+                                }
+                                else
+                                {
+                                    return -1
+                                }
+                            }
                             anchors.left: motionText.right
                             anchors.verticalCenter: parent.verticalCenter
                             onCurrentIndexChanged: {
@@ -188,7 +210,8 @@ Popup {
                                 ListElement {text: "10"}
                             }
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            currentIndex: -1
+                            //currentIndex: -1
+                            currentIndex: MotorNum-1
                             anchors.left: motorText.right
                             anchors.verticalCenter: parent.verticalCenter
                             onCurrentIndexChanged: {
@@ -219,9 +242,26 @@ Popup {
                                 ListElement {text: "大秤"}
                             }
                             enabled: motionComboBox.currentText != "泵液"
-                            //editable: motionComboBox.currentText != "泵液"
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            currentIndex: -1
+                            //currentIndex: -1
+                            currentIndex: {
+                                if (AddLocal == "1")
+                                {
+                                    return 0
+                                }
+                                else if (AddLocal == "2")
+                                {
+                                    return 1
+                                }
+                                else if (AddLocal == "3")
+                                {
+                                    return 2
+                                }
+                                else
+                                {
+                                    return -1
+                                }
+                            }
                             anchors.left: localName.right
                             anchors.verticalCenter: parent.verticalCenter
                             onCurrentIndexChanged: {
@@ -252,12 +292,15 @@ Popup {
                         }
                         TextField {
                             id: weightTextField
+                            text: {
+                                return SetWeight
+                            }
                             visible: motionComboBox.currentText != "移出"
                             anchors.left: weightName.right
                             anchors.verticalCenter: parent.verticalCenter
                             width: 80
                             font.pointSize: Qt.application.font.pixelSize * 1.2
-                            validator: IntValidator {bottom: 1; top: 100000;}
+                            validator: DoubleValidator {bottom: 1; top: 100000;}
                             inputMethodHints: Qt.ImhDigitsOnly
                             onEditingFinished: {
                                 SetWeight = text
@@ -375,8 +418,8 @@ Popup {
                                     {
                                         if (targetDrag !== -1)
                                         {
-                                            console.log("oldINdex=", index)
-                                            console.log("target=", targetDrag)
+                                            //console.log("oldINdex=", index)
+                                            //console.log("target=", targetDrag)
                                             formulaAddNew.move(index, targetDrag)
                                         }
                                     }
@@ -402,6 +445,7 @@ Popup {
                 delegate: addFormulaDelegate
                 clip: true
                 focus: true
+                cacheBuffer: 100
                 move: Transition {
                     NumberAnimation {properties: "x, y"; duration: 200}
                 }
@@ -452,7 +496,7 @@ Popup {
                 anchors.left: totalWeightText.right
                 anchors.leftMargin: 10
                 font.pointSize: Qt.application.font.pixelSize * 1.5
-                text: formulaAddNew.totalWeight
+                text: formulaAddNew.totalWeight.toString()
             }
 
 

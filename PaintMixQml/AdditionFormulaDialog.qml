@@ -59,7 +59,7 @@ Popup {
             border.color: "#150000"
             anchors.top: tittleHeader.bottom
             anchors.topMargin: 10
-            anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
 
             // listView 的视图模型
             Component {
@@ -191,6 +191,8 @@ Popup {
                             anchors.leftMargin: parent.width * 0.09
                         }
                         SpinBox {
+                            property int decimals: 1
+                            property real realValue: value / 100
                             id: offsetValue
                             enabled: {
                                 if (ItemName == "PumpScaleOutside")
@@ -200,14 +202,25 @@ Popup {
                             }
                             width: 120
                             value: 0
-                            from: parseInt(weightValue.text) * -1
-                            to: 99
+                            from: parseInt(weightValue.text) * -10
+                            to: parseInt(weightValue.text) * 10
+                            stepSize: 1
                             anchors.left: offsetText.right
                             anchors.verticalCenter: parent.verticalCenter
                             font.pointSize: Qt.application.font.pixelSize * 1.5
                             onValueChanged: {
                                 Offset = value
                                 formulaAddition.reflushOffsetPercent()
+                            }
+                            validator: DoubleValidator {
+                                bottom: Math.min(offsetValue.from, offsetValue.to)
+                                top: Math.max(offsetValue.from, offsetValue.to)
+                            }
+                            textFromValue: function(value, locale){
+                                return Number(value / 10).toLocaleString(locale, 'f', offsetValue.decimals)
+                            }
+                            valueFromText: function(text, locale) {
+                                return Number.fromLocaleString(locale, text) * 10
                             }
                         }
 

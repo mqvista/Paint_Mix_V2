@@ -273,9 +273,9 @@ void MotionWorker::runAndSaveNewFormula(QString formulaName, FixedType newFormul
     // 先读取原始的参数, 计算出原始的比例
     qint16 length;
     // 原始的方案重量
-    qint32 originalWeight = 0;
+    double originalWeight = 0;
     // 修改后的的方案重量
-    qint32 fixedWeight = 0;
+    double fixedWeight = 0;
     QMap<quint16, QMap<QString, QString>> originalFormula;
     QMap<quint16, QMap<QString, QString>> fixedFormula = newFormula;
     double middleTankLiter = 0;
@@ -566,6 +566,22 @@ void MotionWorker::closeExtrenPump()
     m_MiddleTankTimer->stop();
     sleep(1);
     Motion::Instance()->controlMiddleTankAddWater(false);
+    emit runningStatus(false);
+}
+
+void MotionWorker::openTankMuxer()
+{
+    emit runningStatus(true);
+    Motion::Instance()->mixMiddleTank(true);
+    sleep(1);
+    m_MiddleTankTimer->start(500);
+}
+
+void MotionWorker::closeTankMuxer()
+{
+    m_MiddleTankTimer->stop();
+    sleep(1);
+    Motion::Instance()->mixMiddleTank(false);
     emit runningStatus(false);
 }
 

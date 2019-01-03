@@ -6,6 +6,7 @@ Item {
     id: item1
     property bool middleTankAddWaterFlag: false;
     property bool middleTankPumpToOutsideFlag: false;
+    property bool middleTankMixFlag: false
 
     Rectangle {
         id: mainRectangle
@@ -185,6 +186,33 @@ Item {
                         middleTankAddWaterFlag = false;
                     }
                 }
+
+                Button {
+                    id: buttonOpenMiddleTankMix
+                    text: qsTr("中桶开启混合")
+                    enabled: !taskModule.busy
+                    anchors.left: buttonCloseMiddleTankAddWater.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        pageSecond.openMiddleTankMix()
+                        middleTankMixFlag = true
+                    }
+                }
+
+                Button {
+                    id: buttonCloseMiddleTankMix
+                    text: qsTr("中桶关闭混合")
+                    enabled: taskModule.busy && middleTankMixFlag == true
+                    anchors.left: buttonCloseMiddleTankAddWater.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        pageSecond.closeMiddleTankMix()
+                        middleTankMixFlag = false;
+                    }
+                }
+
             }
 
             Rectangle {
