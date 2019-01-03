@@ -204,7 +204,7 @@ Item {
                     id: buttonCloseMiddleTankMix
                     text: qsTr("中桶关闭混合")
                     enabled: taskModule.busy && middleTankMixFlag == true
-                    anchors.left: buttonCloseMiddleTankAddWater.right
+                    anchors.left: buttonOpenMiddleTankMix.right
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
                     onReleased: {
