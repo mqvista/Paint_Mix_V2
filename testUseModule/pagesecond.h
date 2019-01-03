@@ -17,6 +17,11 @@ public:
     Q_INVOKABLE void closeMiddleTankAddWaterPump();
     Q_INVOKABLE void openMiddleTankMix();
     Q_INVOKABLE void closeMiddleTankMix();
+    Q_INVOKABLE void openSmallScalePumpToOutSide();
+    Q_INVOKABLE void closeSmallScalePumpToOutSide();
+    Q_INVOKABLE void openBigScalePumpToOutSide();
+    Q_INVOKABLE void closeBigScalePumpToOutSide();
+
 
 signals:
 

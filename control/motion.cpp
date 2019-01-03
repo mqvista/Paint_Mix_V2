@@ -856,6 +856,38 @@ bool Motion::pumpToOutSide(quint8 scaleNum)
     return true;
 }
 
+bool Motion::pumpToOutSideManual(quint8 scaleNum, bool flag)
+{
+    switch (scaleNum) {
+    case 1:
+        if (flag)
+        {
+            DriverGC::Instance()->Setting_SM_Speed(6, 2, 6000, 20000);
+            DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_CW);
+            return true;
+        }
+        else
+        {
+            DriverGC::Instance()->Control_SM(6, 2, DriverGC::StepMotor_Stop);
+            return true;
+        }
+    case 2:
+        if (flag)
+        {
+            DriverGC::Instance()->Setting_SM_Speed(8, 1,30000, 80000);
+            DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_CW);
+            return true;
+        }
+        else
+        {
+            DriverGC::Instance()->Control_SM(8, 1, DriverGC::StepMotor_Stop);
+            return true;
+        }
+    default:
+        return false;
+    }
+}
+
 void Motion::getUserTankTop(bool *flag)
 {
     // 用户浆料槽top 液位 board6， channel 2

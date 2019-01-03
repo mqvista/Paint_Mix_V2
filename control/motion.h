@@ -44,14 +44,13 @@ public:
     quint16 converyDegree(quint8 motorNum, quint8 scaleNum);
     // 新机构设计, 所有的液体移除到外部的桶, 使用蠕动泵, 参数秤的编号 1和2
     bool pumpToOutSide(quint8 scaleNum);
+    // 小秤大秤抽水到中桶
+    bool pumpToOutSideManual(quint8 scaleNum, bool flag);
     // 获取浆料槽液位是否到top
     void getUserTankTop(bool* flag);
     // 搅拌中桶
     void mixMiddleTank(bool flag);
 
-
-//    bool addWaterOutside(quint32 liter);
-//    void reflushOutSideSenser();
 
     // 给大容量补充原液
     // 已经遗弃

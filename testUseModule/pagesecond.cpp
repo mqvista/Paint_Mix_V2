@@ -39,3 +39,23 @@ void PageSecond::closeMiddleTankMix()
 {
     QMetaObject::invokeMethod(MotionWorker::Instance(), "closeTankMuxer", Qt::QueuedConnection);
 }
+
+void PageSecond::openSmallScalePumpToOutSide()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "openSmallScalePumpToOutSide", Qt::QueuedConnection);
+}
+
+void PageSecond::closeSmallScalePumpToOutSide()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "closeSmallScalePumpToOutSide", Qt::QueuedConnection);
+}
+
+void PageSecond::openBigScalePumpToOutSide()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "openBigScalePumpToOutSide", Qt::QueuedConnection);
+}
+
+void PageSecond::closeBigScalePumpToOutSide()
+{
+    QMetaObject::invokeMethod(MotionWorker::Instance(), "closeBigScalePumpToOutSide", Qt::QueuedConnection);
+}

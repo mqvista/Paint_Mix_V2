@@ -6,7 +6,9 @@ Item {
     id: item1
     property bool middleTankAddWaterFlag: false;
     property bool middleTankPumpToOutsideFlag: false;
-    property bool middleTankMixFlag: false
+    property bool middleTankMixFlag: false;
+    property bool scaleSmallPumpToOutsideFlag: false;
+    property bool scaleBigPumpToOutsideFlag: false;
 
     Rectangle {
         id: mainRectangle
@@ -21,7 +23,7 @@ Item {
         GridLayout {
             id: gridLayout
             columns: 1
-            rows: 4
+            rows: 5
             anchors.fill: parent
 
             Rectangle {
@@ -224,6 +226,68 @@ Item {
                 border.color: "black"
                 border.width: 3
 
+                Button {
+                    id: buttonOpenSmallScalePumpToOutSide
+                    text: qsTr("开启小秤抽出")
+                    enabled: !taskModule.busy
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        scaleSmallPumpToOutsideFlag = true
+                        pageSecond.openSmallScalePumpToOutSide()
+                    }
+                }
+
+                Button {
+                    id: buttonCloseSmallScalePumpToOutSide
+                    text: qsTr("关闭小秤抽出")
+                    enabled: taskModule.busy && scaleSmallPumpToOutsideFlag == true
+                    anchors.left: buttonOpenSmallScalePumpToOutSide.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        scaleSmallPumpToOutsideFlag = false
+                        pageSecond.closeSmallScalePumpToOutSide()
+                    }
+                }
+
+                Button {
+                    id: buttonOpenBigScalePumpToOutSide
+                    text: qsTr("开启大秤抽出")
+                    enabled: !taskModule.busy
+                    anchors.left: buttonCloseSmallScalePumpToOutSide.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        scaleBigPumpToOutsideFlag = true
+                        pageSecond.openBigScalePumpToOutSide()
+                    }
+                }
+
+                Button {
+                    id: buttonCloseBigScalePumpToOutSide
+                    text: qsTr("关闭大秤抽出")
+                    enabled: taskModule.busy && scaleBigPumpToOutsideFlag == true
+                    anchors.left: buttonOpenBigScalePumpToOutSide.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    onReleased: {
+                        scaleBigPumpToOutsideFlag = false
+                        pageSecond.closeBigScalePumpToOutSide()
+                    }
+                }
+            }
+
+            Rectangle {
+                id: rectangle4
+                implicitWidth: 500
+                implicitHeight: 70
+                color: "#ffffff"
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                border.color: "black"
+                border.width: 3
+
 
 
                 Button {
@@ -251,6 +315,10 @@ Item {
         }
     }
 }
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/
 
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}

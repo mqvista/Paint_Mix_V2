@@ -585,6 +585,46 @@ void MotionWorker::closeTankMuxer()
     emit runningStatus(false);
 }
 
+void MotionWorker::openSmallScalePumpToOutSide()
+{
+    if (Motion::Instance()->pumpToOutSideManual(1, true))
+    {
+        emit runningStatus(true);
+        sleep(1);
+        m_MiddleTankTimer->start(500);
+    }
+}
+
+void MotionWorker::closeSmallScalePumpToOutSide()
+{
+    if (Motion::Instance()->pumpToOutSideManual(1, false))
+    {
+        m_MiddleTankTimer->stop();
+        sleep(1);
+        emit runningStatus(false);
+    }
+}
+
+void MotionWorker::openBigScalePumpToOutSide()
+{
+    if (Motion::Instance()->pumpToOutSideManual(2, true))
+    {
+        emit runningStatus(true);
+        sleep(1);
+        m_MiddleTankTimer->start(500);
+    }
+}
+
+void MotionWorker::closeBigScalePumpToOutSide()
+{
+    if (Motion::Instance()->pumpToOutSideManual(2, false))
+    {
+        m_MiddleTankTimer->stop();
+        sleep(1);
+        emit runningStatus(false);
+    }
+}
+
 MotionWorker::MotionWorker()
 {
     qRegisterMetaType<FixedType>("FixedType");

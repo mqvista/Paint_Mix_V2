@@ -40,6 +40,10 @@ public:
     Q_INVOKABLE void closeExtrenPump();
     Q_INVOKABLE void openTankMuxer();
     Q_INVOKABLE void closeTankMuxer();
+    Q_INVOKABLE void openSmallScalePumpToOutSide();
+    Q_INVOKABLE void closeSmallScalePumpToOutSide();
+    Q_INVOKABLE void openBigScalePumpToOutSide();
+    Q_INVOKABLE void closeBigScalePumpToOutSide();
 
 private:
     explicit MotionWorker();
