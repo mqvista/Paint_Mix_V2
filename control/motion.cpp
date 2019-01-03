@@ -69,8 +69,8 @@ bool Motion::initBoard()
 // Param2: Error message sub
 void Motion::serial485Error(QString msg1, QString msg2)
 {
-    qDebug() << msg1;
-    qDebug() << msg2;
+    qDebug() << "485ERROR-MSG1:" << msg1;
+    qDebug() << "485ERROR-MSG2:" << msg2;
 }
 
 // 输出driverGC的log
